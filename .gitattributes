@@ -1,0 +1,2 @@
+video_analysis/lib/libtensorflow_cc.so filter=lfs diff=lfs merge=lfs -text
+video_analysis/lib/libtensorflow_cc.so.2 filter=lfs diff=lfs merge=lfs -text
