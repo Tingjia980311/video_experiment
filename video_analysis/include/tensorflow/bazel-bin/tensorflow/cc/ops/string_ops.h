@@ -33,7 +33,7 @@ namespace ops {
 /// >>> tf.strings.as_string([3.1415926, 2.71828], precision=2).numpy()
 /// array([b'3.14', b'2.72'], dtype=object)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Optional attributes (see `Attrs`):
@@ -142,7 +142,7 @@ class AsString {
 /// Input may or may not have padding at the end. See EncodeBase64 for padding.
 /// Web-safe means that input must use - and _ instead of + and /.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: Base64 strings to decode.
 ///
@@ -168,7 +168,7 @@ class DecodeBase64 {
 ///
 /// Web-safe means that the encoder uses - and _ instead of + and /.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: Strings to be encoded.
 ///
@@ -233,7 +233,7 @@ class EncodeBase64 {
 /// tf.reduce_join(a) = tf.reduce_join(a, [1, 0]) ==> "abcd"
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * inputs: The input to be joined.  All reduced indices must have non-zero size.
 /// * reduction_indices: The dimensions to reduce over.  Dimensions are reduced in the
@@ -308,7 +308,7 @@ class ReduceJoin {
 /// >>> tf.strings.regex_full_match(["TF lib", "lib TF"], ".*TF$")
 /// <tf.Tensor: shape=(2,), dtype=bool, numpy=array([False,  True])>
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: A string tensor of the text to be processed.
 /// * pattern: A scalar string tensor containing the regular expression to match the input.
@@ -332,7 +332,7 @@ class RegexFullMatch {
 ///
 /// It follows the re2 syntax (https://github.com/google/re2/wiki/Syntax)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The text to be processed.
 /// * pattern: The regular expression to be matched in the `input` strings.
@@ -384,7 +384,7 @@ class RegexReplace {
 ///
 /// Formats a string template using a list of tensors, pretty-printing tensor summaries.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * inputs: The list of tensors to format into the placeholder string.
 ///
@@ -461,7 +461,7 @@ class StringFormat {
 /// >>> tf.strings.join(s, " ")
 /// <tf.Tensor: shape=(), dtype=string, numpy=b'hello world tensorflow'>
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * inputs: A list of string tensors.  The tensors must all have the same shape,
 /// or be scalars.  Scalars may be mixed in; these will be broadcast to the shape
@@ -513,7 +513,7 @@ class StringJoin {
 /// array([ 5, 10, 1], dtype=int32)
 ///
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The strings for which to compute the length for each element.
 ///
@@ -569,7 +569,7 @@ class StringLength {
 /// <tf.Tensor: shape=(), dtype=string, numpy=b'camelcase string and all caps'>
 ///
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -608,7 +608,7 @@ class StringLower {
 /// strings and outputs a ragged tensor with 1 ragged dimension containing ngrams
 /// of that string, joined along the innermost axis.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * data: The values tensor of the ragged string tensor to make ngrams out of. Must be a
 /// 1D string tensor.
@@ -663,7 +663,7 @@ class StringNGrams {
 ///   shape = [2, 3]
 ///   values = ['hello', 'world', 'a', 'b', 'c']
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: 1-D. Strings to split.
 /// * delimiter: 0-D. Delimiter characters (bytes), or empty string.
@@ -734,7 +734,7 @@ class StringSplit {
 ///
 /// Note that the above mentioned behavior matches python's str.split.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: `1-D` string `Tensor`, the strings to split.
 /// * sep: `0-D` string `Tensor`, the delimiter character.
@@ -778,7 +778,7 @@ class StringSplitV2 {
 
 /// Strip leading and trailing whitespaces from the Tensor.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: A string `Tensor` of any shape.
 ///
@@ -809,7 +809,7 @@ class StringStrip {
 /// This functionality will be deprecated and it's recommended to use
 /// `tf.string_to_hash_bucket_fast()` or `tf.string_to_hash_bucket_strong()`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * num_buckets: The number of buckets.
 ///
@@ -841,7 +841,7 @@ class StringToHashBucket {
 /// >>> tf.strings.to_hash_bucket_fast(["Hello", "TensorFlow", "2.x"], 3).numpy()
 /// array([0, 2, 2])
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The strings to assign a hash bucket.
 /// * num_buckets: The number of buckets.
@@ -881,7 +881,7 @@ class StringToHashBucketFast {
 /// >>> tf.strings.to_hash_bucket_strong(["Hello", "TF"], 3, [1, 2]).numpy()
 /// array([2, 0])
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The strings to assign a hash bucket.
 /// * num_buckets: The number of buckets.
@@ -911,7 +911,7 @@ class StringToHashBucketStrong {
 /// <tf.Tensor: shape=(), dtype=string, numpy=b'CAMELCASE STRING AND ALL CAPS'>
 ///
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1026,11 +1026,11 @@ class StringUpper {
 ///
 ///   * `ValueError`: If the first argument cannot be converted to a
 ///      Tensor of `dtype string`.
-///   * `InvalidArgumentError`: If indicies are out of range.
+///   * `InvalidArgumentError`: If indices are out of range.
 ///   * `ValueError`: If `pos` and `len` are not the same shape.
 ///
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: Tensor of strings
 /// * pos: Scalar defining the position of first character in each substring
@@ -1085,7 +1085,15 @@ class Substr {
 ///
 /// This operation converts Unicode code points to script codes corresponding to
 /// each code point. Script codes correspond to International Components for
-/// Unicode (ICU) UScriptCode values. See http://icu-project.org/apiref/icu4c/uscript_8h.html.
+/// Unicode (ICU) UScriptCode values.
+///
+/// See
+/// [ICU project docs](http://icu-project.org/apiref/icu4c/uscript_8h.html)
+/// for more details on script codes.
+///
+/// For an example, see the unicode strings guide on [unicode scripts]
+/// (https://www.tensorflow.org/tutorials/load_data/unicode#representing_unicode).
+///
 /// Returns -1 (USCRIPT_INVALID_CODE) for invalid codepoints. Output shape will
 /// match input shape.
 ///
@@ -1094,7 +1102,7 @@ class Substr {
 /// >>> tf.strings.unicode_script([1, 31, 38])
 /// <tf.Tensor: shape=(3,), dtype=int32, numpy=array([0, 0, 0], dtype=int32)>
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: A Tensor of int32 Unicode code points.
 ///
@@ -1148,7 +1156,7 @@ class UnicodeScript {
 /// >>> tf.strings.unicode_transcode(["A", "B", "C"], "US ASCII", "UTF-8").numpy()
 /// array([b'A', b'B', b'C'], dtype=object)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The text to be processed. Can have any shape.
 /// * input_encoding: Text encoding of the input strings. This is any of the encodings supported
@@ -1280,7 +1288,7 @@ class UnicodeTranscode {
 /// # output_array ==> ['this:is:a:test']
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * inputs: The input to be joined.
 /// * segment_ids: A tensor whose shape is a prefix of data.shape.  Negative segment ids are not

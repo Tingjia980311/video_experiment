@@ -23,7 +23,7 @@ namespace ops {
 /// Each entry in `output` is the mean of the corresponding size `ksize`
 /// window in `value`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * value: 4-D with shape `[batch, height, width, channels]`.
 /// * ksize: The size of the sliding window for each dimension of `value`.
@@ -78,7 +78,10 @@ class AvgPool {
 
 /// Performs 3D average pooling on the input.
 ///
-/// Arguments:
+/// Each entry in `output` is the mean of the corresponding size `ksize` window in
+/// `value`.
+///
+/// Args:
 /// * scope: A Scope object
 /// * input: Shape `[batch, depth, rows, cols, channels]` tensor to pool over.
 /// * ksize: 1-D tensor of length 5. The size of the window for each dimension of
@@ -135,7 +138,7 @@ class AvgPool3D {
 
 /// Computes gradients of average pooling function.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * orig_input_shape: The original input dimensions.
 /// * grad: Output backprop of shape `[batch, depth, rows, cols, channels]`.
@@ -198,7 +201,7 @@ class AvgPool3DGrad {
 /// This is a special case of `tf.add` where `bias` is restricted to be 1-D.
 /// Broadcasting is supported, so `value` may have any number of dimensions.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * value: Any number of dimensions.
 /// * bias: 1-D with size the last dimension of `value`.
@@ -257,7 +260,7 @@ class BiasAdd {
 /// For NHWC data format, the feature dimension is the last. For NCHW data format,
 /// the feature dimension is the third-to-last.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * out_backprop: Any number of dimensions.
 ///
@@ -332,7 +335,7 @@ class BiasAddGrad {
 /// Must have `strides[0] = strides[3] = 1`.  For the most common case of the same
 /// horizontal and vertices strides, `strides = [1, stride, stride, 1]`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: A 4-D tensor. The dimension order is interpreted according to the value
 /// of `data_format`, see below for details.
@@ -450,7 +453,7 @@ class Conv2D {
 
 /// Computes the gradients of convolution with respect to the filter.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: 4-D with shape `[batch, in_height, in_width, in_channels]`.
 /// * filter_sizes: An integer vector representing the tensor shape of `filter`,
@@ -574,7 +577,7 @@ class Conv2DBackpropFilter {
 
 /// Computes the gradients of convolution with respect to the input.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input_sizes: An integer vector representing the shape of `input`,
 /// where `input` is a 4-D `[batch, height, width, channels]` tensor.
@@ -703,7 +706,7 @@ class Conv2DBackpropInput {
 ///
 /// Our Conv3D implements a form of cross-correlation.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: Shape `[batch, in_depth, in_height, in_width, in_channels]`.
 /// * filter: Shape `[filter_depth, filter_height, filter_width, in_channels,
@@ -787,7 +790,7 @@ class Conv3D {
 
 /// Computes the gradients of 3-D convolution with respect to the filter.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: Shape `[batch, depth, rows, cols, in_channels]`.
 /// * filter_sizes: An integer vector representing the tensor shape of `filter`,
@@ -878,7 +881,7 @@ class Conv3DBackpropFilterV2 {
 
 /// Computes the gradients of 3-D convolution with respect to the input.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input_sizes: An integer vector representing the tensor shape of `input`,
 /// where `input` is a 5-D
@@ -971,7 +974,7 @@ class Conv3DBackpropInputV2 {
 ///
 /// the source data format.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * x: A Tensor with each element as a dimension index in source data format.
 /// Must be in the range [-4, 4).
@@ -1025,11 +1028,30 @@ class DataFormatDimMap {
   ::tensorflow::Output y;
 };
 
-/// Returns the permuted vector/tensor in the destination data format given the
+/// Permute input tensor from `src_format` to `dst_format`.
 ///
-/// one in the source data format.
+/// Input tensor must be a vector of size 4, or a 4x2 tensor.
 ///
-/// Arguments:
+/// For example, with `src_format` of `NHWC`, `dst_format` of `NCHW`, and inputs:
+/// ```
+/// [1, 2, 3, 4]
+/// ```
+/// and
+/// ```
+/// [[1, 2, 3, 4],
+///  [5, 6, 7, 8]]
+/// ```
+/// , the outputs will be (respectively):
+/// ```
+/// [1, 4, 2, 3]
+/// ```
+/// and
+/// ```
+/// [[1, 4, 2, 3],
+///  [5, 8, 6, 7]]
+/// ```
+///
+/// Args:
 /// * scope: A Scope object
 /// * x: Vector of size 4 or Tensor of shape (4, 2) in source data format.
 ///
@@ -1103,7 +1125,7 @@ class DataFormatVecPermute {
 /// Must have `strides[0] = strides[3] = 1`.  For the most common case of the same
 /// horizontal and vertices strides, `strides = [1, stride, stride, 1]`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * strides: 1-D of length 4.  The stride of the sliding window for each dimension
 /// of `input`.
@@ -1127,6 +1149,13 @@ class DepthwiseConv2dNative {
  public:
   /// Optional attribute setters for DepthwiseConv2dNative
   struct Attrs {
+    /// Defaults to []
+    TF_MUST_USE_RESULT Attrs ExplicitPaddings(const gtl::ArraySlice<int>& x) {
+      Attrs ret = *this;
+      ret.explicit_paddings_ = x;
+      return ret;
+    }
+
     /// Specify the data format of the input and output data. With the
     /// default format "NHWC", the data is stored in the order of:
     ///     [batch, height, width, channels].
@@ -1153,6 +1182,7 @@ class DepthwiseConv2dNative {
       return ret;
     }
 
+    gtl::ArraySlice<int> explicit_paddings_ = {};
     StringPiece data_format_ = "NHWC";
     gtl::ArraySlice<int> dilations_ = Default_dilations();
   private:
@@ -1172,6 +1202,9 @@ class DepthwiseConv2dNative {
   operator ::tensorflow::Input() const { return output; }
   ::tensorflow::Node* node() const { return output.node(); }
 
+  static Attrs ExplicitPaddings(const gtl::ArraySlice<int>& x) {
+    return Attrs().ExplicitPaddings(x);
+  }
   static Attrs DataFormat(StringPiece x) {
     return Attrs().DataFormat(x);
   }
@@ -1185,7 +1218,7 @@ class DepthwiseConv2dNative {
 
 /// Computes the gradients of depthwise convolution with respect to the filter.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: 4-D with shape based on `data_format`.  For example, if
 /// `data_format` is 'NHWC' then `input` is a 4-D `[batch, in_height,
@@ -1221,6 +1254,13 @@ class DepthwiseConv2dNativeBackpropFilter {
  public:
   /// Optional attribute setters for DepthwiseConv2dNativeBackpropFilter
   struct Attrs {
+    /// Defaults to []
+    TF_MUST_USE_RESULT Attrs ExplicitPaddings(const gtl::ArraySlice<int>& x) {
+      Attrs ret = *this;
+      ret.explicit_paddings_ = x;
+      return ret;
+    }
+
     /// Specify the data format of the input and output data. With the
     /// default format "NHWC", the data is stored in the order of:
     ///     [batch, height, width, channels].
@@ -1247,6 +1287,7 @@ class DepthwiseConv2dNativeBackpropFilter {
       return ret;
     }
 
+    gtl::ArraySlice<int> explicit_paddings_ = {};
     StringPiece data_format_ = "NHWC";
     gtl::ArraySlice<int> dilations_ = Default_dilations();
   private:
@@ -1273,6 +1314,9 @@ class DepthwiseConv2dNativeBackpropFilter {
   operator ::tensorflow::Input() const { return output; }
   ::tensorflow::Node* node() const { return output.node(); }
 
+  static Attrs ExplicitPaddings(const gtl::ArraySlice<int>& x) {
+    return Attrs().ExplicitPaddings(x);
+  }
   static Attrs DataFormat(StringPiece x) {
     return Attrs().DataFormat(x);
   }
@@ -1286,7 +1330,7 @@ class DepthwiseConv2dNativeBackpropFilter {
 
 /// Computes the gradients of depthwise convolution with respect to the input.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input_sizes: An integer vector representing the shape of `input`, based
 /// on `data_format`.  For example, if `data_format` is 'NHWC' then
@@ -1322,6 +1366,13 @@ class DepthwiseConv2dNativeBackpropInput {
  public:
   /// Optional attribute setters for DepthwiseConv2dNativeBackpropInput
   struct Attrs {
+    /// Defaults to []
+    TF_MUST_USE_RESULT Attrs ExplicitPaddings(const gtl::ArraySlice<int>& x) {
+      Attrs ret = *this;
+      ret.explicit_paddings_ = x;
+      return ret;
+    }
+
     /// Specify the data format of the input and output data. With the
     /// default format "NHWC", the data is stored in the order of:
     ///     [batch, height, width, channels].
@@ -1348,6 +1399,7 @@ class DepthwiseConv2dNativeBackpropInput {
       return ret;
     }
 
+    gtl::ArraySlice<int> explicit_paddings_ = {};
     StringPiece data_format_ = "NHWC";
     gtl::ArraySlice<int> dilations_ = Default_dilations();
   private:
@@ -1374,6 +1426,9 @@ class DepthwiseConv2dNativeBackpropInput {
   operator ::tensorflow::Input() const { return output; }
   ::tensorflow::Node* node() const { return output.node(); }
 
+  static Attrs ExplicitPaddings(const gtl::ArraySlice<int>& x) {
+    return Attrs().ExplicitPaddings(x);
+  }
   static Attrs DataFormat(StringPiece x) {
     return Attrs().DataFormat(x);
   }
@@ -1411,7 +1466,7 @@ class DepthwiseConv2dNativeBackpropInput {
 /// Note on duality: The dilation of `input` by the `filter` is equal to the
 /// negation of the erosion of `-input` by the reflected `filter`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: 4-D with shape `[batch, in_height, in_width, depth]`.
 /// * filter: 3-D with shape `[filter_height, filter_width, depth]`.
@@ -1438,7 +1493,7 @@ class Dilation2D {
 
 /// Computes the gradient of morphological 2-D dilation with respect to the filter.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: 4-D with shape `[batch, in_height, in_width, depth]`.
 /// * filter: 3-D with shape `[filter_height, filter_width, depth]`.
@@ -1468,7 +1523,7 @@ class Dilation2DBackpropFilter {
 
 /// Computes the gradient of morphological 2-D dilation with respect to the input.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: 4-D with shape `[batch, in_height, in_width, depth]`.
 /// * filter: 3-D with shape `[filter_height, filter_width, depth]`.
@@ -1495,12 +1550,26 @@ class Dilation2DBackpropInput {
   ::tensorflow::Output in_backprop;
 };
 
-/// Computes exponential linear: `exp(features) - 1` if < 0, `features` otherwise.
+/// Computes the exponential linear function.
+///
+/// The ELU function is defined as:
+///
+///  * $ e ^ x - 1 $ if $ x < 0 $
+///  * $ x $ if $ x >= 0 $
+///
+/// Examples:
+///
+/// >>> tf.nn.elu(1.0)
+/// <tf.Tensor: shape=(), dtype=float32, numpy=1.0>
+/// >>> tf.nn.elu(0.0)
+/// <tf.Tensor: shape=(), dtype=float32, numpy=0.0>
+/// >>> tf.nn.elu(-1000.0)
+/// <tf.Tensor: shape=(), dtype=float32, numpy=-1.0>
 ///
 /// See [Fast and Accurate Deep Network Learning by Exponential Linear Units (ELUs)
 /// ](http://arxiv.org/abs/1511.07289)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1523,7 +1592,7 @@ class Elu {
 /// generated, a mean operation is performed instead of a max operation in each
 /// pooling region.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * value: 4-D with shape `[batch, height, width, channels]`.
 /// * pooling_ratio: Pooling ratio for each dimension of `value`, currently only
@@ -1688,7 +1757,7 @@ class FractionalAvgPool {
 /// For more details on fractional max pooling, see this paper:
 /// [Benjamin Graham, Fractional Max-Pooling](http://arxiv.org/abs/1412.6071)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * value: 4-D with shape `[batch, height, width, channels]`.
 /// * pooling_ratio: Pooling ratio for each dimension of `value`, currently only
@@ -1827,7 +1896,7 @@ class FractionalMaxPool {
 /// Note that the size of 4D Tensors are defined by either "NHWC" or "NCHW".
 /// The size of 1D Tensors matches the dimension C of the 4D Tensors.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * x: A 4D Tensor for input data.
 /// * scale: A 1D Tensor for scaling factor, to scale the normalized x.
@@ -1931,7 +2000,7 @@ class FusedBatchNorm {
 /// Note that the size of 4D Tensors are defined by either "NHWC" or "NCHW".
 /// The size of 1D Tensors matches the dimension C of the 4D Tensors.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * y_backprop: A 4D Tensor for the gradient with respect to y.
 /// * x: A 4D Tensor for input data.
@@ -2030,7 +2099,7 @@ class FusedBatchNormGrad {
 /// Note that the size of 4D Tensors are defined by either "NHWC" or "NCHW".
 /// The size of 1D Tensors matches the dimension C of the 4D Tensors.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * y_backprop: A 4D Tensor for the gradient with respect to y.
 /// * x: A 4D Tensor for input data.
@@ -2129,7 +2198,7 @@ class FusedBatchNormGradV2 {
 /// Note that the size of 4D Tensors are defined by either "NHWC" or "NCHW".
 /// The size of 1D Tensors matches the dimension C of the 4D Tensors.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * y_backprop: A 4D Tensor for the gradient with respect to y.
 /// * x: A 4D Tensor for input data.
@@ -2232,7 +2301,7 @@ class FusedBatchNormGradV3 {
 /// Note that the size of 4D Tensors are defined by either "NHWC" or "NCHW".
 /// The size of 1D Tensors matches the dimension C of the 4D Tensors.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * x: A 4D Tensor for input data.
 /// * scale: A 1D Tensor for scaling factor, to scale the normalized x.
@@ -2336,7 +2405,7 @@ class FusedBatchNormV2 {
 /// Note that the size of 4D Tensors are defined by either "NHWC" or "NCHW".
 /// The size of 1D Tensors matches the dimension C of the 4D Tensors.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * x: A 4D Tensor for input data.
 /// * scale: A 1D Tensor for scaling factor, to scale the normalized x.
@@ -2452,7 +2521,7 @@ class FusedBatchNormV3 {
 /// will block if multiple versions are being run in parallel. This is because this
 /// operator is primarily an optimization to minimize memory usage.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: 4-D with shape `[batch, in_height, in_width, in_channels]`.
 /// * paddings: A two-column matrix specifying the padding sizes. The number of
@@ -2492,7 +2561,7 @@ class FusedPadConv2D {
 /// will block if multiple versions are being run in parallel. This is because this
 /// operator is primarily an optimization to minimize memory usage.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: 4-D with shape `[batch, in_height, in_width, in_channels]`.
 /// * size: A 1-D int32 Tensor of 2 elements: `new_height, new_width`.  The
@@ -2566,7 +2635,7 @@ class FusedResizeAndPadConv2D {
 ///
 /// $$out_i = predictions_{i, targets_i} \in TopKIncludingTies(predictions_i)$$
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * predictions: A `batch_size` x `classes` tensor.
 /// * targets: A `batch_size` vector of class ids.
@@ -2603,7 +2672,7 @@ class InTopK {
 ///
 /// $$out_i = predictions_{i, targets_i} \in TopKIncludingTies(predictions_i)$$
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * predictions: A `batch_size` x `classes` tensor.
 /// * targets: A `batch_size` vector of class ids.
@@ -2629,7 +2698,7 @@ class InTopKV2 {
 ///
 ///     output = sum(t ** 2) / 2
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * t: Typically 2-D, but may have any dimensions.
 ///
@@ -2660,7 +2729,7 @@ class L2Loss {
 /// For details, see [Krizhevsky et al., ImageNet classification with deep
 /// convolutional neural networks (NIPS 2012)](http://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks).
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: 4-D.
 ///
@@ -2747,7 +2816,7 @@ class LRN {
 ///
 ///     logsoftmax[i, j] = logits[i, j] - log(sum(exp(logits[i])))
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * logits: 2-D with shape `[batch_size, num_classes]`.
 ///
@@ -2766,7 +2835,7 @@ class LogSoftmax {
 
 /// Performs max pooling on the input.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: 4-D input to pool over.
 /// * ksize: The size of the window for each dimension of the input tensor.
@@ -2787,6 +2856,13 @@ class MaxPool {
  public:
   /// Optional attribute setters for MaxPool
   struct Attrs {
+    /// Defaults to []
+    TF_MUST_USE_RESULT Attrs ExplicitPaddings(const gtl::ArraySlice<int>& x) {
+      Attrs ret = *this;
+      ret.explicit_paddings_ = x;
+      return ret;
+    }
+
     /// Specify the data format of the input and output data. With the
     /// default format "NHWC", the data is stored in the order of:
     ///     [batch, in_height, in_width, in_channels].
@@ -2800,6 +2876,7 @@ class MaxPool {
       return ret;
     }
 
+    gtl::ArraySlice<int> explicit_paddings_ = {};
     StringPiece data_format_ = "NHWC";
   };
   MaxPool(const ::tensorflow::Scope& scope, ::tensorflow::Input input, const
@@ -2812,6 +2889,9 @@ class MaxPool {
   operator ::tensorflow::Input() const { return output; }
   ::tensorflow::Node* node() const { return output.node(); }
 
+  static Attrs ExplicitPaddings(const gtl::ArraySlice<int>& x) {
+    return Attrs().ExplicitPaddings(x);
+  }
   static Attrs DataFormat(StringPiece x) {
     return Attrs().DataFormat(x);
   }
@@ -2822,7 +2902,7 @@ class MaxPool {
 
 /// Performs 3D max pooling on the input.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: Shape `[batch, depth, rows, cols, channels]` tensor to pool over.
 /// * ksize: 1-D tensor of length 5. The size of the window for each dimension of
@@ -2877,9 +2957,9 @@ class MaxPool3D {
   ::tensorflow::Output output;
 };
 
-/// Computes gradients of max pooling function.
+/// Computes gradients of 3D max pooling function.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * orig_input: The original input tensor.
 /// * orig_output: The original output tensor.
@@ -2940,7 +3020,7 @@ class MaxPool3DGrad {
 
 /// Computes second-order gradients of the maxpooling function.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * orig_input: The original input tensor.
 /// * orig_output: The original output tensor.
@@ -3002,7 +3082,7 @@ class MaxPool3DGradGrad {
 
 /// Computes second-order gradients of the maxpooling function.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * orig_input: The original input tensor.
 /// * orig_output: The original output tensor.
@@ -3063,7 +3143,7 @@ class MaxPoolGradGrad {
 
 /// Computes second-order gradients of the maxpooling function.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * orig_input: The original input tensor.
 /// * orig_output: The original output tensor.
@@ -3124,7 +3204,7 @@ class MaxPoolGradGradV2 {
 
 /// Computes second-order gradients of the maxpooling function.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The original input.
 /// * grad: 4-D with shape `[batch, height, width, channels]`.  Gradients w.r.t. the
@@ -3178,7 +3258,7 @@ class MaxPoolGradGradWithArgmax {
 
 /// Computes gradients of the maxpooling function.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * orig_input: The original input tensor.
 /// * orig_output: The original output tensor.
@@ -3238,7 +3318,7 @@ class MaxPoolGradV2 {
 
 /// Performs max pooling on the input.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: 4-D input to pool over.
 /// * ksize: The size of the window for each dimension of the input tensor.
@@ -3304,7 +3384,7 @@ class MaxPoolV2 {
 /// (either negative or too large).  This is a bug, but fixing it is difficult to do
 /// in a safe backwards compatible way, especially due to flattening.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: 4-D with shape `[batch, height, width, channels]`.  Input to pool over.
 /// * ksize: The size of the window for each dimension of the input tensor.
@@ -3371,7 +3451,7 @@ class MaxPoolWithArgmax {
 ///
 ///     values.shape = input.shape[:-1]
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: 1-D or higher with last dimension at least `n+1`.
 /// * n: 0-D. Position of sorted vector to select along the last dimension (along
@@ -3417,7 +3497,7 @@ class NthElement {
 
 /// Produces the average pool of the input tensor for quantized types.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: 4-D with shape `[batch, height, width, channels]`.
 /// * min_input: The float value that the lowest quantized input value represents.
@@ -3450,7 +3530,7 @@ class QuantizedAvgPool {
 /// This op is deprecated and will be removed in the future. Prefer
 /// `tf.nn.batch_normalization`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * t: A 4D input Tensor.
 /// * t_min: The value represented by the lowest quantized input.
@@ -3514,7 +3594,7 @@ class QuantizedBatchNormWithGlobalNormalization {
 ///
 /// Broadcasts the values of bias on dimensions 0..N-2 of 'input'.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * bias: A 1D bias Tensor with size matching the last dimension of 'input'.
 /// * min_input: The float value that the lowest quantized input value represents.
@@ -3546,7 +3626,7 @@ class QuantizedBiasAdd {
 /// This means that you can only interpret the quantized output in the same way, by
 /// taking the returned minimum and maximum values into account.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * filter: filter's input_depth dimension must match input's depth dimensions.
 /// * min_input: The float value that the lowest quantized input value represents.
@@ -3627,7 +3707,7 @@ class QuantizedConv2D {
 
 /// Produces the max pool of the input tensor for quantized types.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The 4D (batch x rows x cols x depth) Tensor to MaxReduce over.
 /// * min_input: The float value that the lowest quantized input value represents.
@@ -3657,7 +3737,7 @@ class QuantizedMaxPool {
 
 /// Computes Quantized Rectified Linear: `max(features, 0)`
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * min_features: The float value that the lowest quantized value represents.
 /// * max_features: The float value that the highest quantized value represents.
@@ -3698,7 +3778,7 @@ class QuantizedRelu {
 
 /// Computes Quantized Rectified Linear 6: `min(max(features, 0), 6)`
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * min_features: The float value that the lowest quantized value represents.
 /// * max_features: The float value that the highest quantized value represents.
@@ -3739,7 +3819,7 @@ class QuantizedRelu6 {
 
 /// Computes Quantized Rectified Linear X: `min(max(features, 0), max_value)`
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * min_features: The float value that the lowest quantized value represents.
 /// * max_features: The float value that the highest quantized value represents.
@@ -3783,10 +3863,10 @@ class QuantizedReluX {
 ///
 /// See: https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
 /// Example usage:
-/// >>> tf.nn.relu([-2., 0., -0., 3.]).numpy()
-/// array([ 0.,  0., -0.,  3.], dtype=float32)
+/// >>> tf.nn.relu([-2., 0., 3.]).numpy()
+/// array([0., 0., 3.], dtype=float32)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -3804,7 +3884,7 @@ class Relu {
 
 /// Computes rectified linear 6: `min(max(features, 0), 6)`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -3830,7 +3910,7 @@ class Relu6 {
 ///
 /// See [Self-Normalizing Neural Networks](https://arxiv.org/abs/1706.02515)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -3852,7 +3932,7 @@ class Selu {
 ///
 ///     $$softmax[i, j] = exp(logits[i, j]) / sum_j(exp(logits[i, j]))$$
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * logits: 2-D with shape `[batch_size, num_classes]`.
 ///
@@ -3873,7 +3953,7 @@ class Softmax {
 ///
 /// Inputs are the logits, not probabilities.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * features: batch_size x num_classes matrix
 /// * labels: batch_size x num_classes matrix
@@ -3894,9 +3974,9 @@ class SoftmaxCrossEntropyWithLogits {
   ::tensorflow::Output backprop;
 };
 
-/// Computes softplus: `log(exp(features) + 1)`.
+/// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -3914,7 +3994,7 @@ class Softplus {
 
 /// Computes softsign: `features / (abs(features) + 1)`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -3939,7 +4019,7 @@ class Softsign {
 ///
 /// Inputs are the logits, not probabilities.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * features: batch_size x num_classes matrix
 /// * labels: batch_size vector with values in [0, num_classes).
@@ -3972,7 +4052,7 @@ class SparseSoftmaxCrossEntropyWithLogits {
 ///
 /// If two elements are equal, the lower-index element appears first.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: 1-D or higher with last dimension at least `k`.
 /// * k: 0-D.  Number of top elements to look for along the last dimension (along each

@@ -20,7 +20,7 @@ namespace ops {
 
 /// Operator that connects the output of an XLA computation to other consumer graph nodes.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -38,7 +38,7 @@ class XlaClusterOutput {
 
 /// XLA Launch Op. For use by the XLA JIT only.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -60,7 +60,7 @@ class XlaLaunch {
 /// Compiles a TensorFlow function into an XLA LocalExecutable and returns a key
 /// that _XlaRun can use to look up the LocalExecutable and execute it.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -92,7 +92,7 @@ class _XlaCompile {
 /// particular when an XLA cluster has int32 outputs. The _XlaMerge up does not
 /// have a value_index output that identifies the chosen input.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -114,7 +114,7 @@ class _XlaMerge {
 /// Executes a TensorFlow function previously compiled into a LocalExecutable by an
 /// _XlaCompile op.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:

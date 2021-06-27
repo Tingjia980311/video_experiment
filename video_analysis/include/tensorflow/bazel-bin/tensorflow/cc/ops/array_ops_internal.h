@@ -25,7 +25,7 @@ namespace internal {
 ///
 /// This is typically used by gradient computations for a broadcasting operation.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -44,11 +44,11 @@ class BroadcastGradientArgs {
 /// Checks a tensor for NaN, -Inf and +Inf values.
 ///
 /// When run, reports an `InvalidArgument` error if `tensor` has any values
-/// that are not a number (NaN) or infinity (Inf). Otherwise, passes `tensor` as-is.
-/// Unlike CheckNumerics (V1), CheckNumericsV2 distinguishes -Inf and +Inf in the
-/// errors it throws.
+/// that are not a number (NaN) or infinity (Inf). Otherwise, returns the input
+/// tensor. Unlike CheckNumerics (V1), CheckNumericsV2 distinguishes -Inf and +Inf
+/// in the errors it throws.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * message: Prefix of the error message.
 ///
@@ -86,7 +86,7 @@ class CheckNumericsV2 {
 ///   result == [[1, 2, 2],
 ///              [0, 1, 5]]
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * sorted_inputs: 2-D Tensor where each row is ordered.
 /// * values: 2-D Tensor with the same numbers of rows as `sorted_search_values`. Contains
@@ -146,7 +146,7 @@ class LowerBound {
 ///                       [11, 28]]
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The input tensor to be folded.
 /// * paddings: A two-column matrix specifying the padding sizes. The number of
@@ -169,7 +169,7 @@ class MirrorPadGrad {
 
 /// Return the same ref tensor as the input ref tensor.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -205,7 +205,7 @@ class RefIdentity {
 ///   result == [[1, 2, 4],
 ///              [0, 2, 5]]
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * sorted_inputs: 2-D Tensor where each row is ordered.
 /// * values: 2-D Tensor with the same numbers of rows as `sorted_search_values`. Contains

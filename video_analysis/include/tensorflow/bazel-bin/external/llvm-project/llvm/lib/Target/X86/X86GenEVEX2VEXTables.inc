@@ -516,6 +516,14 @@ static const X86EvexToVexCompressTableEntry X86EvexToVex128CompressTable[] = {
   { X86::VPBROADCASTWZ128rr, X86::VPBROADCASTWrr },
   { X86::VPCLMULQDQZ128rm, X86::VPCLMULQDQrm },
   { X86::VPCLMULQDQZ128rr, X86::VPCLMULQDQrr },
+  { X86::VPDPBUSDSZ128m, X86::VPDPBUSDSrm },
+  { X86::VPDPBUSDSZ128r, X86::VPDPBUSDSrr },
+  { X86::VPDPBUSDZ128m, X86::VPDPBUSDrm },
+  { X86::VPDPBUSDZ128r, X86::VPDPBUSDrr },
+  { X86::VPDPWSSDSZ128m, X86::VPDPWSSDSrm },
+  { X86::VPDPWSSDSZ128r, X86::VPDPWSSDSrr },
+  { X86::VPDPWSSDZ128m, X86::VPDPWSSDrm },
+  { X86::VPDPWSSDZ128r, X86::VPDPWSSDrr },
   { X86::VPERMILPDZ128mi, X86::VPERMILPDmi },
   { X86::VPERMILPDZ128ri, X86::VPERMILPDri },
   { X86::VPERMILPDZ128rm, X86::VPERMILPDrm },
@@ -1037,6 +1045,14 @@ static const X86EvexToVexCompressTableEntry X86EvexToVex256CompressTable[] = {
   { X86::VPBROADCASTWZ256rr, X86::VPBROADCASTWYrr },
   { X86::VPCLMULQDQZ256rm, X86::VPCLMULQDQYrm },
   { X86::VPCLMULQDQZ256rr, X86::VPCLMULQDQYrr },
+  { X86::VPDPBUSDSZ256m, X86::VPDPBUSDSYrm },
+  { X86::VPDPBUSDSZ256r, X86::VPDPBUSDSYrr },
+  { X86::VPDPBUSDZ256m, X86::VPDPBUSDYrm },
+  { X86::VPDPBUSDZ256r, X86::VPDPBUSDYrr },
+  { X86::VPDPWSSDSZ256m, X86::VPDPWSSDSYrm },
+  { X86::VPDPWSSDSZ256r, X86::VPDPWSSDSYrr },
+  { X86::VPDPWSSDZ256m, X86::VPDPWSSDYrm },
+  { X86::VPDPWSSDZ256r, X86::VPDPWSSDYrr },
   { X86::VPERMDZ256rm, X86::VPERMDYrm },
   { X86::VPERMDZ256rr, X86::VPERMDYrr },
   { X86::VPERMILPDZ256mi, X86::VPERMILPDYmi },
@@ -1242,4 +1258,27 @@ static const X86EvexToVexCompressTableEntry X86EvexToVex256CompressTable[] = {
   { X86::VXORPSZ256rm, X86::VXORPSYrm },
   { X86::VXORPSZ256rr, X86::VXORPSYrr },
 };
+
+static bool CheckVEXInstPredicate(MachineInstr &MI, const X86Subtarget *Subtarget) {
+  unsigned Opc = MI.getOpcode();
+  switch (Opc) {
+    default: return true;
+    case X86::VPDPBUSDSZ128m: return Subtarget->hasAVXVNNI();
+    case X86::VPDPBUSDSZ128r: return Subtarget->hasAVXVNNI();
+    case X86::VPDPBUSDSZ256m: return Subtarget->hasAVXVNNI();
+    case X86::VPDPBUSDSZ256r: return Subtarget->hasAVXVNNI();
+    case X86::VPDPBUSDZ128m: return Subtarget->hasAVXVNNI();
+    case X86::VPDPBUSDZ128r: return Subtarget->hasAVXVNNI();
+    case X86::VPDPBUSDZ256m: return Subtarget->hasAVXVNNI();
+    case X86::VPDPBUSDZ256r: return Subtarget->hasAVXVNNI();
+    case X86::VPDPWSSDSZ128m: return Subtarget->hasAVXVNNI();
+    case X86::VPDPWSSDSZ128r: return Subtarget->hasAVXVNNI();
+    case X86::VPDPWSSDSZ256m: return Subtarget->hasAVXVNNI();
+    case X86::VPDPWSSDSZ256r: return Subtarget->hasAVXVNNI();
+    case X86::VPDPWSSDZ128m: return Subtarget->hasAVXVNNI();
+    case X86::VPDPWSSDZ128r: return Subtarget->hasAVXVNNI();
+    case X86::VPDPWSSDZ256m: return Subtarget->hasAVXVNNI();
+    case X86::VPDPWSSDZ256r: return Subtarget->hasAVXVNNI();
+  }
+}
 

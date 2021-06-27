@@ -23,7 +23,7 @@ namespace internal {
 
 /// Computes gradients of the average pooling function.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * orig_input_shape: 1-D.  Shape of the original input to `avg_pool`.
 /// * grad: 4-D with shape `[batch, height, width, channels]`.  Gradients w.r.t.
@@ -82,7 +82,7 @@ class AvgPoolGrad {
 
 /// Computes gradients for the exponential linear (Elu) operation.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * gradients: The backpropagated gradients to the corresponding Elu operation.
 /// * outputs: The outputs of the corresponding Elu operation.
@@ -110,7 +110,7 @@ class EluGrad {
 /// just need to know the shape of original input tensor, instead of the whole
 /// tensor.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * orig_input_tensor_shape: Original input tensor shape for `fractional_avg_pool`
 /// * out_backprop: 4-D with shape `[batch, height, width, channels]`.  Gradients
@@ -179,7 +179,7 @@ class FractionalAvgPoolGrad {
 
 /// Computes gradient of the FractionalMaxPool function.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * orig_input: Original input for `fractional_max_pool`
 /// * orig_output: Original output for `fractional_max_pool`
@@ -249,9 +249,49 @@ class FractionalMaxPoolGrad {
   ::tensorflow::Output output;
 };
 
+/// Solves a batch of isotonic regression problems.
+///
+/// Args:
+/// * scope: A Scope object
+/// * input: A (batch_size, dim)-tensor holding a batch of inputs.
+///
+/// Optional attributes (see `Attrs`):
+/// * output_dtype: Dtype of output.
+///
+/// Returns:
+/// * `Output` output: A (batch_size, dim)-tensor holding the per-batch element solutions.
+/// * `Output` segments: An int32 (batch_size, dim)-tensor with the segments.
+class IsotonicRegression {
+ public:
+  /// Optional attribute setters for IsotonicRegression
+  struct Attrs {
+    /// Dtype of output.
+    ///
+    /// Defaults to DT_FLOAT
+    TF_MUST_USE_RESULT Attrs OutputDtype(DataType x) {
+      Attrs ret = *this;
+      ret.output_dtype_ = x;
+      return ret;
+    }
+
+    DataType output_dtype_ = DT_FLOAT;
+  };
+  IsotonicRegression(const ::tensorflow::Scope& scope, ::tensorflow::Input input);
+  IsotonicRegression(const ::tensorflow::Scope& scope, ::tensorflow::Input input,
+                   const IsotonicRegression::Attrs& attrs);
+
+  static Attrs OutputDtype(DataType x) {
+    return Attrs().OutputDtype(x);
+  }
+
+  Operation operation;
+  ::tensorflow::Output output;
+  ::tensorflow::Output segments;
+};
+
 /// Gradients for Local Response Normalization.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input_grads: 4-D with shape `[batch, height, width, channels]`.
 /// * input_image: 4-D with shape `[batch, height, width, channels]`.
@@ -338,7 +378,7 @@ class LRNGrad {
 
 /// Computes rectified linear: `max(features, features * alpha)`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -373,7 +413,7 @@ class LeakyRelu {
 
 /// Computes rectified linear gradients for a LeakyRelu operation.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * gradients: The backpropagated gradients to the corresponding LeakyRelu operation.
 /// * features: The features passed as input to the corresponding LeakyRelu operation,
@@ -412,7 +452,7 @@ class LeakyReluGrad {
 
 /// Computes gradients of the maxpooling function.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * orig_input: The original input tensor.
 /// * orig_output: The original output tensor.
@@ -435,6 +475,13 @@ class MaxPoolGrad {
  public:
   /// Optional attribute setters for MaxPoolGrad
   struct Attrs {
+    /// Defaults to []
+    TF_MUST_USE_RESULT Attrs ExplicitPaddings(const gtl::ArraySlice<int>& x) {
+      Attrs ret = *this;
+      ret.explicit_paddings_ = x;
+      return ret;
+    }
+
     /// Specify the data format of the input and output data. With the
     /// default format "NHWC", the data is stored in the order of:
     ///     [batch, in_height, in_width, in_channels].
@@ -448,6 +495,7 @@ class MaxPoolGrad {
       return ret;
     }
 
+    gtl::ArraySlice<int> explicit_paddings_ = {};
     StringPiece data_format_ = "NHWC";
   };
   MaxPoolGrad(const ::tensorflow::Scope& scope, ::tensorflow::Input orig_input,
@@ -462,6 +510,9 @@ class MaxPoolGrad {
   operator ::tensorflow::Input() const { return output; }
   ::tensorflow::Node* node() const { return output.node(); }
 
+  static Attrs ExplicitPaddings(const gtl::ArraySlice<int>& x) {
+    return Attrs().ExplicitPaddings(x);
+  }
   static Attrs DataFormat(StringPiece x) {
     return Attrs().DataFormat(x);
   }
@@ -472,7 +523,7 @@ class MaxPoolGrad {
 
 /// Computes gradients of the maxpooling function.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The original input.
 /// * grad: 4-D with shape `[batch, height, width, channels]`.  Gradients w.r.t. the
@@ -526,7 +577,7 @@ class MaxPoolGradWithArgmax {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -599,7 +650,7 @@ class QuantizedConv2DAndRelu {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -683,7 +734,7 @@ class QuantizedConv2DAndReluAndRequantize {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -762,7 +813,7 @@ class QuantizedConv2DAndRequantize {
 
 /// Computes QuantizedConv2D per channel.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The original input tensor.
 /// * filter: The original filter tensor.
@@ -839,7 +890,7 @@ class QuantizedConv2DPerChannel {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -912,7 +963,7 @@ class QuantizedConv2DWithBias {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -991,7 +1042,7 @@ class QuantizedConv2DWithBiasAndRelu {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1081,7 +1132,7 @@ class QuantizedConv2DWithBiasAndReluAndRequantize {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1167,7 +1218,7 @@ class QuantizedConv2DWithBiasAndRequantize {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1281,7 +1332,7 @@ class QuantizedConv2DWithBiasSignedSumAndReluAndRequantize {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1363,7 +1414,7 @@ class QuantizedConv2DWithBiasSumAndRelu {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1460,7 +1511,7 @@ class QuantizedConv2DWithBiasSumAndReluAndRequantize {
 
 /// Computes quantized depthwise Conv2D.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The original input tensor.
 /// * filter: The original filter tensor.
@@ -1537,7 +1588,7 @@ class QuantizedDepthwiseConv2D {
 
 /// Computes quantized depthwise Conv2D with Bias.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The original input tensor.
 /// * filter: The original filter tensor.
@@ -1622,7 +1673,7 @@ class QuantizedDepthwiseConv2DWithBias {
 
 /// Computes quantized depthwise Conv2D with Bias and Relu.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The original input tensor.
 /// * filter: The original filter tensor.
@@ -1720,7 +1771,7 @@ class QuantizedDepthwiseConv2DWithBiasAndRelu {
 
 /// Computes quantized depthwise Conv2D with Bias, Relu and Requantize.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The original input tensor.
 /// * filter: The original filter tensor.
@@ -1845,9 +1896,9 @@ class QuantizedDepthwiseConv2DWithBiasAndReluAndRequantize {
 /// dimension of `a` (after being transposed if `transpose_a` is non-zero) must
 /// match the outer dimension of `b` (after being transposed if `transposed_b` is
 /// non-zero). Then do broadcast add operation with bias values on the matrix
-/// mulplication result. The bias size must match inner dimension of `b`.
+/// multiplication result. The bias size must match inner dimension of `b`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * a: A matrix to be multiplied. Must be a two-dimensional tensor of type `quint8`.
 /// * b: A matrix to be multiplied and must be a two-dimensional tensor of type `qint8`.
@@ -1941,7 +1992,7 @@ class QuantizedMatMulWithBias {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2022,10 +2073,10 @@ class QuantizedMatMulWithBiasAndDequantize {
 /// dimension of `a` (after being transposed if `transpose_a` is non-zero) must
 /// match the outer dimension of `b` (after being transposed if `transposed_b` is
 /// non-zero). Then do broadcast add operation with bias values on the matrix
-/// mulplication result. The bias size must match inner dimension of `b`. Then do
+/// multiplication result. The bias size must match inner dimension of `b`. Then do
 /// relu activation to get non-negative result.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * a: A matrix to be multiplied. Must be a two-dimensional tensor of type `quint8`.
 /// * b: A matrix to be multiplied and must be a two-dimensional tensor of type `qint8`.
@@ -2128,11 +2179,11 @@ class QuantizedMatMulWithBiasAndRelu {
 /// dimension of `a` (after being transposed if `transpose_a` is non-zero) must
 /// match the outer dimension of `b` (after being transposed if `transposed_b` is
 /// non-zero). Then do broadcast add operation with bias values on the matrix
-/// mulplication result. The bias size must match inner dimension of `b`.  Then do
+/// multiplication result. The bias size must match inner dimension of `b`.  Then do
 /// relu activation to get non-negative result. Then do requantize operation to get
 /// final uint8 result.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * a: A matrix to be multiplied. Must be a two-dimensional tensor of type `quint8`.
 /// * b: A matrix to be multiplied and must be a two-dimensional tensor of type `qint8`.
@@ -2244,7 +2295,7 @@ class QuantizedMatMulWithBiasAndReluAndRequantize {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2331,7 +2382,7 @@ class QuantizedMatMulWithBiasAndRequantize {
 
 /// Computes rectified linear 6 gradients for a Relu6 operation.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * gradients: The backpropagated gradients to the corresponding Relu6 operation.
 /// * features: The features passed as input to the corresponding Relu6 operation, or
@@ -2354,7 +2405,7 @@ class Relu6Grad {
 
 /// Computes rectified linear gradients for a Relu operation.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * gradients: The backpropagated gradients to the corresponding Relu operation.
 /// * features: The features passed as input to the corresponding Relu operation, OR
@@ -2376,7 +2427,7 @@ class ReluGrad {
 
 /// Computes gradients for the scaled exponential linear (Selu) operation.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * gradients: The backpropagated gradients to the corresponding Selu operation.
 /// * outputs: The outputs of the corresponding Selu operation.
@@ -2398,7 +2449,7 @@ class SeluGrad {
 
 /// Computes softplus gradients for a softplus operation.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * gradients: The backpropagated gradients to the corresponding softplus operation.
 /// * features: The features passed as input to the corresponding softplus operation.
@@ -2419,7 +2470,7 @@ class SoftplusGrad {
 
 /// Computes softsign gradients for a softsign operation.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * gradients: The backpropagated gradients to the corresponding softsign operation.
 /// * features: The features passed as input to the corresponding softsign operation.

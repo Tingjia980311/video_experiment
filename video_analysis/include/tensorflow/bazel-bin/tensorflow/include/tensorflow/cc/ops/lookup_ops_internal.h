@@ -21,12 +21,29 @@ namespace internal {
 /// @defgroup lookup_ops_internal Lookup Ops Internal
 /// @{
 
+/// TODO: add doc.
+///
+/// Args:
+/// * scope: A Scope object
+///
+/// Returns:
+/// * the created `Operation`
+class InitializeTableFromDataset {
+ public:
+  InitializeTableFromDataset(const ::tensorflow::Scope& scope,
+                           ::tensorflow::Input table_handle,
+                           ::tensorflow::Input dataset);
+  operator ::tensorflow::Operation() const { return operation; }
+
+  Operation operation;
+};
+
 /// Removes keys and its associated values from a table.
 ///
 /// The tensor `keys` must of the same type as the keys of the table. Keys not
 /// already in the table are silently ignored.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * table_handle: Handle to the table.
 /// * keys: Any shape.  Keys of the elements to remove.

@@ -27,7 +27,7 @@ namespace ops {
 /// element_dtype: the type of elements in the list.
 /// element_shape: a shape compatible with that of elements in the list.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -54,7 +54,7 @@ class EmptyTensorList {
 /// lengths: Output tensor containing sizes of the 0th dimension of tensors in the list, used for computing the gradient.
 ///
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -90,7 +90,7 @@ class TensorListConcat {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -123,7 +123,7 @@ class TensorListConcatLists {
 /// lengths: Output tensor containing sizes of the 0th dimension of tensors in the list, used for computing the gradient.
 ///
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -145,7 +145,7 @@ class TensorListConcatV2 {
 ///   input_handle: the list
 ///   element_shape: the shape of elements of the list
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -169,7 +169,7 @@ class TensorListElementShape {
 /// tensor: The input tensor.
 /// output_handle: The list.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -195,7 +195,7 @@ class TensorListFromTensor {
 /// indices: The indices used to index into the list.
 /// values: The tensor.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -215,7 +215,7 @@ class TensorListGather {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -238,7 +238,7 @@ class TensorListGetItem {
 /// input_handle: the input list
 /// length: the number of tensors in the list
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -264,7 +264,7 @@ class TensorListLength {
 /// element_dtype: the type of elements in the list
 /// element_shape: the shape of the output tensor
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -289,7 +289,7 @@ class TensorListPopBack {
 /// element_dtype: the type of elements in the list.
 /// element_shape: a shape compatible with that of elements in the list.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -308,7 +308,7 @@ class TensorListPushBack {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -332,7 +332,7 @@ class TensorListPushBackBatch {
 /// handle: the output list
 /// element_dtype: the desired type of elements in the list.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -357,7 +357,7 @@ class TensorListReserve {
 /// size: size of the output list
 ///
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -385,7 +385,7 @@ class TensorListResize {
 ///   the shape of the tensor).
 /// output_handle: The TensorList.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -413,7 +413,7 @@ class TensorListScatter {
 /// indices: The indices used to index into the list.
 /// output_handle: The TensorList.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -446,7 +446,7 @@ class TensorListScatterIntoExistingList {
 ///   the largest index in indices.
 /// output_handle: The TensorList.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -466,7 +466,7 @@ class TensorListScatterV2 {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -494,7 +494,7 @@ class TensorListSetItem {
 /// lengths: Vector of sizes of the 0th dimension of tensors in the list.
 /// output_handle: The list.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -520,7 +520,7 @@ class TensorListSplit {
 /// num_elements: optional. If not -1, the number of elements in the list.
 ///
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:

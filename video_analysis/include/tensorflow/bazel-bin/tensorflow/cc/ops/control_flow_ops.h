@@ -25,7 +25,7 @@ namespace ops {
 ///
 /// Returns nothing but an exception.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Optional attributes (see `Attrs`):
@@ -74,7 +74,7 @@ class Abort {
 ///
 /// Only useful as a placeholder for control edges.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -92,7 +92,7 @@ class ControlTrigger {
 /// This operator represents the loop termination condition used by the
 /// "pivot" switches of a loop.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: A boolean scalar, representing the branch predicate of the Switch op.
 ///
@@ -117,7 +117,7 @@ class LoopCond {
 /// `Merge` forwards the first tensor to become available to `output`, and sets
 /// `value_index` to its index in `inputs`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * inputs: The input tensors, exactly one of which will become available.
 ///
@@ -135,7 +135,7 @@ class Merge {
 
 /// Makes its input available to the next iteration.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * data: The tensor to be made available to the next iteration.
 ///
@@ -154,7 +154,7 @@ class NextIteration {
 
 /// Makes its input available to the next iteration.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * data: The tensor to be made available to the next iteration.
 ///
@@ -173,7 +173,7 @@ class RefNextIteration {
 
 /// Forwards the `index`th element of `inputs` to `output`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * index: A scalar that determines the input that gets selected.
 /// * inputs: A list of ref tensors, one of which will be forwarded to `output`.
@@ -199,7 +199,7 @@ class RefSelect {
 ///
 /// See also `Switch` and `Merge`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * data: The ref tensor to be forwarded to the appropriate output.
 /// * pred: A scalar that specifies which output port will receive data.
@@ -224,7 +224,7 @@ class RefSwitch {
 ///
 /// See also `RefSwitch` and `Merge`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * data: The tensor to be forwarded to the appropriate output.
 /// * pred: A scalar that specifies which output port will receive data.

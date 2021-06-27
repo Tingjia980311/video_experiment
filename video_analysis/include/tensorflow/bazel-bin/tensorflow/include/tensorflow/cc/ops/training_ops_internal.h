@@ -27,7 +27,7 @@ namespace internal {
 /// v_t <- max(beta2 * v_{t-1}, abs(g))
 /// variable <- variable - learning_rate / (1 - beta1^t) * m_t / (v_t + epsilon)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * m: Should be from a Variable().
@@ -90,7 +90,7 @@ class ApplyAdaMax {
 /// accum += grad * grad
 /// var -= lr * grad * (1 / sqrt(accum))
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().
@@ -158,7 +158,7 @@ class ApplyAdagradV2 {
 /// v_t <- max(beta2 * v_{t-1}, abs(g))
 /// variable <- variable - learning_rate / (1 - beta1^t) * m_t / (v_t + epsilon)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * m: Should be from a Variable().
@@ -217,9 +217,9 @@ class ResourceApplyAdaMax {
 /// Update '*var' according to the adagrad scheme.
 ///
 /// accum += grad * grad
-/// var -= lr * grad * (1 / sqrt(accum))
+/// var -= lr * grad * (1 / (sqrt(accum) + epsilon))
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().
@@ -284,7 +284,7 @@ class ResourceApplyAdagradV2 {
 /// accum += grad * grad
 /// var -= lr * grad * (1 / sqrt(accum))
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().
@@ -354,7 +354,7 @@ class ResourceSparseApplyAdagradV2 {
 /// $$accum += grad * grad$$
 /// $$var -= lr * grad * (1 / sqrt(accum))$$
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().

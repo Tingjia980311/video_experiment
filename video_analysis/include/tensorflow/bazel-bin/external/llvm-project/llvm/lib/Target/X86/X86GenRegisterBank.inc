@@ -10,9 +10,10 @@
 #undef GET_REGBANK_DECLARATIONS
 namespace llvm {
 namespace X86 {
-enum {
-  GPRRegBankID,
-  VECRRegBankID,
+enum : unsigned {
+  InvalidRegBankID = ~0u,
+  GPRRegBankID = 0,
+  VECRRegBankID = 1,
   NumRegisterBanks,
 };
 } // end namespace X86
@@ -134,8 +135,8 @@ const uint32_t VECRRegBankCoverageData[] = {
     0,
 };
 
-RegisterBank GPRRegBank(/* ID */ X86::GPRRegBankID, /* Name */ "GPR", /* Size */ 64, /* CoveredRegClasses */ GPRRegBankCoverageData, /* NumRegClasses */ 118);
-RegisterBank VECRRegBank(/* ID */ X86::VECRRegBankID, /* Name */ "VECR", /* Size */ 512, /* CoveredRegClasses */ VECRRegBankCoverageData, /* NumRegClasses */ 118);
+RegisterBank GPRRegBank(/* ID */ X86::GPRRegBankID, /* Name */ "GPR", /* Size */ 64, /* CoveredRegClasses */ GPRRegBankCoverageData, /* NumRegClasses */ 119);
+RegisterBank VECRRegBank(/* ID */ X86::VECRRegBankID, /* Name */ "VECR", /* Size */ 512, /* CoveredRegClasses */ VECRRegBankCoverageData, /* NumRegClasses */ 119);
 } // end namespace X86
 
 RegisterBank *X86GenRegisterBankInfo::RegBanks[] = {

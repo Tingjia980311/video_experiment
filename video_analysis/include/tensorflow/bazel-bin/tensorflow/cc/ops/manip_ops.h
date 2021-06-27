@@ -41,7 +41,7 @@ namespace ops {
 /// roll(t, shift=[2, -3], axis=[1, 1]) ==> [[1, 2, 3, 4, 0], [6, 7, 8, 9, 5]]
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * shift: Dimension must be 0-D or 1-D. `shift[i]` specifies the number of places by which
 /// elements are shifted positively (towards larger indices) along the dimension

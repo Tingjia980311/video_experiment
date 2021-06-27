@@ -46,7 +46,7 @@ namespace ops {
 /// tensorflow/examples/wav_to_spectrogram to read in an audio file and save out the
 /// resulting spectrogram as a PNG image.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: Float representation of audio data.
 /// * window_size: How wide the input window is in samples. For the highest efficiency
@@ -109,7 +109,7 @@ class AudioSpectrogram {
 /// number of samples. For example, a ten-sample-long stereo WAV file should give an
 /// output shape of [10, 2].
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * contents: The WAV-encoded audio, usually from a file.
 ///
@@ -171,7 +171,7 @@ class DecodeWav {
 /// `audio` is a 2-D float Tensor of shape `[length, channels]`.
 /// `sample_rate` is a scalar Tensor holding the rate to use (e.g. 44100).
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * audio: 2-D with shape `[length, channels]`.
 /// * sample_rate: Scalar containing the sample frequency.
@@ -199,7 +199,7 @@ class EncodeWav {
 /// history in the speech recognition world, and https://en.wikipedia.org/wiki/Mel-frequency_cepstrum
 /// is a good resource to learn more.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * spectrogram: Typically produced by the Spectrogram op, with magnitude_squared
 /// set to true.

@@ -29,7 +29,7 @@ namespace internal {
 /// it may be changed in the child frame. At most `parallel_iterations` iterations
 /// are run in parallel in the child frame.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * data: The tensor to be made available to the child frame.
 /// * frame_name: The name of the child frame.
@@ -88,7 +88,7 @@ class Enter {
 ///
 /// Exit makes its input `data` available to the parent frame.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * data: The tensor to be made available to the parent frame.
 ///
@@ -112,7 +112,7 @@ class Exit {
 /// it may be changed in the child frame. At most `parallel_iterations` iterations
 /// are run in parallel in the child frame.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * data: The tensor to be made available to the child frame.
 /// * frame_name: The name of the child frame.
@@ -171,7 +171,7 @@ class RefEnter {
 ///
 /// Exit makes its input `data` available to the parent frame.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * data: The tensor to be made available to the parent frame.
 ///
@@ -196,7 +196,7 @@ class RefExit {
 /// `Merge` forwards the first tensor for become available to `output`, and sets
 /// `value_index` to its index in `inputs`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * inputs: The input tensors, exactly one of which will become available.
 ///

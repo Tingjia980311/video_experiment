@@ -24,7 +24,7 @@ namespace ops {
 /// Before using the table you will have to initialize it.  After initialization the
 /// table will be immutable.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * key_dtype: Type of the table keys.
 /// * value_dtype: Type of the table values.
@@ -112,7 +112,7 @@ class HashTable {
 /// - A value >= 0 means use the index (starting at zero) of the split line based
 ///   on `delimiter`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * table_handle: Handle to a table which will be initialized.
 /// * filename: Filename of a vocabulary text file.
@@ -148,8 +148,16 @@ class InitializeTableFromTextFile {
       return ret;
     }
 
+    /// Defaults to 0
+    TF_MUST_USE_RESULT Attrs Offset(int64 x) {
+      Attrs ret = *this;
+      ret.offset_ = x;
+      return ret;
+    }
+
     int64 vocab_size_ = -1;
     StringPiece delimiter_ = "\t";
+    int64 offset_ = 0;
   };
   InitializeTableFromTextFile(const ::tensorflow::Scope& scope,
                             ::tensorflow::Input table_handle,
@@ -168,13 +176,16 @@ class InitializeTableFromTextFile {
   static Attrs Delimiter(StringPiece x) {
     return Attrs().Delimiter(x);
   }
+  static Attrs Offset(int64 x) {
+    return Attrs().Offset(x);
+  }
 
   Operation operation;
 };
 
 /// Table initializer that takes two tensors for keys and values respectively.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * table_handle: Handle to a table which will be initialized.
 /// * keys: Keys of type Tkey.
@@ -194,7 +205,7 @@ class InitializeTable {
 
 /// Outputs all keys and values in the table.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * table_handle: Handle to the table.
 ///
@@ -219,7 +230,7 @@ class LookupTableExport {
 /// The scalar `default_value` is the value output for keys not present in the
 /// table. It must also be of the same type as the table values.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * table_handle: Handle to the table.
 /// * keys: Any shape.  Keys to look up.
@@ -245,7 +256,7 @@ class LookupTableFind {
 /// The tensor `keys` must be of the same type as the keys of the table.
 /// The tensor `values` must be of the type of the table values.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * table_handle: Handle to the table.
 /// * keys: Any shape.  Keys to look up.
@@ -268,7 +279,7 @@ class LookupTableImport {
 /// The tensor `keys` must be of the same type as the keys of the table.
 /// The tensor `values` must be of the type of the table values.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * table_handle: Handle to the table.
 /// * keys: Any shape.  Keys to look up.
@@ -288,7 +299,7 @@ class LookupTableInsert {
 
 /// Computes the number of elements in the given table.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * table_handle: Handle to the table.
 ///
@@ -315,7 +326,7 @@ class LookupTableSize {
 /// values. Each value must be a scalar. Data can be inserted into the table using
 /// the insert operations. It does not support the initialization operation.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * empty_key: The key used to represent empty key buckets internally. Must not
 /// be used in insert or lookup operations.
@@ -440,7 +451,7 @@ class MutableDenseHashTable {
 /// values. Each value must be a vector. Data can be inserted into the table using
 /// the insert operations. It does not support the initialization operation.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * key_dtype: Type of the table keys.
 /// * value_dtype: Type of the table values.
@@ -528,7 +539,7 @@ class MutableHashTableOfTensors {
 /// values. Each value must be a scalar. Data can be inserted into the table using
 /// the insert operations. It does not support the initialization operation.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * key_dtype: Type of the table keys.
 /// * value_dtype: Type of the table values.

@@ -20,7 +20,7 @@ namespace ops {
 
 /// A Reader that outputs fixed-length records from a file.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * record_bytes: Number of bytes in the record.
 ///
@@ -142,7 +142,7 @@ class FixedLengthRecordReader {
 /// To use, enqueue strings in a Queue.  ReaderRead will take the front
 /// work string and output (work, work).
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Optional attributes (see `Attrs`):
@@ -200,7 +200,7 @@ class IdentityReader {
 
 /// A Reader that outputs the records from a LMDB file.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Optional attributes (see `Attrs`):
@@ -261,7 +261,7 @@ class LMDBReader {
 /// basename portion of the pattern, not in the directory portion.
 /// Note also that the order of filenames returned is deterministic.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * pattern: Shell wildcard pattern(s). Scalar or vector of type string.
 ///
@@ -289,7 +289,7 @@ class MatchingFiles {
 /// path in the input checkpoint_prefixes.  This is useful when those paths are non
 /// user-facing temporary locations.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * checkpoint_prefixes: prefixes of V2 checkpoints to merge.
 /// * destination_prefix: scalar.  The desired final prefix.  Allowed to be the same
@@ -331,7 +331,7 @@ class MergeV2Checkpoints {
 
 /// Reads and outputs the entire contents of the input filename.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -352,7 +352,7 @@ class ReadFile {
 /// This is the same as the number of ReaderRead executions that have
 /// succeeded.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * reader_handle: Handle to a Reader.
 ///
@@ -372,7 +372,7 @@ class ReaderNumRecordsProduced {
 
 /// Returns the number of work units this Reader has finished processing.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * reader_handle: Handle to a Reader.
 ///
@@ -397,7 +397,7 @@ class ReaderNumWorkUnitsCompleted {
 /// with the previous file).
 /// It may return less than `num_records` even before the last batch.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * reader_handle: Handle to a `Reader`.
 /// * queue_handle: Handle to a `Queue`, with string work items.
@@ -423,7 +423,7 @@ class ReaderReadUpTo {
 /// Reader needs to start reading from a new file since it has finished
 /// with the previous file).
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * reader_handle: Handle to a Reader.
 /// * queue_handle: Handle to a Queue, with string work items.
@@ -443,7 +443,7 @@ class ReaderRead {
 
 /// Restore a Reader to its initial clean state.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * reader_handle: Handle to a Reader.
 ///
@@ -463,7 +463,7 @@ class ReaderReset {
 /// Not all Readers support being restored, so this can produce an
 /// Unimplemented error.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * reader_handle: Handle to a Reader.
 /// * state: Result of a ReaderSerializeState of a Reader with type
@@ -485,7 +485,7 @@ class ReaderRestoreState {
 /// Not all Readers support being serialized, so this can produce an
 /// Unimplemented error.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * reader_handle: Handle to a Reader.
 ///
@@ -522,7 +522,7 @@ class ReaderSerializeState {
 ///
 /// See also `RestoreSlice`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * file_pattern: Must have a single element. The pattern of the files from
 /// which we read the tensor.
@@ -578,7 +578,7 @@ class Restore {
 /// The `shape_and_slice` input has the same format as the
 /// elements of the `shapes_and_slices` input of the `SaveSlices` op.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * file_pattern: Must have a single element. The pattern of the files from
 /// which we read the tensor.
@@ -644,7 +644,7 @@ class RestoreSlice {
 ///
 /// Callers must ensure all the named tensors are indeed stored in the checkpoint.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * prefix: Must have a single element.  The prefix of a V2 checkpoint.
 /// * tensor_names: shape {N}.  The names of the tensors to be restored.
@@ -675,7 +675,7 @@ class RestoreV2 {
 ///
 /// See also `SaveSlices`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * filename: Must have a single element. The name of the file to which we write
 /// the tensor.
@@ -717,7 +717,7 @@ class Save {
 ///
 /// See also `Save`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * filename: Must have a single element. The name of the file to which we write the
 /// tensor.
@@ -744,7 +744,7 @@ class SaveSlices {
 /// specific slices of full tensors, "shape_and_slices" should be non-empty strings
 /// and correspondingly well-formed.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * prefix: Must have a single element. The prefix of the V2 checkpoint to which we
 /// write the tensors.
@@ -769,7 +769,7 @@ class SaveV2 {
 ///
 ///    %s-%05d-of-%05d, basename, shard, num_shards.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -788,7 +788,7 @@ class ShardedFilename {
 
 /// Generate a glob pattern matching all sharded file names.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -807,7 +807,7 @@ class ShardedFilespec {
 
 /// A Reader that outputs the records from a TensorFlow Records file.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Optional attributes (see `Attrs`):
@@ -876,7 +876,7 @@ class TFRecordReader {
 
 /// A Reader that outputs the lines of a file delimited by '\n'.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Optional attributes (see `Attrs`):
@@ -951,7 +951,7 @@ class TextLineReader {
 /// To use, enqueue filenames in a Queue.  The output of ReaderRead will
 /// be a filename (key) and the contents of that file (value).
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Optional attributes (see `Attrs`):
@@ -1011,7 +1011,7 @@ class WholeFileReader {
 ///
 /// creates directory if not existing.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * filename: scalar. The name of the file to which we write the contents.
 /// * contents: scalar. The content to be written to the output file.

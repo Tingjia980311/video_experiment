@@ -24,7 +24,7 @@ namespace ops {
 /// whichever of `lhs` and `rhs` has the lower rank, using XLA's broadcasting rules
 /// for binary operators.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * lhs: the LHS input tensor
 /// * rhs: the RHS input tensor
@@ -48,7 +48,7 @@ class XlaBroadcastHelper {
 ///  https://www.tensorflow.org/performance/xla/operation_semantics#conv_convolution
 /// .
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * lhs: the input tensor
 /// * rhs: the kernel tensor
@@ -78,11 +78,47 @@ class XlaConv {
   ::tensorflow::Output output;
 };
 
+/// Wraps the XLA ConvGeneralDilated operator, documented at
+///
+///  https://www.tensorflow.org/performance/xla/operation_semantics#conv_convolution
+/// .
+///
+/// Args:
+/// * scope: A Scope object
+/// * lhs: the input tensor
+/// * rhs: the kernel tensor
+/// * window_strides: the inter-window strides
+/// * padding: the padding to apply at the start and end of each input dimensions
+/// * lhs_dilation: dilation to apply between input elements
+/// * rhs_dilation: dilation to apply between kernel elements
+/// * feature_group_count: number of feature groups for grouped convolution.
+/// * dimension_numbers: a serialized xla::ConvolutionDimensionNumbers proto.
+/// * precision_config: a serialized xla::PrecisionConfig proto.
+/// * preferred_element_type: The type of the tensor.
+///
+/// Returns:
+/// * `Output`: The output tensor.
+class XlaConvV2 {
+ public:
+  XlaConvV2(const ::tensorflow::Scope& scope, ::tensorflow::Input lhs,
+          ::tensorflow::Input rhs, ::tensorflow::Input window_strides,
+          ::tensorflow::Input padding, ::tensorflow::Input lhs_dilation,
+          ::tensorflow::Input rhs_dilation, ::tensorflow::Input
+          feature_group_count, StringPiece dimension_numbers, StringPiece
+          precision_config, DataType preferred_element_type);
+  operator ::tensorflow::Output() const { return output; }
+  operator ::tensorflow::Input() const { return output; }
+  ::tensorflow::Node* node() const { return output.node(); }
+
+  Operation operation;
+  ::tensorflow::Output output;
+};
+
 /// Takes the packed uint32 input and unpacks the input to uint8 to do
 ///
 /// Dequantization on device.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: Input tensors whose types is uint32, shape is [d0, ..., dn].
 /// * min_range: The minimum scalar value possibly produced for the input.
@@ -113,7 +149,7 @@ class XlaDequantize {
 ///  https://www.tensorflow.org/performance/xla/operation_semantics#dotgeneral
 /// .
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * lhs: the LHS tensor
 /// * rhs: the RHS tensor
@@ -135,6 +171,34 @@ class XlaDot {
   ::tensorflow::Output output;
 };
 
+/// Wraps the XLA DotGeneral operator, documented at
+///
+///  https://www.tensorflow.org/performance/xla/operation_semantics#dotgeneral
+/// .
+///
+/// Args:
+/// * scope: A Scope object
+/// * lhs: the LHS tensor
+/// * rhs: the RHS tensor
+/// * dimension_numbers: a serialized xla::DotDimensionNumbers proto.
+/// * precision_config: a serialized xla::PrecisionConfig proto.
+/// * preferred_element_type: The type of the tensor.
+///
+/// Returns:
+/// * `Output`: The output tensor.
+class XlaDotV2 {
+ public:
+  XlaDotV2(const ::tensorflow::Scope& scope, ::tensorflow::Input lhs,
+         ::tensorflow::Input rhs, StringPiece dimension_numbers, StringPiece
+         precision_config, DataType preferred_element_type);
+  operator ::tensorflow::Output() const { return output; }
+  operator ::tensorflow::Input() const { return output; }
+  ::tensorflow::Node* node() const { return output.node(); }
+
+  Operation operation;
+  ::tensorflow::Output output;
+};
+
 /// Wraps the XLA DynamicSlice operator, documented at
 ///
 ///  https://www.tensorflow.org/performance/xla/operation_semantics#dynamicslice
@@ -146,7 +210,7 @@ class XlaDot {
 /// dimension -- [start, start + size). The shape of start_indices must have rank 1,
 /// with dimension size equal to the rank of operand.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: A `Tensor` of type T.
 /// * start_indices: List of N integers containing the slice size for each
@@ -181,7 +245,7 @@ class XlaDynamicSlice {
 ///
 /// Handling of out-of-bounds slice indices is implementation-defined.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: A `Tensor` of type T.
 /// * update: A `Tensor` of type T. Same rank as `input`.
@@ -208,7 +272,7 @@ class XlaDynamicUpdateSlice {
 /// This op has better TPU performance since it doesn't have explicitly reshape and
 /// transpose operations as tf.einsum does.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -229,7 +293,7 @@ class XlaEinsum {
 ///
 ///   https://www.tensorflow.org/xla/operation_semantics#gather
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * operand: The array we're gathering from.
 /// * start_indices: Array containing the starting indices of the slices we gather.
@@ -254,7 +318,7 @@ class XlaGather {
 
 /// output = cond ? then_branch(inputs) : else_branch(inputs).
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * cond: A boolean scalar.
 /// * inputs: A list of input tensors.
@@ -286,7 +350,7 @@ class XlaIf {
 ///
 /// Sorts a tensor. Currently only sorts in ascending order are supported.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * keys: A `Tensor` of type K.
 /// * values: A `Tensor` of type V.
@@ -309,13 +373,17 @@ class XlaKeyValueSort {
 ///  https://www.tensorflow.org/performance/xla/operation_semantics#pad
 /// .
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: A `Tensor` of type T.
 /// * padding_value: A scalar `Tensor` of type T.
-/// * padding_low: the padding to apply at the start of each input dimensions
-/// * padding_high: the padding to apply at the end of each input dimension.
-/// * padding_interior: the padding to apply between each input element.
+/// * padding_low: the padding to apply at the start of each input dimensions. Must
+/// be a compile-time constant 1D tensor of length equal to rank of input.
+/// * padding_high: the padding to apply at the end of each input dimension. Must
+/// be a compile-time constant 1D tensor of length equal to rank of input.
+/// * padding_interior: the padding to apply between each input element. Must
+/// be a compile-time constant 1D tensor of length equal to rank of input,
+/// containing only non-negative values.
 ///
 /// Returns:
 /// * `Output`: A `Tensor` of type T.
@@ -337,7 +405,7 @@ class XlaPad {
 /// operator documented at
 ///  https://www.tensorflow.org/performance/xla/operation_semantics#recv .
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * dtype: The type of the tensor.
 /// * tensor_name: A string key that identifies the channel.
@@ -361,7 +429,7 @@ class XlaRecv {
 ///
 ///  https://www.tensorflow.org/performance/xla/operation_semantics#reduce .
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: the input tensor
 /// * init_value: a scalar representing the initial value for the reduction
@@ -387,7 +455,7 @@ class XlaReduce {
 ///
 ///  https://www.tensorflow.org/performance/xla/operation_semantics#reducewindow .
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: the input tensor
 /// * init_value: a scalar representing the initial value for the reduction
@@ -416,7 +484,7 @@ class XlaReduceWindow {
 
 /// Replica ID.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -436,7 +504,7 @@ class XlaReplicaId {
 ///
 ///   https://www.tensorflow.org/xla/operation_semantics#scatter.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * operand: Array to be scattered into.
 /// * scatter_indices: Array containing the starting indices of the slices that must
@@ -468,7 +536,7 @@ class XlaScatter {
 ///  https://www.tensorflow.org/performance/xla/operation_semantics#selectandscatter
 /// .
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * operand: the input tensor
 /// * window_dimensions: the shape of the window
@@ -505,7 +573,7 @@ class XlaSelectAndScatter {
 /// tensor such that tensor[...,:,:] * v[..., :,i] = e[..., i] * v[...,:,i], for
 /// i=0...N-1.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * a: the input tensor.
 /// * lower: a boolean specifies whether the calculation is done with the lower
@@ -536,7 +604,7 @@ class XlaSelfAdjointEig {
 /// documented at
 ///  https://www.tensorflow.org/performance/xla/operation_semantics#send .
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * tensor: The tensor to send.
 /// * tensor_name: A string key that identifies the channel.
@@ -552,19 +620,80 @@ class XlaSend {
   Operation operation;
 };
 
+/// Set a bound for the given input value as a hint to Xla compiler,
+///
+///         returns the same value.
+///
+/// Args:
+/// * scope: A Scope object
+///
+/// Returns:
+/// * `Output`: The output tensor.
+class XlaSetBound {
+ public:
+  XlaSetBound(const ::tensorflow::Scope& scope, ::tensorflow::Input input,
+            ::tensorflow::Input bound);
+  operator ::tensorflow::Output() const { return output; }
+  operator ::tensorflow::Input() const { return output; }
+  ::tensorflow::Node* node() const { return output.node(); }
+
+  Operation operation;
+  ::tensorflow::Output output;
+};
+
+/// Make a static dimension into a xla bounded dynamic dimension.
+///
+///         The current static dimension size will become the bound and the second
+///         operand becomes the dynamic size of the dimension.
+///
+/// Args:
+/// * scope: A Scope object
+///
+/// Returns:
+/// * `Output`: The output tensor.
+class XlaSetDynamicDimensionSize {
+ public:
+  XlaSetDynamicDimensionSize(const ::tensorflow::Scope& scope,
+                           ::tensorflow::Input input, ::tensorflow::Input
+                           dim_index, ::tensorflow::Input size);
+  operator ::tensorflow::Output() const { return output; }
+  operator ::tensorflow::Input() const { return output; }
+  ::tensorflow::Node* node() const { return output.node(); }
+
+  Operation operation;
+  ::tensorflow::Output output;
+};
+
 /// An op which shards the input based on the given sharding attribute.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
 /// * `Output`: The output tensor.
 class XlaSharding {
  public:
+  /// Optional attribute setters for XlaSharding
+  struct Attrs {
+    /// Defaults to ""
+    TF_MUST_USE_RESULT Attrs Sharding(StringPiece x) {
+      Attrs ret = *this;
+      ret.sharding_ = x;
+      return ret;
+    }
+
+    StringPiece sharding_ = "";
+  };
   XlaSharding(const ::tensorflow::Scope& scope, ::tensorflow::Input input);
+  XlaSharding(const ::tensorflow::Scope& scope, ::tensorflow::Input input, const
+            XlaSharding::Attrs& attrs);
   operator ::tensorflow::Output() const { return output; }
   operator ::tensorflow::Input() const { return output; }
   ::tensorflow::Node* node() const { return output.node(); }
+
+  static Attrs Sharding(StringPiece x) {
+    return Attrs().Sharding(x);
+  }
 
   Operation operation;
   ::tensorflow::Output output;
@@ -577,7 +706,7 @@ class XlaSharding {
 ///
 /// Sorts a tensor. Currently only sorts in ascending order are supported.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: A `Tensor` of type T.
 ///
@@ -594,6 +723,54 @@ class XlaSort {
   ::tensorflow::Output output;
 };
 
+/// An op used by XLA SPMD partitioner to switch from automatic partitioning to
+///
+/// manual partitioning. It annotates the input (full-shape, to be automatically
+/// partitioned) with the same sharding used by manual partitioning, and outputs a
+/// shard-shaped tensor to be consumed by later manually-partitioned ops. If the
+/// shape is not evenly partitionable, the padding region will be masked with 0s.
+///
+/// Args:
+/// * scope: A Scope object
+///
+/// Returns:
+/// * `Output`: The output tensor.
+class XlaSpmdFullToShardShape {
+ public:
+  XlaSpmdFullToShardShape(const ::tensorflow::Scope& scope, ::tensorflow::Input
+                        input, StringPiece manual_sharding);
+  operator ::tensorflow::Output() const { return output; }
+  operator ::tensorflow::Input() const { return output; }
+  ::tensorflow::Node* node() const { return output.node(); }
+
+  Operation operation;
+  ::tensorflow::Output output;
+};
+
+/// An op used by XLA SPMD partitioner to switch from manual partitioning to
+///
+/// automatic partitioning. It converts the shard-shaped, manually partitioned input
+/// into full-shaped tensor to be partitioned automatically with the same sharding
+/// used by manual partitioning.
+///
+/// Args:
+/// * scope: A Scope object
+///
+/// Returns:
+/// * `Output`: The output tensor.
+class XlaSpmdShardToFullShape {
+ public:
+  XlaSpmdShardToFullShape(const ::tensorflow::Scope& scope, ::tensorflow::Input
+                        input, StringPiece manual_sharding, PartialTensorShape
+                        full_shape);
+  operator ::tensorflow::Output() const { return output; }
+  operator ::tensorflow::Input() const { return output; }
+  ::tensorflow::Node* node() const { return output.node(); }
+
+  Operation operation;
+  ::tensorflow::Output output;
+};
+
 /// Computes the eigen decomposition of a batch of self-adjoint matrices
 ///
 /// (Note: Only real inputs are supported).
@@ -601,7 +778,7 @@ class XlaSort {
 /// Computes the eigenvalues and eigenvectors of the innermost M-by-N matrices in
 /// tensor such that tensor[...,:,:] = u[..., :, :] * Diag(s[..., :]) * Transpose(v[...,:,:]).
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * a: the input tensor.
 /// * max_iter: maximum number of sweep update, i.e., the whole lower triangular
@@ -627,9 +804,67 @@ class XlaSvd {
   ::tensorflow::Output v;
 };
 
+/// Wraps the variadic XLA Reduce operator.
+///
+/// Semantics are documented at
+///  https://www.tensorflow.org/performance/xla/operation_semantics#variadic_reduce.
+///
+/// Args:
+/// * scope: A Scope object
+/// * input: the input tensor(s)
+/// * init_value: scalar initial value(s) for the reduction
+/// * dimensions_to_reduce: dimension numbers over which to reduce
+/// * reducer: a reducer function to apply
+///
+/// Returns:
+/// * `OutputList`: The output tensor.
+class XlaVariadicReduce {
+ public:
+  XlaVariadicReduce(const ::tensorflow::Scope& scope, ::tensorflow::InputList
+                  input, ::tensorflow::InputList init_value, const
+                  gtl::ArraySlice<int>& dimensions_to_reduce, const
+                  NameAttrList& reducer);
+  ::tensorflow::Output operator[](size_t index) const { return output[index]; }
+
+
+  Operation operation;
+  ::tensorflow::OutputList output;
+};
+
+/// Wraps the XLA Sort operator, documented at
+///
+///  https://www.tensorflow.org/performance/xla/operation_semantics#sort
+/// .
+///
+/// Sorts one or more tensors, with support for custom comparator, dimension, and
+/// is_stable attributes.
+///
+/// Args:
+/// * scope: A Scope object
+/// * inputs: A list of `Tensor` of identical shape but possibly different types.
+/// * dimension: The dimension along which to sort. Must be a compile-time constant.
+/// * comparator: A comparator function to apply to 2*N scalars and returning a
+/// boolean. N is the number of sort inputs. If you want to sort in ascending
+/// order then the comparator should perform a less-than comparison.
+/// * is_stable: Whether to use stable sort.
+///
+/// Returns:
+/// * `OutputList`: A list of `Tensor` of same shape and types as the `input`.
+class XlaVariadicSort {
+ public:
+  XlaVariadicSort(const ::tensorflow::Scope& scope, ::tensorflow::InputList
+                inputs, ::tensorflow::Input dimension, const NameAttrList&
+                comparator, bool is_stable);
+  ::tensorflow::Output operator[](size_t index) const { return outputs[index]; }
+
+
+  Operation operation;
+  ::tensorflow::OutputList outputs;
+};
+
 /// output = input; While (Cond(output)) { output = Body(output) }
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: A list of input tensors whose types are T.
 /// * cond: A function takes 'input' and returns a tensor.  If the tensor is

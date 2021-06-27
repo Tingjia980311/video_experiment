@@ -24,7 +24,7 @@ namespace ops {
 /// (https://tools.ietf.org/html/rfc4180)
 /// Note that we allow leading and trailing spaces with int or float field.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * records: Each string is a record/row in the csv and all records should have
 /// the same format.
@@ -120,7 +120,7 @@ class DecodeCSV {
 /// each element containing the decompressed data from the corresponding
 /// element in `bytes`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * bytes: A Tensor of string which is compressed.
 ///
@@ -164,14 +164,17 @@ class DecodeCompressed {
 
 /// Convert JSON-encoded Example records to binary protocol buffer strings.
 ///
-/// This op translates a tensor containing Example records, encoded using
-/// the [standard JSON
-/// mapping](https://developers.google.com/protocol-buffers/docs/proto3#json),
-/// into a tensor containing the same records encoded as binary protocol
-/// buffers. The resulting tensor can then be fed to any of the other
-/// Example-parsing ops.
 ///
-/// Arguments:
+/// Note: This is **not** a general purpose JSON parsing op.
+///
+/// This op converts JSON-serialized
+/// `tf.train.Example` (created with `json_format.MessageToJson`, following the
+/// [standard JSON mapping](https://developers.google.com/protocol-buffers/docs/proto3#json))
+/// to a binary-serialized `tf.train.Example` (equivalent to
+/// `Example.SerializeToString()`) suitable for conversion to tensors with
+/// `tf.io.parse_example`.
+///
+/// Args:
 /// * scope: A Scope object
 /// * json_examples: Each string is a JSON object serialized according to the JSON
 /// mapping of the Example proto.
@@ -193,7 +196,7 @@ class DecodeJSONExample {
 
 /// Reinterpret the bytes of a string as a vector of numbers.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input_bytes: Tensor of string to be decoded.
 /// * fixed_length: Length in bytes for each element of the decoded output. Must be a multiple
@@ -243,7 +246,7 @@ class DecodePaddedRaw {
 
 /// Reinterpret the bytes of a string as a vector of numbers.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * bytes: All the elements must have the same length.
 ///
@@ -291,7 +294,7 @@ class DecodeRaw {
 
 /// Transforms a vector of brain.Example protos (as strings) into typed tensors.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * serialized: A vector containing a batch of binary serialized Example protos.
 /// * names: A vector containing the names of the serialized protos.
@@ -355,7 +358,7 @@ class ParseExample {
 
 /// Transforms a vector of tf.Example protos (as strings) into typed tensors.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * serialized: A scalar or vector containing binary serialized Example protos.
 /// * names: A tensor containing the names of the serialized protos.
@@ -437,7 +440,7 @@ class ParseExampleV2 {
 
 /// Transforms a vector of brain.SequenceExample protos (as strings) into typed tensors.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * serialized: A vector containing binary serialized SequenceExample protos.
 /// * debug_name: A vector containing the names of the serialized protos.
@@ -670,7 +673,7 @@ class ParseSequenceExample {
 /// Transforms a vector of tf.io.SequenceExample protos (as strings) into
 /// typed tensors.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * serialized: A scalar or vector containing binary serialized SequenceExample protos.
 /// * debug_name: A scalar or vector containing the names of the serialized protos.
@@ -688,7 +691,7 @@ class ParseSequenceExample {
 /// * feature_list_dense_keys: The keys expected in the SequenceExamples' feature_lists associated
 /// with lists of dense values.
 /// * feature_list_ragged_keys: The keys expected in the FeatureLists associated with ragged values.
-/// * feature_list_dense_missing_assumed_empty: A vector corresponding 1:1 with featue_list_dense_keys, indicating which
+/// * feature_list_dense_missing_assumed_empty: A vector corresponding 1:1 with feature_list_dense_keys, indicating which
 /// features may be missing from the SequenceExamples.  If the associated
 /// FeatureList is missing, it is treated as empty.
 /// * context_dense_defaults: A list of Ncontext_dense Tensors (some may be empty).
@@ -950,7 +953,7 @@ class ParseSequenceExampleV2 {
 
 /// Transforms a tf.Example proto (as a string) into typed tensors.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * serialized: A vector containing a batch of binary serialized Example protos.
 /// * dense_defaults: A list of Tensors (some may be empty), whose length matches
@@ -1006,7 +1009,7 @@ class ParseSingleExample {
 
 /// Transforms a scalar brain.SequenceExample proto (as strings) into typed tensors.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * serialized: A scalar containing a binary serialized SequenceExample proto.
 /// * feature_list_dense_missing_assumed_empty: A vector listing the
@@ -1184,7 +1187,7 @@ class ParseSingleSequenceExample {
 
 /// Transforms a serialized tensorflow.TensorProto proto into a Tensor.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * serialized: A scalar string containing a serialized TensorProto proto.
 /// * out_type: The type of the serialized tensor.  The provided type must match the
@@ -1206,7 +1209,7 @@ class ParseTensor {
 
 /// Transforms a Tensor into a serialized TensorProto proto.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * tensor: A Tensor of type `T`.
 ///
@@ -1235,7 +1238,7 @@ class SerializeTensor {
 /// <tf.Tensor: shape=(3,), dtype=float32, numpy=array([5., 3., 7.], dtype=float32)>
 ///
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Optional attributes (see `Attrs`):

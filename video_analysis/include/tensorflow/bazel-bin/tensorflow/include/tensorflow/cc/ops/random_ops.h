@@ -20,7 +20,7 @@ namespace ops {
 
 /// Draws samples from a multinomial distribution.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * logits: 2-D Tensor with shape `[batch_size, num_classes]`.  Each slice `[i, :]`
 /// represents the unnormalized log probabilities for all classes.
@@ -95,7 +95,7 @@ class Multinomial {
 /// scalar which applies to the entire output, or a vector of length shape[0] which
 /// stores the parameters for each batch.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * shape: The shape of the output tensor. Batches are indexed by the 0th dimension.
 /// * means: The mean parameter of each batch.
@@ -172,7 +172,7 @@ class ParameterizedTruncatedNormal {
 /// transformation-rejection from pairs of uniform and normal random variables.
 /// See http://dl.acm.org/citation.cfm?id=358414
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * shape: 1-D integer tensor. Shape of independent samples to draw from each
 /// distribution described by the shape parameters given in alpha.
@@ -247,7 +247,7 @@ class RandomGamma {
 /// See Donald E. Knuth (1969). Seminumerical Algorithms. The Art of Computer
 /// Programming, Volume 2. Addison Wesley
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * shape: 1-D integer tensor. Shape of independent samples to draw from each
 /// distribution described by the shape parameters given in rate.
@@ -333,7 +333,7 @@ class RandomPoissonV2 {
 ///  [5, 6]]        [3, 4]]
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * value: The tensor to be shuffled.
 ///
@@ -395,7 +395,7 @@ class RandomShuffle {
 ///
 /// The generated values will have mean 0 and standard deviation 1.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * shape: The shape of the output tensor.
 /// * dtype: The type of the output.
@@ -459,7 +459,7 @@ class RandomNormal {
 /// The generated values follow a uniform distribution in the range `[0, 1)`. The
 /// lower bound 0 is included in the range, while the upper bound 1 is excluded.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * shape: The shape of the output tensor.
 /// * dtype: The type of the output.
@@ -528,7 +528,7 @@ class RandomUniform {
 /// power of two.  The bias is small for values of `maxval - minval` significantly
 /// smaller than the range of the output (either `2^32` or `2^64`).
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * shape: The shape of the output tensor.
 /// * minval: 0-D.  Inclusive lower bound on the generated integers.
@@ -595,7 +595,7 @@ class RandomUniformInt {
 /// deviation 1, except that values whose magnitude is more than 2 standard
 /// deviations from the mean are dropped and re-picked.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * shape: The shape of the output tensor.
 /// * dtype: The type of the output.

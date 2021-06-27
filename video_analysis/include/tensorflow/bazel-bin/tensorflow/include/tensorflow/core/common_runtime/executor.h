@@ -17,7 +17,7 @@ limitations under the License.
 #define TENSORFLOW_CORE_COMMON_RUNTIME_EXECUTOR_H_
 
 #include "tensorflow/core/common_runtime/device.h"
-#include "tensorflow/core/common_runtime/rendezvous_mgr.h"
+#include "tensorflow/core/common_runtime/local_executor_params.h"
 #include "tensorflow/core/framework/rendezvous.h"
 #include "tensorflow/core/framework/session_state.h"
 #include "tensorflow/core/framework/tensor.h"
@@ -32,6 +32,15 @@ limitations under the License.
 namespace tensorflow {
 
 class StepStatsCollector;
+
+// If this is called, we will sample execution cost for "inexpensive" kernels
+// and switch them to "expensive" when the estimated cost exceeds expensive-ness
+// threshold.
+// This is a temporary flag for validating the performance impact of
+// this feature. For simplicity, a global flag is used and once the flag
+// is turned on, it cannot be turned off. We will remove this flag once this
+// feature is validated.
+void EnableAlwaysTrackKernelExecutionCost();
 
 // Executor runs a graph computation.
 // Example:
@@ -83,9 +92,6 @@ class Executor {
   //
   // RunAsync() dispatches closures to "runner". Typically, "runner"
   // is backed up by a bounded threadpool.
-  typedef std::function<Status(const int64, const DeviceMgr*, Rendezvous** r)>
-      RendezvousFactory;
-
   struct Args {
     int64 step_id = 0;
     RendezvousInterface* rendezvous = nullptr;
@@ -134,24 +140,6 @@ class Executor {
 //
 // "params" provides a set of context for the executor. We expect that
 // different context would provide different implementations.
-struct LocalExecutorParams {
-  Device* device;
-
-  const SessionMetadata* session_metadata = nullptr;
-
-  // The library runtime support.
-  FunctionLibraryRuntime* function_library = nullptr;
-
-  // create_kernel returns an instance of op kernel based on NodeDef.
-  // delete_kernel is called for every kernel used by the executor
-  // when the executor is deleted.
-  std::function<Status(const std::shared_ptr<const NodeProperties>&,
-                       OpKernel**)>
-      create_kernel;
-  std::function<void(OpKernel*)> delete_kernel;
-
-  Executor::RendezvousFactory rendezvous_factory;
-};
 ::tensorflow::Status NewLocalExecutor(const LocalExecutorParams& params,
                                       const Graph& graph, Executor** executor);
 

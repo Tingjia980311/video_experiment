@@ -30,7 +30,7 @@ namespace ops {
 /// channel and then adjusts each component of each pixel to
 /// `(x - mean) * contrast_factor + mean`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * images: Images to adjust.  At least 3-D.
 /// * contrast_factor: A float multiplier for adjusting contrast.
@@ -52,13 +52,13 @@ class AdjustContrast {
 /// Adjust the hue of one or more images.
 ///
 /// `images` is a tensor of at least 3 dimensions.  The last dimension is
-/// interpretted as channels, and must be three.
+/// interpreted as channels, and must be three.
 ///
 /// The input image is considered in the RGB colorspace. Conceptually, the RGB
 /// colors are first mapped into HSV. A delta is then applied all the hue values,
 /// and then remapped back to RGB colorspace.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * images: Images to adjust.  At least 3-D.
 /// * delta: A float delta to add to the hue.
@@ -80,13 +80,13 @@ class AdjustHue {
 /// Adjust the saturation of one or more images.
 ///
 /// `images` is a tensor of at least 3 dimensions.  The last dimension is
-/// interpretted as channels, and must be three.
+/// interpreted as channels, and must be three.
 ///
 /// The input image is considered in the RGB colorspace. Conceptually, the RGB
 /// colors are first mapped into HSV. A scale is then applied all the saturation
 /// values, and then remapped back to RGB colorspace.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * images: Images to adjust.  At least 3-D.
 /// * scale: A float scale to add to the saturation.
@@ -121,7 +121,7 @@ class AdjustSaturation {
 /// The output of this operation is the final boxes, scores and classes tensor
 /// returned after performing non_max_suppression.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * boxes: A 4-D float tensor of shape `[batch_size, num_boxes, q, 4]`. If `q` is 1 then
 /// same boxes are used for all classes otherwise, if `q` is equal to number of
@@ -130,7 +130,9 @@ class AdjustSaturation {
 /// representing a single score corresponding to each box (each row of boxes).
 /// * max_output_size_per_class: A scalar integer tensor representing the maximum number of
 /// boxes to be selected by non max suppression per class
-/// * max_total_size: A scalar representing maximum number of boxes retained over all classes.
+/// * max_total_size: An int32 scalar representing the maximum number of boxes retained over all
+/// classes. Note that setting this value to a large number may result in OOM error
+/// depending on the system workload.
 /// * iou_threshold: A 0-D float tensor representing the threshold for deciding whether
 /// boxes overlap too much with respect to IOU.
 /// * score_threshold: A 0-D float tensor representing the threshold for deciding when to remove
@@ -234,7 +236,7 @@ class CombinedNonMaxSuppression {
 /// `tf.image.resize_nearest_neighbor()`(depends on the `method` argument) with
 /// `align_corners=True`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * image: A 4-D tensor of shape `[batch, image_height, image_width, depth]`.
 /// Both `image_height` and `image_width` need to be positive.
@@ -313,7 +315,7 @@ class CropAndResize {
 
 /// Computes the gradient of the crop_and_resize op wrt the input boxes tensor.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * grads: A 4-D tensor of shape `[num_boxes, crop_height, crop_width, depth]`.
 /// * image: A 4-D tensor of shape `[batch, image_height, image_width, depth]`.
@@ -374,7 +376,7 @@ class CropAndResizeGradBoxes {
 
 /// Computes the gradient of the crop_and_resize op wrt the input image tensor.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * grads: A 4-D tensor of shape `[num_boxes, crop_height, crop_width, depth]`.
 /// * boxes: A 2-D tensor of shape `[num_boxes, 4]`. The `i`-th row of the tensor
@@ -456,7 +458,7 @@ class CropAndResizeGradImage {
 /// It is equivalent to a combination of decode and crop, but much faster by only
 /// decoding partial jpeg image.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * contents: 0-D.  The JPEG-encoded image.
 /// * crop_window: 1-D.  The crop window: [crop_y, crop_x, crop_height, crop_width].
@@ -593,7 +595,7 @@ class DecodeAndCropJpeg {
 /// *   3: output an RGB image.
 /// *   4: output an RGBA image.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * contents: 0-D.  The BMP-encoded image.
 ///
@@ -636,9 +638,9 @@ class DecodeBmp {
 ///     convert $src.gif -coalesce $dst.gif
 ///
 /// This op also supports decoding JPEGs and PNGs, though it is cleaner to use
-/// `tf.image.decode_image`.
+/// `tf.io.decode_image`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * contents: 0-D.  The GIF-encoded image.
 ///
@@ -650,6 +652,100 @@ class DecodeGif {
   operator ::tensorflow::Output() const { return image; }
   operator ::tensorflow::Input() const { return image; }
   ::tensorflow::Node* node() const { return image.node(); }
+
+  Operation operation;
+  ::tensorflow::Output image;
+};
+
+/// Function for decode_bmp, decode_gif, decode_jpeg, and decode_png.
+///
+/// Detects whether an image is a BMP, GIF, JPEG, or PNG, and performs the
+/// appropriate operation to convert the input bytes string into a Tensor of type
+/// dtype.
+///
+/// *NOTE*: decode_gif returns a 4-D array [num_frames, height, width, 3], as
+/// opposed to decode_bmp, decode_jpeg and decode_png, which return 3-D arrays
+/// [height, width, num_channels]. Make sure to take this into account when
+/// constructing your graph if you are intermixing GIF files with BMP, JPEG, and/or
+/// PNG files. Alternately, set the expand_animations argument of this function to
+/// False, in which case the op will return 3-dimensional tensors and will truncate
+/// animated GIF files to the first frame.
+///
+/// *NOTE*: If the first frame of an animated GIF does not occupy the entire
+/// canvas (maximum frame width x maximum frame height), then it fills the
+/// unoccupied areas (in the first frame) with zeros (black). For frames after the
+/// first frame that does not occupy the entire canvas, it uses the previous
+/// frame to fill the unoccupied areas.
+///
+/// Args:
+/// * scope: A Scope object
+/// * contents: 0-D. The encoded image bytes.
+///
+/// Optional attributes (see `Attrs`):
+/// * channels: Number of color channels for the decoded image.
+/// * dtype: The desired DType of the returned Tensor.
+/// * expand_animations: Controls the output shape of the returned op. If True, the returned op will
+/// produce a 3-D tensor for PNG, JPEG, and BMP files; and a 4-D tensor for all
+/// GIFs, whether animated or not. If, False, the returned op will produce a 3-D
+/// tensor for all file types and will truncate animated GIFs to the first frame.
+///
+/// Returns:
+/// * `Output`: 3-D with shape `[height, width, channels]` or 4-D with shape
+/// `[frame, height, width, channels]`..
+class DecodeImage {
+ public:
+  /// Optional attribute setters for DecodeImage
+  struct Attrs {
+    /// Number of color channels for the decoded image.
+    ///
+    /// Defaults to 0
+    TF_MUST_USE_RESULT Attrs Channels(int64 x) {
+      Attrs ret = *this;
+      ret.channels_ = x;
+      return ret;
+    }
+
+    /// The desired DType of the returned Tensor.
+    ///
+    /// Defaults to DT_UINT8
+    TF_MUST_USE_RESULT Attrs Dtype(DataType x) {
+      Attrs ret = *this;
+      ret.dtype_ = x;
+      return ret;
+    }
+
+    /// Controls the output shape of the returned op. If True, the returned op will
+    /// produce a 3-D tensor for PNG, JPEG, and BMP files; and a 4-D tensor for all
+    /// GIFs, whether animated or not. If, False, the returned op will produce a 3-D
+    /// tensor for all file types and will truncate animated GIFs to the first frame.
+    ///
+    /// Defaults to true
+    TF_MUST_USE_RESULT Attrs ExpandAnimations(bool x) {
+      Attrs ret = *this;
+      ret.expand_animations_ = x;
+      return ret;
+    }
+
+    int64 channels_ = 0;
+    DataType dtype_ = DT_UINT8;
+    bool expand_animations_ = true;
+  };
+  DecodeImage(const ::tensorflow::Scope& scope, ::tensorflow::Input contents);
+  DecodeImage(const ::tensorflow::Scope& scope, ::tensorflow::Input contents,
+            const DecodeImage::Attrs& attrs);
+  operator ::tensorflow::Output() const { return image; }
+  operator ::tensorflow::Input() const { return image; }
+  ::tensorflow::Node* node() const { return image.node(); }
+
+  static Attrs Channels(int64 x) {
+    return Attrs().Channels(x);
+  }
+  static Attrs Dtype(DataType x) {
+    return Attrs().Dtype(x);
+  }
+  static Attrs ExpandAnimations(bool x) {
+    return Attrs().ExpandAnimations(x);
+  }
 
   Operation operation;
   ::tensorflow::Output image;
@@ -675,9 +771,9 @@ class DecodeGif {
 ///
 ///
 /// This op also supports decoding PNGs and non-animated GIFs since the interface is
-/// the same, though it is cleaner to use `tf.image.decode_image`.
+/// the same, though it is cleaner to use `tf.io.decode_image`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * contents: 0-D.  The JPEG-encoded image.
 ///
@@ -816,9 +912,9 @@ class DecodeJpeg {
 /// of color channels.
 ///
 /// This op also supports decoding JPEGs and non-animated GIFs since the interface
-/// is the same, though it is cleaner to use `tf.image.decode_image`.
+/// is the same, though it is cleaner to use `tf.io.decode_image`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * contents: 0-D.  The PNG-encoded image.
 ///
@@ -882,7 +978,7 @@ class DecodePng {
 ///
 /// Parts of the bounding box may fall outside the image.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * images: 4-D with shape `[batch, height, width, depth]`. A batch of images.
 /// * boxes: 3-D with shape `[batch, num_bounding_boxes, 4]` containing bounding
@@ -917,7 +1013,7 @@ class DrawBoundingBoxes {
 ///
 /// Parts of the bounding box may fall outside the image.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * images: 4-D with shape `[batch, height, width, depth]`. A batch of images.
 /// * boxes: 3-D with shape `[batch, num_bounding_boxes, 4]` containing bounding
@@ -959,7 +1055,7 @@ class DrawBoundingBoxesV2 {
 /// *   1: Output a grayscale image.
 /// *   3: Output an RGB image.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * image: 3-D with shape `[height, width, channels]`.
 ///
@@ -1118,7 +1214,7 @@ class EncodeJpeg {
 /// `quality` is an int32 jpeg compression quality value between 0 and 100.
 ///
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * images: Images to adjust.  At least 3-D.
 /// * quality: An int quality to encode to.
@@ -1151,7 +1247,7 @@ class EncodeJpegVariableQuality {
 /// default or a value from 0 to 9.  9 is the highest compression level, generating
 /// the smallest output, but is slower.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * image: 3-D with shape `[height, width, channels]`.
 ///
@@ -1214,7 +1310,7 @@ class EncodePng {
 /// * If the coordinates are not normalized they are interpreted as
 ///   numbers of pixels.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: A 4-D float tensor of shape `[batch_size, height, width, channels]`.
 /// * size: A 1-D tensor of 2 elements containing the size of the glimpses
@@ -1232,7 +1328,7 @@ class EncodePng {
 /// * uniform_noise: indicates if the noise should be generated using a
 /// uniform distribution or a Gaussian distribution.
 /// * noise: indicates if the noise should `uniform`, `gaussian`, or
-/// `zero`. The default is `uniform` which means the the noise type
+/// `zero`. The default is `uniform` which means the noise type
 /// will be decided by `uniform_noise`.
 ///
 /// Returns:
@@ -1274,7 +1370,7 @@ class ExtractGlimpse {
     }
 
     /// indicates if the noise should `uniform`, `gaussian`, or
-    /// `zero`. The default is `uniform` which means the the noise type
+    /// `zero`. The default is `uniform` which means the noise type
     /// will be decided by `uniform_noise`.
     ///
     /// Defaults to "uniform"
@@ -1319,7 +1415,7 @@ class ExtractGlimpse {
 ///
 /// This op only parses the image header, so it is much faster than DecodeJpeg.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * contents: 0-D. The JPEG-encoded image.
 ///
@@ -1369,7 +1465,7 @@ class ExtractJpegShape {
 ///
 /// See `rgb_to_hsv` for a description of the HSV encoding.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * images: 1-D or higher rank. HSV data to convert. Last dimension must be size 3.
 ///
@@ -1405,7 +1501,7 @@ class HSVToRGB {
 ///       boxes, scores, max_output_size, iou_threshold)
 ///   selected_boxes = tf.gather(boxes, selected_indices)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * boxes: A 2-D float tensor of shape `[num_boxes, 4]`.
 /// * scores: A 1-D float tensor of shape `[num_boxes]` representing a single
@@ -1475,7 +1571,7 @@ class NonMaxSuppression {
 ///       boxes, scores, max_output_size, iou_threshold)
 ///   selected_boxes = tf.gather(boxes, selected_indices)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * boxes: A 2-D float tensor of shape `[num_boxes, 4]`.
 /// * scores: A 1-D float tensor of shape `[num_boxes]` representing a single
@@ -1521,7 +1617,7 @@ class NonMaxSuppressionV2 {
 ///       boxes, scores, max_output_size, iou_threshold, score_threshold)
 ///   selected_boxes = tf.gather(boxes, selected_indices)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * boxes: A 2-D float tensor of shape `[num_boxes, 4]`.
 /// * scores: A 1-D float tensor of shape `[num_boxes]` representing a single
@@ -1570,7 +1666,7 @@ class NonMaxSuppressionV3 {
 ///       boxes, scores, max_output_size, iou_threshold, score_threshold)
 ///   selected_boxes = tf.gather(boxes, selected_indices)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * boxes: A 2-D float tensor of shape `[num_boxes, 4]`.
 /// * scores: A 1-D float tensor of shape `[num_boxes]` representing a single
@@ -1651,7 +1747,7 @@ class NonMaxSuppressionV4 {
 /// To enable this Soft-NMS mode, set the `soft_nms_sigma` parameter to be
 /// larger than 0.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * boxes: A 2-D float tensor of shape `[num_boxes, 4]`.
 /// * scores: A 1-D float tensor of shape `[num_boxes]` representing a single
@@ -1733,7 +1829,7 @@ class NonMaxSuppressionV5 {
 ///       overlaps, scores, max_output_size, overlap_threshold, score_threshold)
 ///   selected_boxes = tf.gather(boxes, selected_indices)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * overlaps: A 2-D float tensor of shape `[num_boxes, num_boxes]` representing
 /// the n-by-n box overlap values.
@@ -1768,7 +1864,7 @@ class NonMaxSuppressionWithOverlaps {
 ///
 /// Input images and output images must be quantized types.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * images: 4-D with shape `[batch, height, width, channels]`.
 /// * size: = A 1-D int32 Tensor of 2 elements: `new_height, new_width`.  The
@@ -1850,7 +1946,7 @@ class QuantizedResizeBilinear {
 /// array([0.6666667, 1. , 1. ], dtype=float32)
 ///
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * images: 1-D or higher rank. RGB data to convert. Last dimension must be size 3.
 ///
@@ -1881,7 +1977,7 @@ class RGBToHSV {
 /// input pixel's contribution to the average is weighted by the fraction of its
 /// area that intersects the footprint.  This is the same as OpenCV's INTER_AREA.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * images: 4-D with shape `[batch, height, width, channels]`.
 /// * size: = A 1-D int32 Tensor of 2 elements: `new_height, new_width`.  The
@@ -1930,7 +2026,7 @@ class ResizeArea {
 ///
 /// Input images can be of different types but output images are always float.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * images: 4-D with shape `[batch, height, width, channels]`.
 /// * size: = A 1-D int32 Tensor of 2 elements: `new_height, new_width`.  The
@@ -1990,7 +2086,7 @@ class ResizeBicubic {
 ///
 /// Input images can be of different types but output images are always float.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * images: 4-D with shape `[batch, height, width, channels]`.
 /// * size: = A 1-D int32 Tensor of 2 elements: `new_height, new_width`.  The
@@ -2048,7 +2144,7 @@ class ResizeBilinear {
 
 /// Resize `images` to `size` using nearest neighbor interpolation.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * images: 4-D with shape `[batch, height, width, channels]`.
 /// * size: = A 1-D int32 Tensor of 2 elements: `new_height, new_width`.  The
@@ -2146,7 +2242,7 @@ class ResizeNearestNeighbor {
 /// bounding box covering the whole image. If `use_image_if_no_bounding_boxes` is
 /// false and no bounding boxes are supplied, an error is raised.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * image_size: 1-D, containing `[height, width, channels]`.
 /// * bounding_boxes: 3-D with shape `[batch, N, 4]` describing the N bounding boxes
@@ -2351,7 +2447,7 @@ class SampleDistortedBoundingBox {
 /// bounding box covering the whole image. If `use_image_if_no_bounding_boxes` is
 /// false and no bounding boxes are supplied, an error is raised.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * image_size: 1-D, containing `[height, width, channels]`.
 /// * bounding_boxes: 3-D with shape `[batch, N, 4]` describing the N bounding boxes
@@ -2503,7 +2599,7 @@ class SampleDistortedBoundingBoxV2 {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2549,6 +2645,190 @@ class ScaleAndTranslate {
 
   Operation operation;
   ::tensorflow::Output resized_images;
+};
+
+/// Generate a randomly distorted bounding box for an image deterministically.
+///
+/// Bounding box annotations are often supplied in addition to ground-truth labels
+/// in image recognition or object localization tasks. A common technique for
+/// training such a system is to randomly distort an image while preserving its
+/// content, i.e. *data augmentation*. This Op, given the same `seed`,
+/// deterministically outputs a randomly distorted localization of an object, i.e.
+/// bounding box, given an `image_size`, `bounding_boxes` and a series of
+/// constraints.
+///
+/// The output of this Op is a single bounding box that may be used to crop the
+/// original image. The output is returned as 3 tensors: `begin`, `size` and
+/// `bboxes`. The first 2 tensors can be fed directly into `tf.slice` to crop the
+/// image. The latter may be supplied to `tf.image.draw_bounding_boxes` to visualize
+/// what the bounding box looks like.
+///
+/// Bounding boxes are supplied and returned as `[y_min, x_min, y_max, x_max]`. The
+/// bounding box coordinates are floats in `[0.0, 1.0]` relative to the width and
+/// the height of the underlying image.
+///
+/// The output of this Op is guaranteed to be the same given the same `seed` and is
+/// independent of how many times the function is called, and independent of global
+/// seed settings (e.g. `tf.random.set_seed`).
+///
+/// Example usage:
+///
+/// >>> image = np.array([[[1], [2], [3]], [[4], [5], [6]], [[7], [8], [9]]])
+/// >>> bbox = tf.constant(
+/// ...   [0.0, 0.0, 1.0, 1.0], dtype=tf.float32, shape=[1, 1, 4])
+/// >>> seed = (1, 2)
+/// >>> # Generate a single distorted bounding box.
+/// >>> bbox_begin, bbox_size, bbox_draw = (
+/// ...   tf.image.stateless_sample_distorted_bounding_box(
+/// ...     tf.shape(image), bounding_boxes=bbox, seed=seed))
+/// >>> # Employ the bounding box to distort the image.
+/// >>> tf.slice(image, bbox_begin, bbox_size)
+/// <tf.Tensor: shape=(2, 2, 1), dtype=int64, numpy=
+/// array([[[1],
+///         [2]],
+///        [[4],
+///         [5]]])>
+/// >>> # Draw the bounding box in an image summary.
+/// >>> colors = np.array([[1.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
+/// >>> tf.image.draw_bounding_boxes(
+/// ...   tf.expand_dims(tf.cast(image, tf.float32),0), bbox_draw, colors)
+/// <tf.Tensor: shape=(1, 3, 3, 1), dtype=float32, numpy=
+/// array([[[[1.],
+///          [1.],
+///          [3.]],
+///         [[1.],
+///          [1.],
+///          [6.]],
+///         [[7.],
+///          [8.],
+///          [9.]]]], dtype=float32)>
+///
+/// Note that if no bounding box information is available, setting
+/// `use_image_if_no_bounding_boxes = true` will assume there is a single implicit
+/// bounding box covering the whole image. If `use_image_if_no_bounding_boxes` is
+/// false and no bounding boxes are supplied, an error is raised.
+///
+/// Args:
+/// * scope: A Scope object
+/// * image_size: 1-D, containing `[height, width, channels]`.
+/// * bounding_boxes: 3-D with shape `[batch, N, 4]` describing the N bounding boxes
+/// associated with the image.
+/// * min_object_covered: The cropped area of the image must contain at least this
+/// fraction of any bounding box supplied. The value of this parameter should be
+/// non-negative. In the case of 0, the cropped area does not need to overlap
+/// any of the bounding boxes supplied.
+/// * seed: 1-D with shape `[2]`. The seed to the random number generator. Must have dtype
+/// `int32` or `int64`. (When using XLA, only `int32` is allowed.)
+///
+/// Optional attributes (see `Attrs`):
+/// * aspect_ratio_range: The cropped area of the image must have an aspect ratio =
+/// width / height within this range.
+/// * area_range: The cropped area of the image must contain a fraction of the
+/// supplied image within this range.
+/// * max_attempts: Number of attempts at generating a cropped region of the image
+/// of the specified constraints. After `max_attempts` failures, return the entire
+/// image.
+/// * use_image_if_no_bounding_boxes: Controls behavior if no bounding boxes supplied.
+/// If true, assume an implicit bounding box covering the whole input. If false,
+/// raise an error.
+///
+/// Returns:
+/// * `Output` begin: 1-D, containing `[offset_height, offset_width, 0]`. Provide as input to
+/// `tf.slice`.
+/// * `Output` size: 1-D, containing `[target_height, target_width, -1]`. Provide as input to
+/// `tf.slice`.
+/// * `Output` bboxes: 3-D with shape `[1, 1, 4]` containing the distorted bounding box.
+/// Provide as input to `tf.image.draw_bounding_boxes`.
+class StatelessSampleDistortedBoundingBox {
+ public:
+  /// Optional attribute setters for StatelessSampleDistortedBoundingBox
+  struct Attrs {
+    /// The cropped area of the image must have an aspect ratio =
+    /// width / height within this range.
+    ///
+    /// Defaults to [0.75, 1.33]
+    TF_MUST_USE_RESULT Attrs AspectRatioRange(const gtl::ArraySlice<float>& x) {
+      Attrs ret = *this;
+      ret.aspect_ratio_range_ = x;
+      return ret;
+    }
+
+    /// The cropped area of the image must contain a fraction of the
+    /// supplied image within this range.
+    ///
+    /// Defaults to [0.05, 1]
+    TF_MUST_USE_RESULT Attrs AreaRange(const gtl::ArraySlice<float>& x) {
+      Attrs ret = *this;
+      ret.area_range_ = x;
+      return ret;
+    }
+
+    /// Number of attempts at generating a cropped region of the image
+    /// of the specified constraints. After `max_attempts` failures, return the entire
+    /// image.
+    ///
+    /// Defaults to 100
+    TF_MUST_USE_RESULT Attrs MaxAttempts(int64 x) {
+      Attrs ret = *this;
+      ret.max_attempts_ = x;
+      return ret;
+    }
+
+    /// Controls behavior if no bounding boxes supplied.
+    /// If true, assume an implicit bounding box covering the whole input. If false,
+    /// raise an error.
+    ///
+    /// Defaults to false
+    TF_MUST_USE_RESULT Attrs UseImageIfNoBoundingBoxes(bool x) {
+      Attrs ret = *this;
+      ret.use_image_if_no_bounding_boxes_ = x;
+      return ret;
+    }
+
+    gtl::ArraySlice<float> aspect_ratio_range_ = Default_aspect_ratio_range();
+    gtl::ArraySlice<float> area_range_ = Default_area_range();
+    int64 max_attempts_ = 100;
+    bool use_image_if_no_bounding_boxes_ = false;
+  private:
+    static gtl::ArraySlice<float> Default_aspect_ratio_range() {
+      static const float kStorage[] = {0.75f, 1.33f};
+      return gtl::ArraySlice<float>(kStorage);
+    }
+    static gtl::ArraySlice<float> Default_area_range() {
+      static const float kStorage[] = {0.05f, 1.0f};
+      return gtl::ArraySlice<float>(kStorage);
+    }
+  };
+  StatelessSampleDistortedBoundingBox(const ::tensorflow::Scope& scope,
+                                    ::tensorflow::Input image_size,
+                                    ::tensorflow::Input bounding_boxes,
+                                    ::tensorflow::Input min_object_covered,
+                                    ::tensorflow::Input seed);
+  StatelessSampleDistortedBoundingBox(const ::tensorflow::Scope& scope,
+                                    ::tensorflow::Input image_size,
+                                    ::tensorflow::Input bounding_boxes,
+                                    ::tensorflow::Input min_object_covered,
+                                    ::tensorflow::Input seed, const
+                                    StatelessSampleDistortedBoundingBox::Attrs&
+                                    attrs);
+
+  static Attrs AspectRatioRange(const gtl::ArraySlice<float>& x) {
+    return Attrs().AspectRatioRange(x);
+  }
+  static Attrs AreaRange(const gtl::ArraySlice<float>& x) {
+    return Attrs().AreaRange(x);
+  }
+  static Attrs MaxAttempts(int64 x) {
+    return Attrs().MaxAttempts(x);
+  }
+  static Attrs UseImageIfNoBoundingBoxes(bool x) {
+    return Attrs().UseImageIfNoBoundingBoxes(x);
+  }
+
+  Operation operation;
+  ::tensorflow::Output begin;
+  ::tensorflow::Output size;
+  ::tensorflow::Output bboxes;
 };
 
 /// @}

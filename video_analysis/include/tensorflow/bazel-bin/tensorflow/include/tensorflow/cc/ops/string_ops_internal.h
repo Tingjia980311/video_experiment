@@ -30,7 +30,7 @@ namespace internal {
 ///
 /// The pattern follows the re2 syntax (https://github.com/google/re2/wiki/Syntax)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: A string tensor of the text to be processed.
 /// * pattern: The regular expression to match the input.
@@ -53,7 +53,7 @@ class StaticRegexFullMatch {
 ///
 /// It follows the re2 syntax (https://github.com/google/re2/wiki/Syntax)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The text to be processed.
 /// * pattern: The regular expression to match the input.
@@ -114,7 +114,7 @@ class StaticRegexReplace {
 /// * `row_splits[i+1] - row_splits[i]` is the number of characters in the `i`th
 ///   string (in row-major order).
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The text to be decoded. Can have any shape. Note that the output is flattened
 /// to a vector of char values.
@@ -235,7 +235,7 @@ class UnicodeDecode {
 /// * `row_splits[i+1] - row_splits[i]` is the number of characters in the `i`th
 ///   string (in row-major order).
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The text to be decoded. Can have any shape. Note that the output is flattened
 /// to a vector of char values.
@@ -358,7 +358,7 @@ class UnicodeDecodeWithOffsets {
 /// output = ['Hello', 'World']
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input_values: A 1D tensor containing the unicode codepoints that should be encoded.
 /// * input_splits: A 1D tensor specifying how the unicode codepoints should be split into strings.

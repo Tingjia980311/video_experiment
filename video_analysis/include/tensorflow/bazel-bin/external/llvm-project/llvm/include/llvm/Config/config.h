@@ -1,6 +1,9 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+// Include this header only under the llvm source tree.
+// This is a private header.
+
 /* Exported configuration */
 #include "llvm/Config/llvm-config.h"
 
@@ -55,6 +58,12 @@
 /* Define if dladdr() is available on this platform. */
 /* #undef HAVE_DLADDR */
 
+/* Define to 1 if we can register EH frames on this platform. */
+/* #undef HAVE_REGISTER_FRAME */
+
+/* Define to 1 if we can deregister EH frames on this platform. */
+/* #undef HAVE_DEREGISTER_FRAME */
+
 /* Define to 1 if you have the <errno.h> header file. */
 #define HAVE_ERRNO_H 1
 
@@ -97,6 +106,9 @@
 /* Define to 1 if you have the `pfm' library (-lpfm). */
 /* #undef HAVE_LIBPFM */
 
+/* Define to 1 if the `perf_branch_entry' struct has field cycles. */
+/* #undef LIBPFM_HAS_FIELD_CYCLES */
+
 /* Define to 1 if you have the `psapi' library (-lpsapi). */
 /* #undef HAVE_LIBPSAPI */
 
@@ -123,6 +135,9 @@
 
 /* Define to 1 if you have the `mallinfo' function. */
 #define HAVE_MALLINFO 1
+
+/* Define to 1 if you have the `mallinfo2' function. */
+/* #undef HAVE_MALLINFO2 */
 
 /* Define to 1 if you have the <malloc/malloc.h> header file. */
 /* #undef HAVE_MALLOC_MALLOC_H */
@@ -156,12 +171,6 @@
 
 /* Define to 1 if you have the `setenv' function. */
 #define HAVE_SETENV 1
-
-/* Define to 1 if you have the `sched_getaffinity' function. */
-/* #undef HAVE_SCHED_GETAFFINITY */
-
-/* Define to 1 if you have the `CPU_COUNT' macro. */
-/* #undef HAVE_CPU_COUNT */
 
 /* Define to 1 if you have the `setrlimit' function. */
 #define HAVE_SETRLIMIT 1
@@ -209,7 +218,7 @@
 #define HAVE_SYS_TYPES_H 1
 
 /* Define if the setupterm() function is supported this platform. */
-/* #undef HAVE_TERMINFO */
+/* #undef LLVM_ENABLE_TERMINFO */
 
 /* Define if the xar_open() function is supported this platform. */
 /* #undef HAVE_LIBXAR */
@@ -303,10 +312,13 @@
 #define LLVM_VERSION_PRINTER_SHOW_HOST_TARGET_INFO 0
 
 /* Define if libxml2 is supported on this platform. */
-/* #undef LLVM_LIBXML2_ENABLED */
+/* #undef LLVM_ENABLE_LIBXML2 */
 
 /* Define to the extension used for shared libraries, say, ".so". */
 #define LTDL_SHLIB_EXT ".so"
+
+/* Define to the extension used for plugin libraries, say, ".so". */
+/* #undef LLVM_PLUGIN_EXT */
 
 /* Define to the address where bug reports for this package should be sent. */
 /* #undef PACKAGE_BUGREPORT */
@@ -338,13 +350,12 @@
 /* Whether GlobalISel rule coverage is being collected */
 #define LLVM_GISEL_COV_ENABLED 0
 
-/* Define if we have z3 and want to build it */
-/* #undef LLVM_WITH_Z3 */
-
 /* Define to the default GlobalISel coverage file prefix */
 /* #undef LLVM_GISEL_COV_PREFIX */
 
 /* Whether Timers signpost passes in Xcode Instruments */
 #define LLVM_SUPPORT_XCODE_SIGNPOSTS 0
+
+/* #undef HAVE_PROC_PID_RUSAGE */
 
 #endif

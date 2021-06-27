@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright 2019 Intel Corporation
+* Copyright 2019-2020 Intel Corporation
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -14,19 +14,13 @@
 * limitations under the License.
 *******************************************************************************/
 
+// Header file ensures the backwards compatibility with previous namings.
+
 #ifndef MKLDNN_VERSION_H
 #define MKLDNN_VERSION_H
 
-/* Major version of MKL-DNN */
-#define MKLDNN_VERSION_MAJOR 0
+#include "mkldnn_dnnl_mangling.h"
 
-/* Minor version of MKL-DNN */
-#define MKLDNN_VERSION_MINOR 21
+#include "dnnl_version.h"
 
-/* Patch version of MKL-DNN */
-#define MKLDNN_VERSION_PATCH 3
-
-/* Git Commit Hash of MKL-DNN */
-#define MKLDNN_VERSION_HASH  "N/A"
-
-#endif
+#endif /* MKLDNN_VERSION_H */

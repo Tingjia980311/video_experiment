@@ -217,7 +217,7 @@ static bool CC_Intel_OCL_BI(unsigned ValNo, MVT ValVT,
   }
 
   if (LocVT == MVT::i32) {
-    unsigned Offset5 = State.AllocateStack(4, 4);
+    unsigned Offset5 = State.AllocateStack(4, Align(4));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset5, LocVT, LocInfo));
     return false;
   }
@@ -284,7 +284,7 @@ static bool CC_Intel_OCL_BI(unsigned ValNo, MVT ValVT,
   if (!CC_X86_32_C(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -305,7 +305,7 @@ bool llvm::CC_X86(unsigned ValNo, MVT ValVT,
   if (!CC_X86_32(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -315,7 +315,7 @@ static bool CC_X86_32(unsigned ValNo, MVT ValVT,
 
   if (State.getCallingConv() == CallingConv::X86_INTR) {
     if (CC_X86_Intr(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
-        return false;
+      return false;
   }
 
   if (static_cast<const X86Subtarget&>(State.getMachineFunction().getSubtarget()).isTargetMCU()) {
@@ -371,7 +371,7 @@ static bool CC_X86_32(unsigned ValNo, MVT ValVT,
   if (!CC_X86_32_C(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -385,11 +385,11 @@ static bool CC_X86_32_C(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v1i1) {
     LocVT = MVT::i32;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (ArgFlags.isNest()) {
@@ -416,7 +416,7 @@ static bool CC_X86_32_C(unsigned ValNo, MVT ValVT,
   if (!CC_X86_32_Common(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -425,7 +425,12 @@ static bool CC_X86_32_Common(unsigned ValNo, MVT ValVT,
                              ISD::ArgFlagsTy ArgFlags, CCState &State) {
 
   if (ArgFlags.isByVal()) {
-    State.HandleByVal(ValNo, ValVT, LocVT, LocInfo, 4, 4, ArgFlags);
+    State.HandleByVal(ValNo, ValVT, LocVT, LocInfo, 4, Align(4), ArgFlags);
+    return false;
+  }
+
+  if (ArgFlags.isPreallocated()) {
+    State.HandleByVal(ValNo, ValVT, LocVT, LocInfo, 4, Align(4), ArgFlags);
     return false;
   }
 
@@ -460,20 +465,20 @@ static bool CC_X86_32_Common(unsigned ValNo, MVT ValVT,
 
   if (LocVT == MVT::i32 ||
       LocVT == MVT::f32) {
-    unsigned Offset3 = State.AllocateStack(4, 4);
+    unsigned Offset3 = State.AllocateStack(4, Align(4));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset3, LocVT, LocInfo));
     return false;
   }
 
   if (LocVT == MVT::f64) {
-    unsigned Offset4 = State.AllocateStack(8, 4);
+    unsigned Offset4 = State.AllocateStack(8, Align(4));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset4, LocVT, LocInfo));
     return false;
   }
 
   if (LocVT == MVT::f80) {
     unsigned Offset5 = State.AllocateStack(
-      State.getMachineFunction().getDataLayout().getTypeAllocSize(EVT(LocVT).getTypeForEVT(State.getContext())), 4);
+      State.getMachineFunction().getDataLayout().getTypeAllocSize(EVT(LocVT).getTypeForEVT(State.getContext())), Align(4));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset5, LocVT, LocInfo));
     return false;
   }
@@ -481,65 +486,65 @@ static bool CC_X86_32_Common(unsigned ValNo, MVT ValVT,
   if (LocVT == MVT::v2i1) {
     LocVT = MVT::v2i64;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::v4i1) {
     LocVT = MVT::v4i32;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::v8i1) {
     LocVT = MVT::v8i16;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::v16i1) {
     LocVT = MVT::v16i8;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::v32i1) {
     LocVT = MVT::v32i8;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::v64i1) {
     LocVT = MVT::v64i8;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::x86mmx) {
-    unsigned Offset6 = State.AllocateStack(8, 4);
+    unsigned Offset6 = State.AllocateStack(8, Align(4));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset6, LocVT, LocInfo));
     return false;
   }
@@ -552,7 +557,7 @@ static bool CC_X86_32_Common(unsigned ValNo, MVT ValVT,
   if (!CC_X86_32_Vector_Standard(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -561,7 +566,7 @@ static bool CC_X86_32_FastCC(unsigned ValNo, MVT ValVT,
                              ISD::ArgFlagsTy ArgFlags, CCState &State) {
 
   if (ArgFlags.isByVal()) {
-    State.HandleByVal(ValNo, ValVT, LocVT, LocInfo, 4, 4, ArgFlags);
+    State.HandleByVal(ValNo, ValVT, LocVT, LocInfo, 4, Align(4), ArgFlags);
     return false;
   }
 
@@ -571,11 +576,11 @@ static bool CC_X86_32_FastCC(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v1i1) {
     LocVT = MVT::i32;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (ArgFlags.isNest()) {
@@ -611,7 +616,7 @@ static bool CC_X86_32_FastCC(unsigned ValNo, MVT ValVT,
   }
 
   if (LocVT == MVT::f64) {
-    unsigned Offset3 = State.AllocateStack(8, 8);
+    unsigned Offset3 = State.AllocateStack(8, Align(8));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset3, LocVT, LocInfo));
     return false;
   }
@@ -619,7 +624,7 @@ static bool CC_X86_32_FastCC(unsigned ValNo, MVT ValVT,
   if (!CC_X86_32_Common(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -630,11 +635,11 @@ static bool CC_X86_32_FastCall(unsigned ValNo, MVT ValVT,
   if (LocVT == MVT::i1) {
     LocVT = MVT::i8;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (ArgFlags.isNest()) {
@@ -683,7 +688,7 @@ static bool CC_X86_32_FastCall(unsigned ValNo, MVT ValVT,
   if (!CC_X86_32_Common(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -695,11 +700,11 @@ static bool CC_X86_32_GHC(unsigned ValNo, MVT ValVT,
       LocVT == MVT::i16) {
     LocVT = MVT::i32;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::i32) {
@@ -712,7 +717,7 @@ static bool CC_X86_32_GHC(unsigned ValNo, MVT ValVT,
     }
   }
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -724,11 +729,11 @@ static bool CC_X86_32_HiPE(unsigned ValNo, MVT ValVT,
       LocVT == MVT::i16) {
     LocVT = MVT::i32;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::i32) {
@@ -743,12 +748,12 @@ static bool CC_X86_32_HiPE(unsigned ValNo, MVT ValVT,
 
   if (LocVT == MVT::i32 ||
       LocVT == MVT::f32) {
-    unsigned Offset2 = State.AllocateStack(4, 4);
+    unsigned Offset2 = State.AllocateStack(4, Align(4));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset2, LocVT, LocInfo));
     return false;
   }
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -757,7 +762,7 @@ static bool CC_X86_32_MCU(unsigned ValNo, MVT ValVT,
                           ISD::ArgFlagsTy ArgFlags, CCState &State) {
 
   if (ArgFlags.isByVal()) {
-    State.HandleByVal(ValNo, ValVT, LocVT, LocInfo, 4, 4, ArgFlags);
+    State.HandleByVal(ValNo, ValVT, LocVT, LocInfo, 4, Align(4), ArgFlags);
     return false;
   }
 
@@ -767,24 +772,24 @@ static bool CC_X86_32_MCU(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v1i1) {
     LocVT = MVT::i32;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (!State.isVarArg()) {
     if (LocVT == MVT::i32) {
       if (CC_X86_32_MCUInReg(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
-            return false;
+        return false;
     }
   }
 
   if (!CC_X86_32_Common(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -794,13 +799,13 @@ static bool CC_X86_32_RegCall(unsigned ValNo, MVT ValVT,
 
   if (static_cast<const X86Subtarget&>(State.getMachineFunction().getSubtarget()).is64Bit()) {
     if (ArgFlags.isByVal()) {
-      State.HandleByVal(ValNo, ValVT, LocVT, LocInfo, 8, 8, ArgFlags);
+      State.HandleByVal(ValNo, ValVT, LocVT, LocInfo, 8, Align(8), ArgFlags);
       return false;
     }
   }
 
   if (ArgFlags.isByVal()) {
-    State.HandleByVal(ValNo, ValVT, LocVT, LocInfo, 4, 4, ArgFlags);
+    State.HandleByVal(ValNo, ValVT, LocVT, LocInfo, 4, Align(4), ArgFlags);
     return false;
   }
 
@@ -810,11 +815,11 @@ static bool CC_X86_32_RegCall(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v1i1) {
     LocVT = MVT::i32;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::v8i1 ||
@@ -822,11 +827,11 @@ static bool CC_X86_32_RegCall(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v32i1) {
     LocVT = MVT::i32;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::i32) {
@@ -849,11 +854,11 @@ static bool CC_X86_32_RegCall(unsigned ValNo, MVT ValVT,
   if (LocVT == MVT::v64i1) {
     LocVT = MVT::i64;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (static_cast<const X86Subtarget&>(State.getMachineFunction().getSubtarget()).is64Bit()) {
@@ -868,7 +873,7 @@ static bool CC_X86_32_RegCall(unsigned ValNo, MVT ValVT,
   if (static_cast<const X86Subtarget&>(State.getMachineFunction().getSubtarget()).is32Bit()) {
     if (LocVT == MVT::i64) {
       if (CC_X86_32_RegCall_Assign2Regs(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
-            return false;
+        return false;
     }
   }
 
@@ -949,7 +954,7 @@ static bool CC_X86_32_RegCall(unsigned ValNo, MVT ValVT,
         LocVT == MVT::i64 ||
         LocVT == MVT::f32 ||
         LocVT == MVT::f64) {
-      unsigned Offset6 = State.AllocateStack(8, 8);
+      unsigned Offset6 = State.AllocateStack(8, Align(8));
       State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset6, LocVT, LocInfo));
       return false;
     }
@@ -957,28 +962,28 @@ static bool CC_X86_32_RegCall(unsigned ValNo, MVT ValVT,
 
   if (LocVT == MVT::i32 ||
       LocVT == MVT::f32) {
-    unsigned Offset7 = State.AllocateStack(4, 4);
+    unsigned Offset7 = State.AllocateStack(4, Align(4));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset7, LocVT, LocInfo));
     return false;
   }
 
   if (LocVT == MVT::i64 ||
       LocVT == MVT::f64) {
-    unsigned Offset8 = State.AllocateStack(8, 4);
+    unsigned Offset8 = State.AllocateStack(8, Align(4));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset8, LocVT, LocInfo));
     return false;
   }
 
   if (static_cast<const X86Subtarget&>(State.getMachineFunction().getSubtarget()).is64Bit()) {
     if (LocVT == MVT::x86mmx) {
-      unsigned Offset9 = State.AllocateStack(8, 8);
+      unsigned Offset9 = State.AllocateStack(8, Align(8));
       State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset9, LocVT, LocInfo));
       return false;
     }
   }
 
   if (LocVT == MVT::x86mmx) {
-    unsigned Offset10 = State.AllocateStack(8, 4);
+    unsigned Offset10 = State.AllocateStack(8, Align(4));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset10, LocVT, LocInfo));
     return false;
   }
@@ -987,7 +992,7 @@ static bool CC_X86_32_RegCall(unsigned ValNo, MVT ValVT,
       LocVT == MVT::f128) {
     unsigned Offset11 = State.AllocateStack(
       State.getMachineFunction().getDataLayout().getTypeAllocSize(EVT(LocVT).getTypeForEVT(State.getContext())), 
-      State.getMachineFunction().getDataLayout().getABITypeAlignment(EVT(LocVT).getTypeForEVT(State.getContext())));
+      State.getMachineFunction().getDataLayout().getABITypeAlign(EVT(LocVT).getTypeForEVT(State.getContext())));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset11, LocVT, LocInfo));
     return false;
   }
@@ -998,7 +1003,7 @@ static bool CC_X86_32_RegCall(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v2i64 ||
       LocVT == MVT::v4f32 ||
       LocVT == MVT::v2f64) {
-    unsigned Offset12 = State.AllocateStack(16, 16);
+    unsigned Offset12 = State.AllocateStack(16, Align(16));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset12, LocVT, LocInfo));
     return false;
   }
@@ -1009,7 +1014,7 @@ static bool CC_X86_32_RegCall(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v4i64 ||
       LocVT == MVT::v8f32 ||
       LocVT == MVT::v4f64) {
-    unsigned Offset13 = State.AllocateStack(32, 32);
+    unsigned Offset13 = State.AllocateStack(32, Align(32));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset13, LocVT, LocInfo));
     return false;
   }
@@ -1020,12 +1025,12 @@ static bool CC_X86_32_RegCall(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v8i64 ||
       LocVT == MVT::v16f32 ||
       LocVT == MVT::v8f64) {
-    unsigned Offset14 = State.AllocateStack(64, 64);
+    unsigned Offset14 = State.AllocateStack(64, Align(64));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset14, LocVT, LocInfo));
     return false;
   }
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -1041,7 +1046,7 @@ static bool CC_X86_32_ThisCall(unsigned ValNo, MVT ValVT,
   if (!CC_X86_32_ThisCall_Win(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -1059,7 +1064,7 @@ static bool CC_X86_32_ThisCall_Common(unsigned ValNo, MVT ValVT,
   if (!CC_X86_32_Common(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -1073,17 +1078,17 @@ static bool CC_X86_32_ThisCall_Mingw(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v1i1) {
     LocVT = MVT::i32;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (!CC_X86_32_ThisCall_Common(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -1097,15 +1102,15 @@ static bool CC_X86_32_ThisCall_Win(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v1i1) {
     LocVT = MVT::i32;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (ArgFlags.isSRet()) {
-    unsigned Offset1 = State.AllocateStack(4, 4);
+    unsigned Offset1 = State.AllocateStack(4, Align(4));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset1, LocVT, LocInfo));
     return false;
   }
@@ -1113,7 +1118,7 @@ static bool CC_X86_32_ThisCall_Win(unsigned ValNo, MVT ValVT,
   if (!CC_X86_32_ThisCall_Common(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -1127,7 +1132,7 @@ static bool CC_X86_32_Vector_Common(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v2i64 ||
       LocVT == MVT::v4f32 ||
       LocVT == MVT::v2f64) {
-    unsigned Offset1 = State.AllocateStack(16, 16);
+    unsigned Offset1 = State.AllocateStack(16, Align(16));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset1, LocVT, LocInfo));
     return false;
   }
@@ -1138,7 +1143,7 @@ static bool CC_X86_32_Vector_Common(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v4i64 ||
       LocVT == MVT::v8f32 ||
       LocVT == MVT::v4f64) {
-    unsigned Offset2 = State.AllocateStack(32, 32);
+    unsigned Offset2 = State.AllocateStack(32, Align(32));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset2, LocVT, LocInfo));
     return false;
   }
@@ -1149,12 +1154,12 @@ static bool CC_X86_32_Vector_Common(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v8i64 ||
       LocVT == MVT::v16f32 ||
       LocVT == MVT::v8f64) {
-    unsigned Offset3 = State.AllocateStack(64, 64);
+    unsigned Offset3 = State.AllocateStack(64, Align(64));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset3, LocVT, LocInfo));
     return false;
   }
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -1218,7 +1223,7 @@ static bool CC_X86_32_Vector_Darwin(unsigned ValNo, MVT ValVT,
   if (!CC_X86_32_Vector_Common(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -1282,7 +1287,7 @@ static bool CC_X86_32_Vector_Standard(unsigned ValNo, MVT ValVT,
   if (!CC_X86_32_Vector_Common(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -1349,7 +1354,7 @@ static bool CC_X86_64(unsigned ValNo, MVT ValVT,
 
   if (State.getCallingConv() == CallingConv::X86_INTR) {
     if (CC_X86_Intr(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
-        return false;
+      return false;
   }
 
   if (static_cast<const X86Subtarget&>(State.getMachineFunction().getSubtarget()).isTargetWin64()) {
@@ -1360,7 +1365,7 @@ static bool CC_X86_64(unsigned ValNo, MVT ValVT,
   if (!CC_X86_64_C(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -1371,7 +1376,7 @@ static bool CC_X86_64_AnyReg(unsigned ValNo, MVT ValVT,
   if (CC_X86_AnyReg_Error(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -1380,7 +1385,7 @@ static bool CC_X86_64_C(unsigned ValNo, MVT ValVT,
                         ISD::ArgFlagsTy ArgFlags, CCState &State) {
 
   if (ArgFlags.isByVal()) {
-    State.HandleByVal(ValNo, ValVT, LocVT, LocInfo, 8, 8, ArgFlags);
+    State.HandleByVal(ValNo, ValVT, LocVT, LocInfo, 8, Align(8), ArgFlags);
     return false;
   }
 
@@ -1390,11 +1395,11 @@ static bool CC_X86_64_C(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v1i1) {
     LocVT = MVT::i32;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (ArgFlags.isNest()) {
@@ -1442,6 +1447,11 @@ static bool CC_X86_64_C(unsigned ValNo, MVT ValVT,
     }
   }
 
+  if (ArgFlags.isPointer()) {
+    if (CC_X86_64_Pointer(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
+      return false;
+  }
+
   if (LocVT == MVT::i32) {
     static const MCPhysReg RegList1[] = {
       X86::EDI, X86::ESI, X86::EDX, X86::ECX, X86::R8D, X86::R9D
@@ -1467,11 +1477,11 @@ static bool CC_X86_64_C(unsigned ValNo, MVT ValVT,
       if (static_cast<const X86Subtarget&>(State.getMachineFunction().getSubtarget()).hasSSE2()) {
         LocVT = MVT::v2i64;
         if (ArgFlags.isSExt())
-                LocInfo = CCValAssign::SExt;
+          LocInfo = CCValAssign::SExt;
         else if (ArgFlags.isZExt())
-                LocInfo = CCValAssign::ZExt;
+          LocInfo = CCValAssign::ZExt;
         else
-                LocInfo = CCValAssign::AExt;
+          LocInfo = CCValAssign::AExt;
       }
     }
   }
@@ -1479,61 +1489,61 @@ static bool CC_X86_64_C(unsigned ValNo, MVT ValVT,
   if (LocVT == MVT::v2i1) {
     LocVT = MVT::v2i64;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::v4i1) {
     LocVT = MVT::v4i32;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::v8i1) {
     LocVT = MVT::v8i16;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::v16i1) {
     LocVT = MVT::v16i8;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::v32i1) {
     LocVT = MVT::v32i8;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::v64i1) {
     LocVT = MVT::v64i8;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::f32 ||
@@ -1598,7 +1608,7 @@ static bool CC_X86_64_C(unsigned ValNo, MVT ValVT,
       LocVT == MVT::i64 ||
       LocVT == MVT::f32 ||
       LocVT == MVT::f64) {
-    unsigned Offset6 = State.AllocateStack(8, 8);
+    unsigned Offset6 = State.AllocateStack(8, Align(8));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset6, LocVT, LocInfo));
     return false;
   }
@@ -1607,7 +1617,7 @@ static bool CC_X86_64_C(unsigned ValNo, MVT ValVT,
       LocVT == MVT::f128) {
     unsigned Offset7 = State.AllocateStack(
       State.getMachineFunction().getDataLayout().getTypeAllocSize(EVT(LocVT).getTypeForEVT(State.getContext())), 
-      State.getMachineFunction().getDataLayout().getABITypeAlignment(EVT(LocVT).getTypeForEVT(State.getContext())));
+      State.getMachineFunction().getDataLayout().getABITypeAlign(EVT(LocVT).getTypeForEVT(State.getContext())));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset7, LocVT, LocInfo));
     return false;
   }
@@ -1618,7 +1628,7 @@ static bool CC_X86_64_C(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v2i64 ||
       LocVT == MVT::v4f32 ||
       LocVT == MVT::v2f64) {
-    unsigned Offset8 = State.AllocateStack(16, 16);
+    unsigned Offset8 = State.AllocateStack(16, Align(16));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset8, LocVT, LocInfo));
     return false;
   }
@@ -1629,7 +1639,7 @@ static bool CC_X86_64_C(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v4i64 ||
       LocVT == MVT::v8f32 ||
       LocVT == MVT::v4f64) {
-    unsigned Offset9 = State.AllocateStack(32, 32);
+    unsigned Offset9 = State.AllocateStack(32, Align(32));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset9, LocVT, LocInfo));
     return false;
   }
@@ -1640,12 +1650,12 @@ static bool CC_X86_64_C(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v8i64 ||
       LocVT == MVT::v16f32 ||
       LocVT == MVT::v8f64) {
-    unsigned Offset10 = State.AllocateStack(64, 64);
+    unsigned Offset10 = State.AllocateStack(64, Align(64));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset10, LocVT, LocInfo));
     return false;
   }
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -1658,11 +1668,11 @@ static bool CC_X86_64_GHC(unsigned ValNo, MVT ValVT,
       LocVT == MVT::i32) {
     LocVT = MVT::i64;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::i64) {
@@ -1728,7 +1738,7 @@ static bool CC_X86_64_GHC(unsigned ValNo, MVT ValVT,
     }
   }
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -1746,7 +1756,7 @@ static bool CC_X86_64_HHVM(unsigned ValNo, MVT ValVT,
     }
   }
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -1764,7 +1774,7 @@ static bool CC_X86_64_HHVM_C(unsigned ValNo, MVT ValVT,
   if (!CC_X86_64_C(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -1777,11 +1787,11 @@ static bool CC_X86_64_HiPE(unsigned ValNo, MVT ValVT,
       LocVT == MVT::i32) {
     LocVT = MVT::i64;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::i64) {
@@ -1798,12 +1808,12 @@ static bool CC_X86_64_HiPE(unsigned ValNo, MVT ValVT,
       LocVT == MVT::i64 ||
       LocVT == MVT::f32 ||
       LocVT == MVT::f64) {
-    unsigned Offset2 = State.AllocateStack(8, 8);
+    unsigned Offset2 = State.AllocateStack(8, Align(8));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset2, LocVT, LocInfo));
     return false;
   }
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -1815,11 +1825,11 @@ static bool CC_X86_64_WebKit_JS(unsigned ValNo, MVT ValVT,
       LocVT == MVT::i16) {
     LocVT = MVT::i32;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::i32) {
@@ -1838,19 +1848,19 @@ static bool CC_X86_64_WebKit_JS(unsigned ValNo, MVT ValVT,
 
   if (LocVT == MVT::i32 ||
       LocVT == MVT::f32) {
-    unsigned Offset1 = State.AllocateStack(4, 4);
+    unsigned Offset1 = State.AllocateStack(4, Align(4));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset1, LocVT, LocInfo));
     return false;
   }
 
   if (LocVT == MVT::i64 ||
       LocVT == MVT::f64) {
-    unsigned Offset2 = State.AllocateStack(8, 8);
+    unsigned Offset2 = State.AllocateStack(8, Align(8));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset2, LocVT, LocInfo));
     return false;
   }
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -1860,13 +1870,13 @@ static bool CC_X86_SysV64_RegCall(unsigned ValNo, MVT ValVT,
 
   if (static_cast<const X86Subtarget&>(State.getMachineFunction().getSubtarget()).is64Bit()) {
     if (ArgFlags.isByVal()) {
-      State.HandleByVal(ValNo, ValVT, LocVT, LocInfo, 8, 8, ArgFlags);
+      State.HandleByVal(ValNo, ValVT, LocVT, LocInfo, 8, Align(8), ArgFlags);
       return false;
     }
   }
 
   if (ArgFlags.isByVal()) {
-    State.HandleByVal(ValNo, ValVT, LocVT, LocInfo, 4, 4, ArgFlags);
+    State.HandleByVal(ValNo, ValVT, LocVT, LocInfo, 4, Align(4), ArgFlags);
     return false;
   }
 
@@ -1876,11 +1886,11 @@ static bool CC_X86_SysV64_RegCall(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v1i1) {
     LocVT = MVT::i32;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::v8i1 ||
@@ -1888,11 +1898,11 @@ static bool CC_X86_SysV64_RegCall(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v32i1) {
     LocVT = MVT::i32;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::i32) {
@@ -1918,11 +1928,11 @@ static bool CC_X86_SysV64_RegCall(unsigned ValNo, MVT ValVT,
   if (LocVT == MVT::v64i1) {
     LocVT = MVT::i64;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (static_cast<const X86Subtarget&>(State.getMachineFunction().getSubtarget()).is64Bit()) {
@@ -1940,7 +1950,7 @@ static bool CC_X86_SysV64_RegCall(unsigned ValNo, MVT ValVT,
   if (static_cast<const X86Subtarget&>(State.getMachineFunction().getSubtarget()).is32Bit()) {
     if (LocVT == MVT::i64) {
       if (CC_X86_32_RegCall_Assign2Regs(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
-            return false;
+        return false;
     }
   }
 
@@ -2021,7 +2031,7 @@ static bool CC_X86_SysV64_RegCall(unsigned ValNo, MVT ValVT,
         LocVT == MVT::i64 ||
         LocVT == MVT::f32 ||
         LocVT == MVT::f64) {
-      unsigned Offset8 = State.AllocateStack(8, 8);
+      unsigned Offset8 = State.AllocateStack(8, Align(8));
       State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset8, LocVT, LocInfo));
       return false;
     }
@@ -2029,28 +2039,28 @@ static bool CC_X86_SysV64_RegCall(unsigned ValNo, MVT ValVT,
 
   if (LocVT == MVT::i32 ||
       LocVT == MVT::f32) {
-    unsigned Offset9 = State.AllocateStack(4, 4);
+    unsigned Offset9 = State.AllocateStack(4, Align(4));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset9, LocVT, LocInfo));
     return false;
   }
 
   if (LocVT == MVT::i64 ||
       LocVT == MVT::f64) {
-    unsigned Offset10 = State.AllocateStack(8, 4);
+    unsigned Offset10 = State.AllocateStack(8, Align(4));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset10, LocVT, LocInfo));
     return false;
   }
 
   if (static_cast<const X86Subtarget&>(State.getMachineFunction().getSubtarget()).is64Bit()) {
     if (LocVT == MVT::x86mmx) {
-      unsigned Offset11 = State.AllocateStack(8, 8);
+      unsigned Offset11 = State.AllocateStack(8, Align(8));
       State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset11, LocVT, LocInfo));
       return false;
     }
   }
 
   if (LocVT == MVT::x86mmx) {
-    unsigned Offset12 = State.AllocateStack(8, 4);
+    unsigned Offset12 = State.AllocateStack(8, Align(4));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset12, LocVT, LocInfo));
     return false;
   }
@@ -2059,7 +2069,7 @@ static bool CC_X86_SysV64_RegCall(unsigned ValNo, MVT ValVT,
       LocVT == MVT::f128) {
     unsigned Offset13 = State.AllocateStack(
       State.getMachineFunction().getDataLayout().getTypeAllocSize(EVT(LocVT).getTypeForEVT(State.getContext())), 
-      State.getMachineFunction().getDataLayout().getABITypeAlignment(EVT(LocVT).getTypeForEVT(State.getContext())));
+      State.getMachineFunction().getDataLayout().getABITypeAlign(EVT(LocVT).getTypeForEVT(State.getContext())));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset13, LocVT, LocInfo));
     return false;
   }
@@ -2070,7 +2080,7 @@ static bool CC_X86_SysV64_RegCall(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v2i64 ||
       LocVT == MVT::v4f32 ||
       LocVT == MVT::v2f64) {
-    unsigned Offset14 = State.AllocateStack(16, 16);
+    unsigned Offset14 = State.AllocateStack(16, Align(16));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset14, LocVT, LocInfo));
     return false;
   }
@@ -2081,7 +2091,7 @@ static bool CC_X86_SysV64_RegCall(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v4i64 ||
       LocVT == MVT::v8f32 ||
       LocVT == MVT::v4f64) {
-    unsigned Offset15 = State.AllocateStack(32, 32);
+    unsigned Offset15 = State.AllocateStack(32, Align(32));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset15, LocVT, LocInfo));
     return false;
   }
@@ -2092,12 +2102,12 @@ static bool CC_X86_SysV64_RegCall(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v8i64 ||
       LocVT == MVT::v16f32 ||
       LocVT == MVT::v8f64) {
-    unsigned Offset16 = State.AllocateStack(64, 64);
+    unsigned Offset16 = State.AllocateStack(64, Align(64));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset16, LocVT, LocInfo));
     return false;
   }
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -2112,7 +2122,7 @@ static bool CC_X86_Win32_CFGuard_Check(unsigned ValNo, MVT ValVT,
     }
   }
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -2126,7 +2136,7 @@ static bool CC_X86_Win32_VectorCall(unsigned ValNo, MVT ValVT,
   if (!CC_X86_32_FastCall(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -2143,11 +2153,11 @@ static bool CC_X86_Win64_C(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v1i1) {
     LocVT = MVT::i8;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (ArgFlags.isNest()) {
@@ -2160,6 +2170,15 @@ static bool CC_X86_Win64_C(unsigned ValNo, MVT ValVT,
   if (ArgFlags.isSwiftError()) {
     if (LocVT == MVT::i64) {
       if (unsigned Reg = State.AllocateReg(X86::R12)) {
+        State.addLoc(CCValAssign::getReg(ValNo, ValVT, Reg, LocVT, LocInfo));
+        return false;
+      }
+    }
+  }
+
+  if (ArgFlags.isSwiftSelf()) {
+    if (LocVT == MVT::i64) {
+      if (unsigned Reg = State.AllocateReg(X86::R13)) {
         State.addLoc(CCValAssign::getReg(ValNo, ValVT, Reg, LocVT, LocInfo));
         return false;
       }
@@ -2316,12 +2335,12 @@ static bool CC_X86_Win64_C(unsigned ValNo, MVT ValVT,
       LocVT == MVT::i64 ||
       LocVT == MVT::f32 ||
       LocVT == MVT::f64) {
-    unsigned Offset13 = State.AllocateStack(8, 8);
+    unsigned Offset13 = State.AllocateStack(8, Align(8));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset13, LocVT, LocInfo));
     return false;
   }
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -2331,13 +2350,13 @@ static bool CC_X86_Win64_RegCall(unsigned ValNo, MVT ValVT,
 
   if (static_cast<const X86Subtarget&>(State.getMachineFunction().getSubtarget()).is64Bit()) {
     if (ArgFlags.isByVal()) {
-      State.HandleByVal(ValNo, ValVT, LocVT, LocInfo, 8, 8, ArgFlags);
+      State.HandleByVal(ValNo, ValVT, LocVT, LocInfo, 8, Align(8), ArgFlags);
       return false;
     }
   }
 
   if (ArgFlags.isByVal()) {
-    State.HandleByVal(ValNo, ValVT, LocVT, LocInfo, 4, 4, ArgFlags);
+    State.HandleByVal(ValNo, ValVT, LocVT, LocInfo, 4, Align(4), ArgFlags);
     return false;
   }
 
@@ -2347,11 +2366,11 @@ static bool CC_X86_Win64_RegCall(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v1i1) {
     LocVT = MVT::i32;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::v8i1 ||
@@ -2359,11 +2378,11 @@ static bool CC_X86_Win64_RegCall(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v32i1) {
     LocVT = MVT::i32;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::i32) {
@@ -2389,11 +2408,11 @@ static bool CC_X86_Win64_RegCall(unsigned ValNo, MVT ValVT,
   if (LocVT == MVT::v64i1) {
     LocVT = MVT::i64;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (static_cast<const X86Subtarget&>(State.getMachineFunction().getSubtarget()).is64Bit()) {
@@ -2411,7 +2430,7 @@ static bool CC_X86_Win64_RegCall(unsigned ValNo, MVT ValVT,
   if (static_cast<const X86Subtarget&>(State.getMachineFunction().getSubtarget()).is32Bit()) {
     if (LocVT == MVT::i64) {
       if (CC_X86_32_RegCall_Assign2Regs(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
-            return false;
+        return false;
     }
   }
 
@@ -2492,7 +2511,7 @@ static bool CC_X86_Win64_RegCall(unsigned ValNo, MVT ValVT,
         LocVT == MVT::i64 ||
         LocVT == MVT::f32 ||
         LocVT == MVT::f64) {
-      unsigned Offset8 = State.AllocateStack(8, 8);
+      unsigned Offset8 = State.AllocateStack(8, Align(8));
       State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset8, LocVT, LocInfo));
       return false;
     }
@@ -2500,28 +2519,28 @@ static bool CC_X86_Win64_RegCall(unsigned ValNo, MVT ValVT,
 
   if (LocVT == MVT::i32 ||
       LocVT == MVT::f32) {
-    unsigned Offset9 = State.AllocateStack(4, 4);
+    unsigned Offset9 = State.AllocateStack(4, Align(4));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset9, LocVT, LocInfo));
     return false;
   }
 
   if (LocVT == MVT::i64 ||
       LocVT == MVT::f64) {
-    unsigned Offset10 = State.AllocateStack(8, 4);
+    unsigned Offset10 = State.AllocateStack(8, Align(4));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset10, LocVT, LocInfo));
     return false;
   }
 
   if (static_cast<const X86Subtarget&>(State.getMachineFunction().getSubtarget()).is64Bit()) {
     if (LocVT == MVT::x86mmx) {
-      unsigned Offset11 = State.AllocateStack(8, 8);
+      unsigned Offset11 = State.AllocateStack(8, Align(8));
       State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset11, LocVT, LocInfo));
       return false;
     }
   }
 
   if (LocVT == MVT::x86mmx) {
-    unsigned Offset12 = State.AllocateStack(8, 4);
+    unsigned Offset12 = State.AllocateStack(8, Align(4));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset12, LocVT, LocInfo));
     return false;
   }
@@ -2530,7 +2549,7 @@ static bool CC_X86_Win64_RegCall(unsigned ValNo, MVT ValVT,
       LocVT == MVT::f128) {
     unsigned Offset13 = State.AllocateStack(
       State.getMachineFunction().getDataLayout().getTypeAllocSize(EVT(LocVT).getTypeForEVT(State.getContext())), 
-      State.getMachineFunction().getDataLayout().getABITypeAlignment(EVT(LocVT).getTypeForEVT(State.getContext())));
+      State.getMachineFunction().getDataLayout().getABITypeAlign(EVT(LocVT).getTypeForEVT(State.getContext())));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset13, LocVT, LocInfo));
     return false;
   }
@@ -2541,7 +2560,7 @@ static bool CC_X86_Win64_RegCall(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v2i64 ||
       LocVT == MVT::v4f32 ||
       LocVT == MVT::v2f64) {
-    unsigned Offset14 = State.AllocateStack(16, 16);
+    unsigned Offset14 = State.AllocateStack(16, Align(16));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset14, LocVT, LocInfo));
     return false;
   }
@@ -2552,7 +2571,7 @@ static bool CC_X86_Win64_RegCall(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v4i64 ||
       LocVT == MVT::v8f32 ||
       LocVT == MVT::v4f64) {
-    unsigned Offset15 = State.AllocateStack(32, 32);
+    unsigned Offset15 = State.AllocateStack(32, Align(32));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset15, LocVT, LocInfo));
     return false;
   }
@@ -2563,12 +2582,12 @@ static bool CC_X86_Win64_RegCall(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v8i64 ||
       LocVT == MVT::v16f32 ||
       LocVT == MVT::v8f64) {
-    unsigned Offset16 = State.AllocateStack(64, 64);
+    unsigned Offset16 = State.AllocateStack(64, Align(64));
     State.addLoc(CCValAssign::getMem(ValNo, ValVT, Offset16, LocVT, LocInfo));
     return false;
   }
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -2582,7 +2601,7 @@ static bool CC_X86_Win64_VectorCall(unsigned ValNo, MVT ValVT,
   if (!CC_X86_Win64_C(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -2634,7 +2653,7 @@ static bool RetCC_Intel_OCL_BI(unsigned ValNo, MVT ValVT,
   if (!RetCC_X86Common(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -2655,7 +2674,7 @@ bool llvm::RetCC_X86(unsigned ValNo, MVT ValVT,
   if (!RetCC_X86_32(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -2666,21 +2685,21 @@ static bool RetCC_X86Common(unsigned ValNo, MVT ValVT,
   if (LocVT == MVT::v1i1) {
     LocVT = MVT::i8;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::i1) {
     LocVT = MVT::i8;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::i8) {
@@ -2726,61 +2745,61 @@ static bool RetCC_X86Common(unsigned ValNo, MVT ValVT,
   if (LocVT == MVT::v2i1) {
     LocVT = MVT::v2i64;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::v4i1) {
     LocVT = MVT::v4i32;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::v8i1) {
     LocVT = MVT::v8i16;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::v16i1) {
     LocVT = MVT::v16i8;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::v32i1) {
     LocVT = MVT::v32i8;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::v64i1) {
     LocVT = MVT::v64i8;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::v16i8 ||
@@ -2847,7 +2866,7 @@ static bool RetCC_X86Common(unsigned ValNo, MVT ValVT,
     }
   }
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -2883,7 +2902,7 @@ static bool RetCC_X86_32(unsigned ValNo, MVT ValVT,
   if (!RetCC_X86_32_C(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -2920,7 +2939,7 @@ static bool RetCC_X86_32_C(unsigned ValNo, MVT ValVT,
   if (!RetCC_X86Common(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -2985,7 +3004,7 @@ static bool RetCC_X86_32_Fast(unsigned ValNo, MVT ValVT,
   if (!RetCC_X86Common(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -2997,11 +3016,11 @@ static bool RetCC_X86_32_HiPE(unsigned ValNo, MVT ValVT,
       LocVT == MVT::i16) {
     LocVT = MVT::i32;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::i32) {
@@ -3014,7 +3033,7 @@ static bool RetCC_X86_32_HiPE(unsigned ValNo, MVT ValVT,
     }
   }
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -3027,31 +3046,31 @@ static bool RetCC_X86_32_RegCall(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v8i1) {
     LocVT = MVT::i8;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::v16i1) {
     LocVT = MVT::i16;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::v32i1) {
     LocVT = MVT::i32;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::i8) {
@@ -3094,11 +3113,11 @@ static bool RetCC_X86_32_RegCall(unsigned ValNo, MVT ValVT,
   if (LocVT == MVT::v64i1) {
     LocVT = MVT::i64;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (static_cast<const X86Subtarget&>(State.getMachineFunction().getSubtarget()).is64Bit()) {
@@ -3113,7 +3132,7 @@ static bool RetCC_X86_32_RegCall(unsigned ValNo, MVT ValVT,
   if (static_cast<const X86Subtarget&>(State.getMachineFunction().getSubtarget()).is32Bit()) {
     if (LocVT == MVT::i64) {
       if (CC_X86_32_RegCall_Assign2Regs(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
-            return false;
+        return false;
     }
   }
 
@@ -3192,7 +3211,7 @@ static bool RetCC_X86_32_RegCall(unsigned ValNo, MVT ValVT,
     }
   }
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -3215,7 +3234,7 @@ static bool RetCC_X86_32_VectorCall(unsigned ValNo, MVT ValVT,
   if (!RetCC_X86Common(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -3283,7 +3302,7 @@ static bool RetCC_X86_64(unsigned ValNo, MVT ValVT,
   if (!RetCC_X86_64_C(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -3294,7 +3313,7 @@ static bool RetCC_X86_64_AnyReg(unsigned ValNo, MVT ValVT,
   if (CC_X86_AnyReg_Error(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -3342,6 +3361,11 @@ static bool RetCC_X86_64_C(unsigned ValNo, MVT ValVT,
     }
   }
 
+  if (ArgFlags.isPointer()) {
+    if (CC_X86_64_Pointer(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
+      return false;
+  }
+
   if (ArgFlags.isSwiftError()) {
     if (LocVT == MVT::i64) {
       if (unsigned Reg = State.AllocateReg(X86::R12)) {
@@ -3354,7 +3378,7 @@ static bool RetCC_X86_64_C(unsigned ValNo, MVT ValVT,
   if (!RetCC_X86Common(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -3367,11 +3391,11 @@ static bool RetCC_X86_64_HHVM(unsigned ValNo, MVT ValVT,
       LocVT == MVT::i32) {
     LocVT = MVT::i64;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::i64) {
@@ -3384,7 +3408,7 @@ static bool RetCC_X86_64_HHVM(unsigned ValNo, MVT ValVT,
     }
   }
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -3397,11 +3421,11 @@ static bool RetCC_X86_64_HiPE(unsigned ValNo, MVT ValVT,
       LocVT == MVT::i32) {
     LocVT = MVT::i64;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::i64) {
@@ -3414,7 +3438,7 @@ static bool RetCC_X86_64_HiPE(unsigned ValNo, MVT ValVT,
     }
   }
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -3434,21 +3458,21 @@ static bool RetCC_X86_64_Swift(unsigned ValNo, MVT ValVT,
   if (LocVT == MVT::v1i1) {
     LocVT = MVT::i8;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::i1) {
     LocVT = MVT::i8;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::i8) {
@@ -3534,7 +3558,7 @@ static bool RetCC_X86_64_Swift(unsigned ValNo, MVT ValVT,
   if (!RetCC_X86Common(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -3557,7 +3581,7 @@ static bool RetCC_X86_64_Vectorcall(unsigned ValNo, MVT ValVT,
   if (!RetCC_X86_Win64_C(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -3570,11 +3594,11 @@ static bool RetCC_X86_64_WebKit_JS(unsigned ValNo, MVT ValVT,
       LocVT == MVT::i32) {
     LocVT = MVT::i64;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::i64) {
@@ -3584,7 +3608,7 @@ static bool RetCC_X86_64_WebKit_JS(unsigned ValNo, MVT ValVT,
     }
   }
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -3597,31 +3621,31 @@ static bool RetCC_X86_SysV64_RegCall(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v8i1) {
     LocVT = MVT::i8;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::v16i1) {
     LocVT = MVT::i16;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::v32i1) {
     LocVT = MVT::i32;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::i8) {
@@ -3667,11 +3691,11 @@ static bool RetCC_X86_SysV64_RegCall(unsigned ValNo, MVT ValVT,
   if (LocVT == MVT::v64i1) {
     LocVT = MVT::i64;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (static_cast<const X86Subtarget&>(State.getMachineFunction().getSubtarget()).is64Bit()) {
@@ -3689,7 +3713,7 @@ static bool RetCC_X86_SysV64_RegCall(unsigned ValNo, MVT ValVT,
   if (static_cast<const X86Subtarget&>(State.getMachineFunction().getSubtarget()).is32Bit()) {
     if (LocVT == MVT::i64) {
       if (CC_X86_32_RegCall_Assign2Regs(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
-            return false;
+        return false;
     }
   }
 
@@ -3768,7 +3792,7 @@ static bool RetCC_X86_SysV64_RegCall(unsigned ValNo, MVT ValVT,
     }
   }
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -3798,7 +3822,7 @@ static bool RetCC_X86_Win64_C(unsigned ValNo, MVT ValVT,
   if (!RetCC_X86_64_C(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
     return false;
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }
 
 
@@ -3811,31 +3835,31 @@ static bool RetCC_X86_Win64_RegCall(unsigned ValNo, MVT ValVT,
       LocVT == MVT::v8i1) {
     LocVT = MVT::i8;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::v16i1) {
     LocVT = MVT::i16;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::v32i1) {
     LocVT = MVT::i32;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (LocVT == MVT::i8) {
@@ -3881,11 +3905,11 @@ static bool RetCC_X86_Win64_RegCall(unsigned ValNo, MVT ValVT,
   if (LocVT == MVT::v64i1) {
     LocVT = MVT::i64;
     if (ArgFlags.isSExt())
-        LocInfo = CCValAssign::SExt;
+      LocInfo = CCValAssign::SExt;
     else if (ArgFlags.isZExt())
-        LocInfo = CCValAssign::ZExt;
+      LocInfo = CCValAssign::ZExt;
     else
-        LocInfo = CCValAssign::AExt;
+      LocInfo = CCValAssign::AExt;
   }
 
   if (static_cast<const X86Subtarget&>(State.getMachineFunction().getSubtarget()).is64Bit()) {
@@ -3903,7 +3927,7 @@ static bool RetCC_X86_Win64_RegCall(unsigned ValNo, MVT ValVT,
   if (static_cast<const X86Subtarget&>(State.getMachineFunction().getSubtarget()).is32Bit()) {
     if (LocVT == MVT::i64) {
       if (CC_X86_32_RegCall_Assign2Regs(ValNo, ValVT, LocVT, LocInfo, ArgFlags, State))
-            return false;
+        return false;
     }
   }
 
@@ -3982,5 +4006,5 @@ static bool RetCC_X86_Win64_RegCall(unsigned ValNo, MVT ValVT,
     }
   }
 
-  return true;  // CC didn't match.
+  return true; // CC didn't match.
 }

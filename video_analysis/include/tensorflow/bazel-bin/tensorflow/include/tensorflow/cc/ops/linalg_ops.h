@@ -34,7 +34,7 @@ namespace ops {
 /// not for large batch dimensions when the submatrices are small. In this
 /// case it might be faster to use the CPU.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: Shape is `[..., M, M]`.
 ///
@@ -56,7 +56,7 @@ class Cholesky {
 /// For an explanation see "Differentiation of the Cholesky algorithm" by
 /// Iain Murray http://arxiv.org/abs/1602.07527.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * l: Output of batch Cholesky algorithm l = cholesky(A). Shape is `[..., M, M]`.
 /// Algorithm depends only on lower triangular part of the innermost matrices of
@@ -93,7 +93,7 @@ class CholeskyGrad {
 /// e = eig(a, compute_v=False)
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: `Tensor` input of shape `[N, N]`.
 ///
@@ -212,7 +212,7 @@ class Eig {
 /// @end_compatibility
 ///
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * inputs: List of 1 or 2 Tensors.
 /// * equation: String describing the Einstein Summation operation; in the format of np.einsum.
@@ -238,12 +238,12 @@ class Einsum {
 /// The input is a tensor of shape `[N, M, M]` whose inner-most 2 dimensions
 /// form square matrices. The outputs are two tensors containing the signs and
 /// absolute values of the log determinants for all N input submatrices
-/// `[..., :, :]` such that the determinant = sign*exp(log_abs_determinant).
-/// The log_abs_determinant is computed as det(P)*sum(log(diag(LU))) where LU
-/// is the LU decomposition of the input and P is the corresponding
+/// `[..., :, :]` such that `determinant = sign*exp(log_abs_determinant)`.
+/// The `log_abs_determinant` is computed as `det(P)*sum(log(diag(LU)))` where `LU`
+/// is the `LU` decomposition of the input and `P` is the corresponding
 /// permutation matrix.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: Shape is `[N, M, M]`.
 ///
@@ -281,7 +281,7 @@ class LogMatrixDeterminant {
 /// and `M-1`, inclusive. If P_mat denotes the permutation matrix corresponding to
 /// P, then the L, U and P satisfies P_mat * input = L * U.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: A tensor of shape `[..., M, M]` whose inner-most 2 dimensions form matrices of
 /// size `[M, M]`.
@@ -330,7 +330,7 @@ class Lu {
 /// form square matrices. The output is a tensor containing the determinants
 /// for all input submatrices `[..., :, :]`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: Shape is `[..., M, M]`.
 ///
@@ -347,9 +347,8 @@ class MatrixDeterminant {
   ::tensorflow::Output output;
 };
 
-/// Computes the inverse of one or more square invertible matrices or their
+/// Computes the inverse of one or more square invertible matrices or their adjoints (conjugate transposes).
 ///
-/// adjoints (conjugate transposes).
 ///
 /// The input is a tensor of shape `[..., M, M]` whose inner-most 2 dimensions
 /// form square matrices. The output is a tensor of the same shape as the input
@@ -361,7 +360,7 @@ class MatrixDeterminant {
 /// may detect the condition and raise an exception or it may simply return a
 /// garbage result.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: Shape is `[..., M, M]`.
 ///
@@ -408,7 +407,7 @@ class MatrixInverse {
 /// If `adjoint` is `True` then each output matrix satisfies
 /// `adjoint(matrix[..., :, :]) * output[..., :, :] = rhs[..., :, :]`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * matrix: Shape is `[..., M, M]`.
 /// * rhs: Shape is `[..., M, K]`.
@@ -488,7 +487,7 @@ class MatrixSolve {
 /// typically 6-7 times slower than the fast path. If `fast` is `False` then
 /// `l2_regularizer` is ignored.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * matrix: Shape is `[..., M, N]`.
 /// * rhs: Shape is `[..., M, K]`.
@@ -548,7 +547,7 @@ class MatrixSolveLs {
 /// form square matrices. The output is a tensor of the same shape as the input
 /// containing the matrix square root for all input submatrices `[..., :, :]`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: Shape is `[..., M, M]`.
 ///
@@ -618,7 +617,7 @@ class MatrixSquareRoot {
 /// #        [1.9999999]], dtype=float32)>
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * matrix: Shape is `[..., M, M]`.
 /// * rhs: Shape is `[..., M, K]`.
@@ -691,6 +690,10 @@ class MatrixTriangularSolve {
 /// Computes the QR decomposition of each inner matrix in `tensor` such that
 /// `tensor[..., :, :] = q[..., :, :] * r[..., :,:])`
 ///
+/// Currently, the gradient for the QR decomposition is well-defined only when
+/// the first `P` columns of the inner matrix are linearly independent, where
+/// `P` is the minimum of `M` and `N`, the 2 inner-most dimmensions of `tensor`.
+///
 /// ```python
 /// # a is a tensor.
 /// # q is a tensor of orthonormal matrices.
@@ -699,7 +702,7 @@ class MatrixTriangularSolve {
 /// q_full, r_full = qr(a, full_matrices=True)
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: A tensor of shape `[..., M, N]` whose inner-most 2 dimensions
 /// form matrices of size `[M, N]`. Let `P` be the minimum of `M` and `N`.
@@ -757,7 +760,7 @@ class Qr {
 /// e = self_adjoint_eig(a, compute_v=False)
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: `Tensor` input of shape `[N, N]`.
 ///
@@ -811,7 +814,7 @@ class SelfAdjointEig {
 /// s, _, _ = svd(a, compute_uv=False)
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: A tensor of shape `[..., M, N]` whose inner-most 2 dimensions
 /// form matrices of size `[M, N]`. Let `P` be the minimum of `M` and `N`.

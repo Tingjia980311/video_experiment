@@ -29,7 +29,7 @@ static Packet2ul  p2ul_CONJ_XOR2 = (Packet2ul) vec_sld((Packet4ui) p2d_MZERO, (P
 //---------- float ----------
 struct Packet2cf
 {
-  EIGEN_STRONG_INLINE explicit Packet2cf() : v(p4f_ZERO) {}
+  EIGEN_STRONG_INLINE explicit Packet2cf() {}
   EIGEN_STRONG_INLINE explicit Packet2cf(const Packet4f& a) : v(a) {}
   Packet4f  v;
 };
@@ -38,6 +38,7 @@ template<> struct packet_traits<std::complex<float> >  : default_packet_traits
 {
   typedef Packet2cf type;
   typedef Packet2cf half;
+  typedef Packet4f as_real;
   enum {
     Vectorizable = 1,
     AlignedOnScalar = 1,
@@ -60,7 +61,7 @@ template<> struct packet_traits<std::complex<float> >  : default_packet_traits
   };
 };
 
-template<> struct unpacket_traits<Packet2cf> { typedef std::complex<float> type; enum {size=2, alignment=Aligned16, vectorizable=true, masked_load_available=false, masked_store_available=false}; typedef Packet2cf half; };
+template<> struct unpacket_traits<Packet2cf> { typedef std::complex<float> type; enum {size=2, alignment=Aligned16, vectorizable=true, masked_load_available=false, masked_store_available=false}; typedef Packet2cf half; typedef Packet4f as_real; };
 
 template<> EIGEN_STRONG_INLINE Packet2cf pset1<Packet2cf>(const std::complex<float>&  from)
 {
@@ -149,22 +150,6 @@ template<> EIGEN_STRONG_INLINE std::complex<float> predux<Packet2cf>(const Packe
   return pfirst<Packet2cf>(Packet2cf(b));
 }
 
-template<> EIGEN_STRONG_INLINE Packet2cf preduxp<Packet2cf>(const Packet2cf* vecs)
-{
-  Packet4f b1, b2;
-#ifdef _BIG_ENDIAN  
-  b1 = vec_sld(vecs[0].v, vecs[1].v, 8);
-  b2 = vec_sld(vecs[1].v, vecs[0].v, 8);
-#else
-  b1 = vec_sld(vecs[1].v, vecs[0].v, 8);
-  b2 = vec_sld(vecs[0].v, vecs[1].v, 8);
-#endif
-  b2 = vec_sld(b2, b2, 8);
-  b2 = padd<Packet4f>(b1, b2);
-
-  return Packet2cf(b2);
-}
-
 template<> EIGEN_STRONG_INLINE std::complex<float> predux_mul<Packet2cf>(const Packet2cf& a)
 {
   Packet4f b;
@@ -174,22 +159,6 @@ template<> EIGEN_STRONG_INLINE std::complex<float> predux_mul<Packet2cf>(const P
 
   return pfirst<Packet2cf>(prod);
 }
-
-template<int Offset>
-struct palign_impl<Offset,Packet2cf>
-{
-  static EIGEN_STRONG_INLINE void run(Packet2cf& first, const Packet2cf& second)
-  {
-    if (Offset==1)
-    {
-#ifdef _BIG_ENDIAN
-      first.v = vec_sld(first.v, second.v, 8);
-#else
-      first.v = vec_sld(second.v, first.v, 8);
-#endif
-    }
-  }
-};
 
 template<> struct conj_helper<Packet2cf, Packet2cf, false,true>
 {
@@ -259,6 +228,11 @@ template<> EIGEN_STRONG_INLINE Packet2cf pblend(const Selector<2>& ifPacket, con
 }
 #endif
 
+template<> EIGEN_STRONG_INLINE Packet2cf psqrt<Packet2cf>(const Packet2cf& a)
+{
+  return psqrt_complex<Packet2cf>(a);
+}
+
 //---------- double ----------
 #ifdef __VSX__
 struct Packet1cd
@@ -272,6 +246,7 @@ template<> struct packet_traits<std::complex<double> >  : default_packet_traits
 {
   typedef Packet1cd type;
   typedef Packet1cd half;
+  typedef Packet2d as_real;
   enum {
     Vectorizable = 1,
     AlignedOnScalar = 0,
@@ -291,7 +266,7 @@ template<> struct packet_traits<std::complex<double> >  : default_packet_traits
   };
 };
 
-template<> struct unpacket_traits<Packet1cd> { typedef std::complex<double> type; enum {size=1, alignment=Aligned16, vectorizable=true, masked_load_available=false, masked_store_available=false}; typedef Packet1cd half; };
+template<> struct unpacket_traits<Packet1cd> { typedef std::complex<double> type; enum {size=1, alignment=Aligned16, vectorizable=true, masked_load_available=false, masked_store_available=false}; typedef Packet1cd half; typedef Packet2d as_real; };
 
 template<> EIGEN_STRONG_INLINE Packet1cd pload <Packet1cd>(const std::complex<double>* from) { return Packet1cd(pload<Packet2d>((const double*)from)); }
 template<> EIGEN_STRONG_INLINE Packet1cd ploadu<Packet1cd>(const std::complex<double>* from) { return Packet1cd(ploadu<Packet2d>((const double*)from)); }
@@ -301,19 +276,13 @@ template<> EIGEN_STRONG_INLINE void pstoreu<std::complex<double> >(std::complex<
 template<> EIGEN_STRONG_INLINE Packet1cd pset1<Packet1cd>(const std::complex<double>&  from)
 { /* here we really have to use unaligned loads :( */ return ploadu<Packet1cd>(&from); }
 
-template<> EIGEN_DEVICE_FUNC inline Packet1cd pgather<std::complex<double>, Packet1cd>(const std::complex<double>* from, Index stride)
+template<> EIGEN_DEVICE_FUNC inline Packet1cd pgather<std::complex<double>, Packet1cd>(const std::complex<double>* from, Index)
 {
-  EIGEN_ALIGN16 std::complex<double> af[2];
-  af[0] = from[0*stride];
-  af[1] = from[1*stride];
-  return pload<Packet1cd>(af);
+  return pload<Packet1cd>(from);
 }
-template<> EIGEN_DEVICE_FUNC inline void pscatter<std::complex<double>, Packet1cd>(std::complex<double>* to, const Packet1cd& from, Index stride)
+template<> EIGEN_DEVICE_FUNC inline void pscatter<std::complex<double>, Packet1cd>(std::complex<double>* to, const Packet1cd& from, Index)
 {
-  EIGEN_ALIGN16 std::complex<double> af[2];
-  pstore<std::complex<double> >(af, from);
-  to[0*stride] = af[0];
-  to[1*stride] = af[1];
+  pstore<std::complex<double> >(to, from);
 }
 
 template<> EIGEN_STRONG_INLINE Packet1cd padd<Packet1cd>(const Packet1cd& a, const Packet1cd& b) { return Packet1cd(a.v + b.v); }
@@ -359,19 +328,8 @@ template<> EIGEN_STRONG_INLINE std::complex<double>  pfirst<Packet1cd>(const Pac
 template<> EIGEN_STRONG_INLINE Packet1cd preverse(const Packet1cd& a) { return a; }
 
 template<> EIGEN_STRONG_INLINE std::complex<double> predux<Packet1cd>(const Packet1cd& a) { return pfirst(a); }
-template<> EIGEN_STRONG_INLINE Packet1cd preduxp<Packet1cd>(const Packet1cd* vecs)        { return vecs[0]; }
 
 template<> EIGEN_STRONG_INLINE std::complex<double> predux_mul<Packet1cd>(const Packet1cd& a) { return pfirst(a); }
-
-template<int Offset>
-struct palign_impl<Offset,Packet1cd>
-{
-  static EIGEN_STRONG_INLINE void run(Packet1cd& /*first*/, const Packet1cd& /*second*/)
-  {
-    // FIXME is it sure we never have to align a Packet1cd?
-    // Even though a std::complex<double> has 16 bytes, it is not necessarily aligned on a 16 bytes boundary...
-  }
-};
 
 template<> struct conj_helper<Packet1cd, Packet1cd, false,true>
 {
@@ -437,6 +395,11 @@ template<> EIGEN_STRONG_INLINE Packet1cd pcmp_eq(const Packet1cd& a, const Packe
   Packet2d eq_swapped = reinterpret_cast<Packet2d>(vec_sld(reinterpret_cast<Packet4ui>(eq), reinterpret_cast<Packet4ui>(eq), 8));
   // Return re(a)==re(b) & im(a)==im(b) by computing bitwise AND of eq and eq_swapped
   return Packet1cd(vec_and(eq, eq_swapped));
+}
+
+template<> EIGEN_STRONG_INLINE Packet1cd psqrt<Packet1cd>(const Packet1cd& a)
+{
+  return psqrt_complex<Packet1cd>(a);
 }
 
 #endif // __VSX__

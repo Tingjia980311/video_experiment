@@ -30,7 +30,7 @@ namespace ops {
 /// the sampled candidates must be chosen independently of the context and of the
 /// true labels.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * true_classes: A batch_size * num_true matrix, in which each row contains the
 /// IDs of the num_true target_classes in the corresponding original label.
@@ -110,7 +110,7 @@ class AllCandidateSampler {
 /// the effect of 'removing' the sampled labels that match the true labels by
 /// making the classifier sure that they are sampled labels.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * true_classes: The true_classes output of UnpackSparseLabels.
 /// * sampled_candidates: The sampled_candidates output of CandidateSampler.
@@ -193,7 +193,7 @@ class ComputeAccidentalHits {
 /// the sampled candidates must be chosen independently of the context and of the
 /// true labels.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * true_classes: A batch_size * num_true matrix, in which each row contains the
 /// IDs of the num_true target_classes in the corresponding original label.
@@ -398,7 +398,7 @@ class FixedUnigramCandidateSampler {
 /// the sampled candidates must be chosen independently of the context and of the
 /// true labels.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * true_classes: A batch_size * num_true matrix, in which each row contains the
 /// IDs of the num_true target_classes in the corresponding original label.
@@ -487,7 +487,7 @@ class LearnedUnigramCandidateSampler {
 /// the sampled candidates must be chosen independently of the context and of the
 /// true labels.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * true_classes: A batch_size * num_true matrix, in which each row contains the
 /// IDs of the num_true target_classes in the corresponding original label.
@@ -574,7 +574,7 @@ class LogUniformCandidateSampler {
 /// the sampled candidates must be chosen independently of the context and of the
 /// true labels.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * true_classes: A batch_size * num_true matrix, in which each row contains the
 /// IDs of the num_true target_classes in the corresponding original label.

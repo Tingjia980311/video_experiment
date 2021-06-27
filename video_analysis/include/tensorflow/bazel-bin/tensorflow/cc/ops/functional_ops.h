@@ -20,7 +20,7 @@ namespace ops {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -57,7 +57,26 @@ class Case {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
+/// * scope: A Scope object
+///
+/// Returns:
+/// * `Output`: The index tensor.
+class DeviceIndex {
+ public:
+  DeviceIndex(const ::tensorflow::Scope& scope, const
+            gtl::ArraySlice<::tensorflow::tstring>& device_names);
+  operator ::tensorflow::Output() const { return index; }
+  operator ::tensorflow::Input() const { return index; }
+  ::tensorflow::Node* node() const { return index.node(); }
+
+  Operation operation;
+  ::tensorflow::Output index;
+};
+
+/// TODO: add doc.
+///
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -76,7 +95,7 @@ class FakeParam {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -95,7 +114,7 @@ class For {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -133,7 +152,7 @@ class If {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -191,7 +210,7 @@ class PartitionedCall {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -210,7 +229,7 @@ class RemoteCall {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -270,7 +289,45 @@ class StatefulPartitionedCall {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
+/// * scope: A Scope object
+///
+/// Returns:
+/// * `OutputList`: The output tensor.
+class StatelessCase {
+ public:
+  /// Optional attribute setters for StatelessCase
+  struct Attrs {
+    /// Defaults to []
+    TF_MUST_USE_RESULT Attrs OutputShapes(const gtl::ArraySlice<PartialTensorShape>& x) {
+      Attrs ret = *this;
+      ret.output_shapes_ = x;
+      return ret;
+    }
+
+    gtl::ArraySlice<PartialTensorShape> output_shapes_ = {};
+  };
+  StatelessCase(const ::tensorflow::Scope& scope, ::tensorflow::Input
+              branch_index, ::tensorflow::InputList input, const DataTypeSlice&
+              Tout, const gtl::ArraySlice<NameAttrList>& branches);
+  StatelessCase(const ::tensorflow::Scope& scope, ::tensorflow::Input
+              branch_index, ::tensorflow::InputList input, const DataTypeSlice&
+              Tout, const gtl::ArraySlice<NameAttrList>& branches, const
+              StatelessCase::Attrs& attrs);
+  ::tensorflow::Output operator[](size_t index) const { return output[index]; }
+
+
+  static Attrs OutputShapes(const gtl::ArraySlice<PartialTensorShape>& x) {
+    return Attrs().OutputShapes(x);
+  }
+
+  Operation operation;
+  ::tensorflow::OutputList output;
+};
+
+/// TODO: add doc.
+///
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -308,7 +365,7 @@ class StatelessIf {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -355,7 +412,7 @@ class StatelessWhile {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -373,7 +430,7 @@ class SymbolicGradient {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -391,7 +448,7 @@ class ToBool {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -437,7 +494,7 @@ class While {
 
 /// output = cond ? then_branch(input) : else_branch(input)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * cond: A Tensor. If the tensor is a scalar of non-boolean type, the
 /// scalar is converted to a boolean according to the
@@ -467,7 +524,7 @@ class _If {
 
 /// output = input; While (Cond(output)) { output = Body(output) }
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: A list of input tensors whose types are T.
 /// * cond: A function takes 'input' and returns a tensor.  If the tensor is

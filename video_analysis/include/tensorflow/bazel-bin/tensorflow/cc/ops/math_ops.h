@@ -24,7 +24,7 @@ namespace ops {
 /// value of each element in `x`. For example, if x is an input element and y is
 /// an output element, this operation computes \\(y = |x|\\).
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -51,7 +51,7 @@ class Abs {
 ///
 /// Returns a `Tensor` of same shape and type as the elements of `inputs`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * inputs: A list of `Tensor` objects, each with same shape and type.
 /// * shape: Shape of elements of `inputs`.
@@ -72,7 +72,13 @@ class AccumulateNV2 {
 
 /// Computes acos of x element-wise.
 ///
-/// Arguments:
+///
+///   Provided an input tensor, the `tf.math.acos` operation returns the inverse cosine of each element of the tensor. If `y = tf.math.cos(x)` then, `x = tf.math.acos(y)`.
+///
+///   Input range is `[-1, 1]` and the output has a range of `[0, pi]`.
+///
+///
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -98,7 +104,7 @@ class Acos {
 /// tf.math.acosh(x) ==> [nan nan 0. 0.62236255 5.9914584 9.903487 inf]
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -119,7 +125,12 @@ class Acosh {
 /// *NOTE*: `Add` supports broadcasting. `AddN` does not. More about broadcasting
 /// [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 ///
-/// Arguments:
+/// Given two input tensors, the `tf.add` operation computes the sum for every element in the tensor.
+///
+/// Both input and output have a range `(-inf, inf)`.
+///
+///
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -145,7 +156,7 @@ class Add {
 ///   tf.math.add_n(x) ==> 26
 ///   ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -166,7 +177,7 @@ class AddN {
 /// *NOTE*: `Add` supports broadcasting. `AddN` does not. More about broadcasting
 /// [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -190,7 +201,7 @@ class AddV2 {
 /// `axis`. If `keep_dims` is true, the reduced dimensions are
 /// retained with length 1.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The tensor to reduce.
 /// * axis: The dimensions to reduce. Must be in the range
@@ -256,7 +267,7 @@ typedef All ReduceAll;
 /// Equivalent to np.angle.
 /// @end_compatibility
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -296,7 +307,7 @@ class Angle {
 /// `axis`. If `keep_dims` is true, the reduced dimensions are
 /// retained with length 1.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The tensor to reduce.
 /// * axis: The dimensions to reduce. Must be in the range
@@ -344,7 +355,7 @@ typedef Any ReduceAny;
 
 /// Returns the truth value of abs(x-y) < tolerance element-wise.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -392,7 +403,7 @@ class ApproximateEqual {
 ///   # here a[4] = 166.32 which is the largest element of a across axis 0
 ///   ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * dimension: int32 or int64, must be in the range `[-rank(input), rank(input))`.
 /// Describes which dimension of the input Tensor to reduce across. For vectors,
@@ -443,7 +454,7 @@ class ArgMax {
 ///   # here a[0] = 1 which is the smallest element of a across axis 0
 ///   ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * dimension: int32 or int64, must be in the range `[-rank(input), rank(input))`.
 /// Describes which dimension of the input Tensor to reduce across. For vectors,
@@ -499,7 +510,7 @@ class ArgMin {
 /// ```
 ///
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -526,7 +537,7 @@ class Asin {
 ///   tf.math.asinh(x) ==> [-inf -1.4436355 -0.4812118 0.8813736 1.0159732 5.991471 9.903487 inf]
 ///   ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -561,7 +572,7 @@ class Asinh {
 /// ```
 ///
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -585,7 +596,7 @@ class Atan {
 /// \[ y = r \sin(\theta) \]
 /// where \(r = \sqrt(x^2 + y^2) \).
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -615,7 +626,7 @@ class Atan2 {
 ///   tf.math.atanh(x) ==> [nan -inf -0.54930615 inf  0. 0.54930615 nan nan]
 ///   ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -652,7 +663,7 @@ class Atanh {
 ///
 ///     output[..., :, :] = matrix(x[..., :, :]) * matrix(y[..., :, :])
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * x: 2-D or higher with shape `[..., r_x, c_x]`.
 /// * y: 2-D or higher with shape `[..., r_y, c_y]`.
@@ -733,7 +744,7 @@ class BatchMatMul {
 /// [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html).
 ///
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * x: 2-D or higher with shape `[..., r_x, c_x]`.
 /// * y: 2-D or higher with shape `[..., r_y, c_y]`.
@@ -788,52 +799,6 @@ class BatchMatMulV2 {
   ::tensorflow::Output output;
 };
 
-/// Computes the Bessel i0e function of `x` element-wise.
-///
-/// Exponentially scaled modified Bessel function of order 0 defined as
-/// `bessel_i0e(x) = exp(-abs(x)) bessel_i0(x)`.
-///
-/// This function is faster and numerically stabler than `bessel_i0(x)`.
-///
-/// Arguments:
-/// * scope: A Scope object
-///
-/// Returns:
-/// * `Output`: The y tensor.
-class BesselI0e {
- public:
-  BesselI0e(const ::tensorflow::Scope& scope, ::tensorflow::Input x);
-  operator ::tensorflow::Output() const { return y; }
-  operator ::tensorflow::Input() const { return y; }
-  ::tensorflow::Node* node() const { return y.node(); }
-
-  Operation operation;
-  ::tensorflow::Output y;
-};
-
-/// Computes the Bessel i1e function of `x` element-wise.
-///
-/// Exponentially scaled modified Bessel function of order 0 defined as
-/// `bessel_i1e(x) = exp(-abs(x)) bessel_i1(x)`.
-///
-/// This function is faster and numerically stabler than `bessel_i1(x)`.
-///
-/// Arguments:
-/// * scope: A Scope object
-///
-/// Returns:
-/// * `Output`: The y tensor.
-class BesselI1e {
- public:
-  BesselI1e(const ::tensorflow::Scope& scope, ::tensorflow::Input x);
-  operator ::tensorflow::Output() const { return y; }
-  operator ::tensorflow::Input() const { return y; }
-  ::tensorflow::Node* node() const { return y.node(); }
-
-  Operation operation;
-  ::tensorflow::Output y;
-};
-
 /// Compute the regularized incomplete beta integral \\(I_x(a, b)\\).
 ///
 /// The regularized incomplete beta integral is defined as:
@@ -850,7 +815,7 @@ class BesselI1e {
 /// is the incomplete beta function and \\(B(a, b)\\) is the *complete*
 /// beta function.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -877,7 +842,7 @@ class Betainc {
 ///
 /// Values in `arr` outside of the range [0, size) are ignored.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * arr: int32 `Tensor`.
 /// * size: non-negative int32 scalar `Tensor`.
@@ -913,7 +878,7 @@ class Bincount {
 ///               [3, 2]
 ///               [1, 3]]
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: Any shape of Tensor contains with int or float type.
 /// * boundaries: A sorted list of floats gives the boundary of the buckets.
@@ -938,7 +903,7 @@ class Bucketize {
 
 /// Cast x of type SrcT to y of DstT.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -973,7 +938,7 @@ class Cast {
 
 /// Returns element-wise smallest integer not less than x.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -996,7 +961,7 @@ class Ceil {
 /// Any values less than `clip_value_min` are set to `clip_value_min`. Any values
 /// greater than `clip_value_max` are set to `clip_value_max`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * t: A `Tensor`.
 /// * clip_value_min: A 0-D (scalar) `Tensor`, or a `Tensor` with the same shape
@@ -1045,7 +1010,7 @@ class ClipByValue {
 /// Given an `input` shaped `[s0, s1, ..., s_n]`, the output is
 /// a `uint8` tensor shaped `[s0, s1, ..., s_n / 8]`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: Values to compare against `threshold` and bitpack.
 /// * threshold: Threshold to compare against.
@@ -1081,7 +1046,7 @@ class CompareAndBitpack {
 /// tf.complex(real, imag) ==> [[2.25 + 4.75j], [3.25 + 5.75j]]
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1122,7 +1087,7 @@ class Complex {
 /// elements in `x` must be complex numbers of the form \\(a + bj\\). The absolute
 /// value is computed as \\( \sqrt{a^2 + b^2}\\).
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1171,7 +1136,7 @@ class ComplexAbs {
 /// tf.conj(input) ==> [-2.25 - 4.75j, 3.25 - 5.75j]
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1199,7 +1164,7 @@ class Conj {
 ///   tf.math.cos(x) ==> [nan -0.91113025 0.87758255 0.5403023 0.36235774 0.48718765 -0.95215535 nan]
 ///   ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1226,7 +1191,7 @@ class Cos {
 ///   tf.math.cosh(x) ==> [inf 4.0515420e+03 1.1276259e+00 1.5430807e+00 1.8106556e+00 3.7621956e+00 1.1013233e+04 inf]
 ///   ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1248,7 +1213,7 @@ class Cosh {
 /// or any shape where the innermost dimension is 3. In the latter case, each pair
 /// of corresponding 3-element vectors is cross-multiplied independently.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * a: A tensor containing 3-element vectors.
 /// * b: Another tensor, of same type and shape as `a`.
@@ -1298,7 +1263,7 @@ class Cross {
 /// tf.cumprod([a, b, c], exclusive=True, reverse=True)  # => [b * c, c, 1]
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * x: A `Tensor`. Must be one of the following types: `float32`, `float64`,
 /// `int64`, `int32`, `uint8`, `uint16`, `int16`, `int8`, `complex64`,
@@ -1387,7 +1352,7 @@ class Cumprod {
 /// tf.cumsum([a, b, c], exclusive=True, reverse=True)  # => [b + c, c, 0]
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * x: A `Tensor`. Must be one of the following types: `float32`, `float64`,
 /// `int64`, `int32`, `uint8`, `uint16`, `int16`, `int8`, `complex64`,
@@ -1445,11 +1410,67 @@ class Cumsum {
   ::tensorflow::Output out;
 };
 
+/// Counts the number of occurrences of each value in an integer array.
+///
+/// Outputs a vector with length `size` and the same dtype as `weights`. If
+/// `weights` are empty, then index `i` stores the number of times the value `i` is
+/// counted in `arr`. If `weights` are non-empty, then index `i` stores the sum of
+/// the value in `weights` at each index where the corresponding value in `arr` is
+/// `i`.
+///
+/// Values in `arr` outside of the range [0, size) are ignored.
+///
+/// Args:
+/// * scope: A Scope object
+/// * input: 1D or 2D int `Tensor`.
+/// * size: non-negative int scalar `Tensor`.
+/// * weights: is an int32, int64, float32, or float64 `Tensor` with the same
+/// shape as `arr`, or a length-0 `Tensor`, in which case it acts as all weights
+/// equal to 1.
+///
+/// Optional attributes (see `Attrs`):
+/// * binary_output: bool; Whether the kernel should count the appearance or number of occurrences.
+///
+/// Returns:
+/// * `Output`: 1D `Tensor` with length equal to `size` or 2D `Tensor` with [batch_size, `size`].
+/// The counts or summed weights for each value in the range [0, size).
+class DenseBincount {
+ public:
+  /// Optional attribute setters for DenseBincount
+  struct Attrs {
+    /// bool; Whether the kernel should count the appearance or number of occurrences.
+    ///
+    /// Defaults to false
+    TF_MUST_USE_RESULT Attrs BinaryOutput(bool x) {
+      Attrs ret = *this;
+      ret.binary_output_ = x;
+      return ret;
+    }
+
+    bool binary_output_ = false;
+  };
+  DenseBincount(const ::tensorflow::Scope& scope, ::tensorflow::Input input,
+              ::tensorflow::Input size, ::tensorflow::Input weights);
+  DenseBincount(const ::tensorflow::Scope& scope, ::tensorflow::Input input,
+              ::tensorflow::Input size, ::tensorflow::Input weights, const
+              DenseBincount::Attrs& attrs);
+  operator ::tensorflow::Output() const { return output; }
+  operator ::tensorflow::Input() const { return output; }
+  ::tensorflow::Node* node() const { return output.node(); }
+
+  static Attrs BinaryOutput(bool x) {
+    return Attrs().BinaryOutput(x);
+  }
+
+  Operation operation;
+  ::tensorflow::Output output;
+};
+
 /// Computes Psi, the derivative of Lgamma (the log of the absolute value of
 ///
 /// `Gamma(x)`), element-wise.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1470,7 +1491,7 @@ class Digamma {
 /// *NOTE*: `Div` supports broadcasting. More about broadcasting
 /// [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1493,7 +1514,7 @@ class Div {
 /// *NOTE*: `DivNoNan` supports broadcasting. More about broadcasting
 /// [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1525,7 +1546,7 @@ class DivNoNan {
 /// tf.math.equal(x, y) ==> array([True,  True])
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1561,7 +1582,7 @@ class Equal {
 
 /// Computes the Gauss error function of `x` element-wise.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1579,7 +1600,7 @@ class Erf {
 
 /// Computes the complementary error function of `x` element-wise.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1597,7 +1618,7 @@ class Erfc {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1620,7 +1641,7 @@ class Erfinv {
 /// `axis`. If `keep_dims` is true, the reduced dimensions are
 /// retained with length 1.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The tensor to reduce.
 /// * axis: The dimensions to reduce. Must be in the range
@@ -1691,7 +1712,7 @@ class EuclideanNorm {
 ///   tf.math.exp(x) ==> 1.4686939399158851+2.2873552871788423j
 ///   ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1723,7 +1744,7 @@ class Exp {
 ///   tf.math.expm1(x) ==> (0.46869393991588515+2.2873552871788423j)
 ///   ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1741,7 +1762,7 @@ class Expm1 {
 
 /// Returns element-wise largest integer not greater than x.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1762,7 +1783,7 @@ class Floor {
 /// *NOTE*: `FloorDiv` supports broadcasting. More about broadcasting
 /// [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1787,7 +1808,7 @@ class FloorDiv {
 /// *NOTE*: `FloorMod` supports broadcasting. More about broadcasting
 /// [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1821,7 +1842,7 @@ class FloorMod {
 /// tf.math.greater(x, y) ==> [False, False, True]
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1855,7 +1876,7 @@ class Greater {
 /// tf.math.greater_equal(x, y) ==> [True, False, True, True]
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1890,7 +1911,7 @@ class GreaterEqual {
 ///   sess.run(hist) => [2, 1, 1, 0, 2]
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * values: Numeric `Tensor`.
 /// * value_range: Shape [2] `Tensor` of same `dtype` as `values`.
@@ -1948,7 +1969,7 @@ class HistogramFixedWidth {
 /// Note, above `Q(a, x)` (`Igammac`) is the upper regularized complete
 /// Gamma function.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1980,7 +2001,7 @@ class Igamma {
 /// Note, above `P(a, x)` (`Igamma`) is the lower regularized complete
 /// Gamma function.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2011,7 +2032,7 @@ class Igammac {
 /// tf.imag(input) ==> [4.75, 5.75]
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2048,7 +2069,7 @@ class Imag {
 ///
 /// I.e., \\(y = 1 / x\\).
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2077,7 +2098,7 @@ class Inv {
 /// tf.math.is_finite(x) ==> [True, True, True, False, False]
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2106,7 +2127,7 @@ class IsFinite {
 /// tf.math.is_inf(x) ==> [False, True, False, True]
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2135,7 +2156,7 @@ class IsInf {
 /// tf.math.is_nan(x) ==> [False, True, False, True, False]
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2168,7 +2189,7 @@ class IsNan {
 /// tf.math.less(x, y) ==> [False, True, True]
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2202,7 +2223,7 @@ class Less {
 /// tf.math.less_equal(x, y) ==> [True, True, True]
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2231,7 +2252,7 @@ class LessEqual {
 /// tf.math.lgamma(x) ==> [inf, 0.5723649, 0., 2.4537368, inf, -4.6477685]
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2247,38 +2268,6 @@ class Lgamma {
   ::tensorflow::Output y;
 };
 
-/// Generates values in an interval.
-///
-/// A sequence of `num` evenly-spaced values are generated beginning at `start`.
-/// If `num > 1`, the values in the sequence increase by `stop - start / num - 1`,
-/// so that the last one is exactly `stop`.
-///
-/// For example:
-///
-/// ```
-/// tf.linspace(10.0, 12.0, 3, name="linspace") => [ 10.0  11.0  12.0]
-/// ```
-///
-/// Arguments:
-/// * scope: A Scope object
-/// * start: 0-D tensor. First entry in the range.
-/// * stop: 0-D tensor. Last entry in the range.
-/// * num: 0-D tensor. Number of values to generate.
-///
-/// Returns:
-/// * `Output`: 1-D. The generated values.
-class LinSpace {
- public:
-  LinSpace(const ::tensorflow::Scope& scope, ::tensorflow::Input start,
-         ::tensorflow::Input stop, ::tensorflow::Input num);
-  operator ::tensorflow::Output() const { return output; }
-  operator ::tensorflow::Input() const { return output; }
-  ::tensorflow::Node* node() const { return output.node(); }
-
-  Operation operation;
-  ::tensorflow::Output output;
-};
-
 /// Computes natural logarithm of x element-wise.
 ///
 /// I.e., \\(y = \log_e x\\).
@@ -2290,7 +2279,7 @@ class LinSpace {
 /// tf.math.log(x) ==> [-inf, -0.6931472,  0. ,  1.609438]
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2317,7 +2306,7 @@ class Log {
 /// tf.math.log1p(x) ==> [0., 0.4054651, 0.6931472, 1.7917595]
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2338,7 +2327,7 @@ class Log1p {
 /// *NOTE*: `LogicalAnd` supports broadcasting. More about broadcasting
 /// [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2357,7 +2346,7 @@ class LogicalAnd {
 
 /// Returns the truth value of `NOT x` element-wise.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * x: A `Tensor` of type `bool`.
 ///
@@ -2379,7 +2368,7 @@ class LogicalNot {
 /// *NOTE*: `LogicalOr` supports broadcasting. More about broadcasting
 /// [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2406,7 +2395,7 @@ class LogicalOr {
 /// *Note*: The default kernel implementation for MatMul on GPUs uses
 /// cublas.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Optional attributes (see `Attrs`):
@@ -2466,7 +2455,7 @@ class MatMul {
 /// `axis`. If `keep_dims` is true, the reduced dimensions are
 /// retained with length 1.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The tensor to reduce.
 /// * axis: The dimensions to reduce. Must be in the range
@@ -2517,7 +2506,7 @@ typedef Max ReduceMax;
 /// *NOTE*: `Maximum` supports broadcasting. More about broadcasting
 /// [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2541,7 +2530,7 @@ class Maximum {
 /// `axis`. If `keep_dims` is true, the reduced dimensions are
 /// retained with length 1.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The tensor to reduce.
 /// * axis: The dimensions to reduce. Must be in the range
@@ -2594,7 +2583,7 @@ typedef Mean ReduceMean;
 /// `axis`. If `keep_dims` is true, the reduced dimensions are
 /// retained with length 1.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The tensor to reduce.
 /// * axis: The dimensions to reduce. Must be in the range
@@ -2645,7 +2634,7 @@ typedef Min ReduceMin;
 /// *NOTE*: `Minimum` supports broadcasting. More about broadcasting
 /// [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2670,7 +2659,7 @@ class Minimum {
 /// *NOTE*: `Mod` supports broadcasting. More about broadcasting
 /// [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2692,7 +2681,7 @@ class Mod {
 /// *NOTE*: `Multiply` supports broadcasting. More about broadcasting
 /// [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2718,7 +2707,7 @@ typedef Multiply Mul;
 /// *NOTE*: `MulNoNan` supports broadcasting. More about broadcasting
 /// [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2737,7 +2726,7 @@ class MulNoNan {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2757,7 +2746,7 @@ class Ndtri {
 ///
 /// I.e., \\(y = -x\\).
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2787,7 +2776,7 @@ typedef Negate Neg;
 /// Equivalent to C++ std::nextafter function.
 /// @end_compatibility
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2809,7 +2798,7 @@ class NextAfter {
 /// *NOTE*: `NotEqual` supports broadcasting. More about broadcasting
 /// [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2853,7 +2842,7 @@ class NotEqual {
 /// where \\(\psi(x)\\) is the digamma function.
 /// The polygamma function is defined only for non-negative integer orders \\a\\.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2881,7 +2870,7 @@ class Polygamma {
 /// tf.pow(x, y) ==> [[256, 65536], [9, 27]]
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2905,7 +2894,7 @@ class Pow {
 /// `axis`. If `keep_dims` is true, the reduced dimensions are
 /// retained with length 1.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The tensor to reduce.
 /// * axis: The dimensions to reduce. Must be in the range
@@ -2976,7 +2965,7 @@ typedef Prod ReduceProd;
 /// that output into this operator, we can reduce it from 32 bits down to 8 with
 /// minimal loss of accuracy.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input_min: The float value that the minimum quantized input value represents.
 /// * input_max: The float value that the maximum quantized input value represents.
@@ -3001,7 +2990,7 @@ class QuantizeDownAndShrinkRange {
 
 /// Returns x + y element-wise, working on quantized buffers.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * min_x: The float value that the lowest quantized `x` value represents.
 /// * max_x: The float value that the highest quantized `x` value represents.
@@ -3054,7 +3043,7 @@ class QuantizedAdd {
 /// outer dimension of `b` (after being transposed if `transposed_b` is
 /// non-zero).
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * a: Must be a two-dimensional tensor.
 /// * b: Must be a two-dimensional tensor.
@@ -3147,7 +3136,7 @@ class QuantizedMatMul {
 
 /// Returns x * y element-wise, working on quantized buffers.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * min_x: The float value that the lowest quantized `x` value represents.
 /// * max_x: The float value that the highest quantized `x` value represents.
@@ -3193,6 +3182,64 @@ class QuantizedMul {
   ::tensorflow::Output max_z;
 };
 
+/// Counts the number of occurrences of each value in an integer array.
+///
+/// Outputs a vector with length `size` and the same dtype as `weights`. If
+/// `weights` are empty, then index `i` stores the number of times the value `i` is
+/// counted in `arr`. If `weights` are non-empty, then index `i` stores the sum of
+/// the value in `weights` at each index where the corresponding value in `arr` is
+/// `i`.
+///
+/// Values in `arr` outside of the range [0, size) are ignored.
+///
+/// Args:
+/// * scope: A Scope object
+/// * splits: 1D int64 `Tensor`.
+/// * values: 2D int `Tensor`.
+/// * size: non-negative int scalar `Tensor`.
+/// * weights: is an int32, int64, float32, or float64 `Tensor` with the same
+/// shape as `input`, or a length-0 `Tensor`, in which case it acts as all weights
+/// equal to 1.
+///
+/// Optional attributes (see `Attrs`):
+/// * binary_output: bool; Whether the kernel should count the appearance or number of occurrences.
+///
+/// Returns:
+/// * `Output`: 1D `Tensor` with length equal to `size` or 2D `Tensor` with [batch_size, `size`].
+/// The counts or summed weights for each value in the range [0, size).
+class RaggedBincount {
+ public:
+  /// Optional attribute setters for RaggedBincount
+  struct Attrs {
+    /// bool; Whether the kernel should count the appearance or number of occurrences.
+    ///
+    /// Defaults to false
+    TF_MUST_USE_RESULT Attrs BinaryOutput(bool x) {
+      Attrs ret = *this;
+      ret.binary_output_ = x;
+      return ret;
+    }
+
+    bool binary_output_ = false;
+  };
+  RaggedBincount(const ::tensorflow::Scope& scope, ::tensorflow::Input splits,
+               ::tensorflow::Input values, ::tensorflow::Input size,
+               ::tensorflow::Input weights);
+  RaggedBincount(const ::tensorflow::Scope& scope, ::tensorflow::Input splits,
+               ::tensorflow::Input values, ::tensorflow::Input size,
+               ::tensorflow::Input weights, const RaggedBincount::Attrs& attrs);
+  operator ::tensorflow::Output() const { return output; }
+  operator ::tensorflow::Input() const { return output; }
+  ::tensorflow::Node* node() const { return output.node(); }
+
+  static Attrs BinaryOutput(bool x) {
+    return Attrs().BinaryOutput(x);
+  }
+
+  Operation operation;
+  ::tensorflow::Output output;
+};
+
 /// Creates a sequence of numbers.
 ///
 /// This operation creates a sequence of numbers that begins at `start` and
@@ -3207,7 +3254,7 @@ class QuantizedMul {
 /// tf.range(start, limit, delta) ==> [3, 6, 9, 12, 15]
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * start: 0-D (scalar). First entry in the sequence.
 /// * limit: 0-D (scalar). Upper limit of sequence, exclusive.
@@ -3241,7 +3288,7 @@ class Range {
 /// tf.real(input) ==> [-2.25, 3.25]
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -3281,7 +3328,7 @@ class Real {
 /// *NOTE*: `Div` supports broadcasting. More about broadcasting
 /// [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -3302,7 +3349,7 @@ class RealDiv {
 ///
 /// I.e., \\(y = 1 / x\\).
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -3325,7 +3372,7 @@ class Reciprocal {
 /// used to produce the `requested_output_min` and `requested_output_max` for
 /// `Requantize`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input_min: The float value that the minimum quantized input value represents.
 /// * input_max: The float value that the maximum quantized input value represents.
@@ -3354,7 +3401,7 @@ class RequantizationRange {
 /// `input_max` is 1.0f, and we are dealing with `quint16` quantized data, then a 0
 /// value in the 16-bit data should be interpreted as -1.0f, and a 65535 means 1.0f.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input_min: The float value that the minimum quantized input value represents.
 /// * input_max: The float value that the maximum quantized input value represents.
@@ -3391,7 +3438,7 @@ class Requantize {
 /// rint([-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]) ==> [-2., -2., -0., 0., 2., 2., 2.]
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -3412,7 +3459,7 @@ class Rint {
 /// Rounds half to even.  Also known as bankers rounding. If you want to round
 /// according to the current system rounding mode use std::cint.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -3432,7 +3479,7 @@ class Round {
 ///
 /// I.e., \\(y = 1 / \sqrt{x}\\).
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -3474,7 +3521,7 @@ class Rsqrt {
 /// ```
 ///
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * segment_ids: A 1-D tensor whose size is equal to the size of `data`'s
 /// first dimension.  Values should be sorted and can be repeated.
@@ -3521,7 +3568,7 @@ class SegmentMax {
 /// ```
 ///
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * segment_ids: A 1-D tensor whose size is equal to the size of `data`'s
 /// first dimension.  Values should be sorted and can be repeated.
@@ -3566,7 +3613,7 @@ class SegmentMean {
 /// #      [5, 6, 7, 8]]
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * segment_ids: A 1-D tensor whose size is equal to the size of `data`'s
 /// first dimension.  Values should be sorted and can be repeated.
@@ -3612,7 +3659,7 @@ class SegmentMin {
 /// ```
 ///
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * segment_ids: A 1-D tensor whose size is equal to the size of `data`'s
 /// first dimension.  Values should be sorted and can be repeated.
@@ -3658,7 +3705,7 @@ class SegmentProd {
 /// ```
 ///
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * segment_ids: A 1-D tensor whose size is equal to the size of `data`'s
 /// first dimension.  Values should be sorted and can be repeated.
@@ -3719,7 +3766,7 @@ class SegmentSum {
 ///
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * x: = A `Tensor` which may have the same shape as `condition`.
 /// If `condition` is rank 1, `x` may have higher rank,
@@ -3742,7 +3789,7 @@ class Where3 {
 
 /// TODO: add doc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -3763,7 +3810,7 @@ class SelectV2 {
 ///
 /// Specifically, `y = 1 / (1 + exp(-x))`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -3789,7 +3836,7 @@ class Sigmoid {
 /// >>> tf.math.sign([0., 2., -3.])
 /// <tf.Tensor: shape=(3,), dtype=float32, numpy=array([ 0.,  1., -1.], dtype=float32)>
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -3816,7 +3863,7 @@ class Sign {
 ///   tf.math.sin(x) ==> [nan -0.4121185 -0.47942555 0.84147096 0.9320391 -0.87329733 -0.54402107 nan]
 ///   ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -3843,7 +3890,7 @@ class Sin {
 ///   tf.math.sinh(x) ==> [-inf -4.0515420e+03 -5.2109528e-01 1.1752012e+00 1.5094614e+00 3.6268604e+00 1.1013232e+04 inf]
 ///   ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -3859,6 +3906,66 @@ class Sinh {
   ::tensorflow::Output y;
 };
 
+/// Counts the number of occurrences of each value in an integer array.
+///
+/// Outputs a vector with length `size` and the same dtype as `weights`. If
+/// `weights` are empty, then index `i` stores the number of times the value `i` is
+/// counted in `arr`. If `weights` are non-empty, then index `i` stores the sum of
+/// the value in `weights` at each index where the corresponding value in `arr` is
+/// `i`.
+///
+/// Values in `arr` outside of the range [0, size) are ignored.
+///
+/// Args:
+/// * scope: A Scope object
+/// * indices: 2D int64 `Tensor`.
+/// * values: 1D int `Tensor`.
+/// * dense_shape: 1D int64 `Tensor`.
+/// * size: non-negative int scalar `Tensor`.
+/// * weights: is an int32, int64, float32, or float64 `Tensor` with the same
+/// shape as `input`, or a length-0 `Tensor`, in which case it acts as all weights
+/// equal to 1.
+///
+/// Optional attributes (see `Attrs`):
+/// * binary_output: bool; Whether the kernel should count the appearance or number of occurrences.
+///
+/// Returns:
+/// * `Output`: 1D `Tensor` with length equal to `size` or 2D `Tensor` with [batch_size, `size`].
+/// The counts or summed weights for each value in the range [0, size).
+class SparseBincount {
+ public:
+  /// Optional attribute setters for SparseBincount
+  struct Attrs {
+    /// bool; Whether the kernel should count the appearance or number of occurrences.
+    ///
+    /// Defaults to false
+    TF_MUST_USE_RESULT Attrs BinaryOutput(bool x) {
+      Attrs ret = *this;
+      ret.binary_output_ = x;
+      return ret;
+    }
+
+    bool binary_output_ = false;
+  };
+  SparseBincount(const ::tensorflow::Scope& scope, ::tensorflow::Input indices,
+               ::tensorflow::Input values, ::tensorflow::Input dense_shape,
+               ::tensorflow::Input size, ::tensorflow::Input weights);
+  SparseBincount(const ::tensorflow::Scope& scope, ::tensorflow::Input indices,
+               ::tensorflow::Input values, ::tensorflow::Input dense_shape,
+               ::tensorflow::Input size, ::tensorflow::Input weights, const
+               SparseBincount::Attrs& attrs);
+  operator ::tensorflow::Output() const { return output; }
+  operator ::tensorflow::Input() const { return output; }
+  ::tensorflow::Node* node() const { return output.node(); }
+
+  static Attrs BinaryOutput(bool x) {
+    return Attrs().BinaryOutput(x);
+  }
+
+  Operation operation;
+  ::tensorflow::Output output;
+};
+
 /// Multiply matrix "a" by matrix "b".
 ///
 /// The inputs must be two-dimensional matrices and the inner dimension of "a" must
@@ -3871,7 +3978,7 @@ class Sinh {
 /// The gradient computation of this operation will only take advantage of sparsity
 /// in the input gradient when that gradient comes from a Relu.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -3945,7 +4052,7 @@ class SparseMatMul {
 /// Like `SegmentMean`, but `segment_ids` can have rank less than `data`'s first
 /// dimension, selecting a subset of dimension 0, specified by `indices`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * indices: A 1-D tensor. Has same rank as `segment_ids`.
 /// * segment_ids: A 1-D tensor. Values should be sorted and can be repeated.
@@ -3970,7 +4077,7 @@ class SparseSegmentMean {
 /// Returns tensor "output" with same shape as grad, except for dimension 0 whose
 /// value is output_dim0.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * grad: gradient propagated to the SparseSegmentMean op.
 /// * indices: indices passed to the corresponding SparseSegmentMean op.
@@ -3995,13 +4102,13 @@ class SparseSegmentMeanGrad {
 /// Computes the mean along sparse segments of a tensor.
 ///
 /// Like `SparseSegmentMean`, but allows missing ids in `segment_ids`. If an id is
-/// misisng, the `output` tensor at that position will be zeroed.
+/// missing, the `output` tensor at that position will be zeroed.
 ///
 /// Read
 /// [the section on segmentation](https://tensorflow.org/api_docs/python/tf/math#Segmentation)
 /// for an explanation of segments.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * indices: A 1-D tensor. Has same rank as `segment_ids`.
 /// * segment_ids: A 1-D tensor. Values should be sorted and can be repeated.
@@ -4031,7 +4138,7 @@ class SparseSegmentMeanWithNumSegments {
 /// See `tf.sparse.segment_sum` for usage examples.
 ///
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * indices: A 1-D tensor. Has same rank as `segment_ids`.
 /// * segment_ids: A 1-D tensor. Values should be sorted and can be repeated.
@@ -4057,7 +4164,7 @@ class SparseSegmentSqrtN {
 /// Returns tensor "output" with same shape as grad, except for dimension 0 whose
 /// value is output_dim0.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * grad: gradient propagated to the SparseSegmentSqrtN op.
 /// * indices: indices passed to the corresponding SparseSegmentSqrtN op.
@@ -4084,13 +4191,13 @@ class SparseSegmentSqrtNGrad {
 /// N is the size of the segment being reduced.
 ///
 /// Like `SparseSegmentSqrtN`, but allows missing ids in `segment_ids`. If an id is
-/// misisng, the `output` tensor at that position will be zeroed.
+/// missing, the `output` tensor at that position will be zeroed.
 ///
 /// Read
 /// [the section on segmentation](https://tensorflow.org/api_docs/python/tf/math#Segmentation)
 /// for an explanation of segments.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * indices: A 1-D tensor. Has same rank as `segment_ids`.
 /// * segment_ids: A 1-D tensor. Values should be sorted and can be repeated.
@@ -4145,7 +4252,7 @@ class SparseSegmentSqrtNWithNumSegments {
 /// tf.segment_sum(c, tf.constant([0, 0, 1]))
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * indices: A 1-D tensor. Has same rank as `segment_ids`.
 /// * segment_ids: A 1-D tensor. Values should be sorted and can be repeated.
@@ -4168,7 +4275,7 @@ class SparseSegmentSum {
 /// Computes the sum along sparse segments of a tensor.
 ///
 /// Like `SparseSegmentSum`, but allows missing ids in `segment_ids`. If an id is
-/// misisng, the `output` tensor at that position will be zeroed.
+/// missing, the `output` tensor at that position will be zeroed.
 ///
 /// Read
 /// [the section on segmentation](https://tensorflow.org/api_docs/python/tf/sparse#Segmentation)
@@ -4195,7 +4302,7 @@ class SparseSegmentSum {
 /// #     [ 0  0  0  0]]
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * indices: A 1-D tensor. Has same rank as `segment_ids`.
 /// * segment_ids: A 1-D tensor. Values should be sorted and can be repeated.
@@ -4222,7 +4329,7 @@ class SparseSegmentSumWithNumSegments {
 ///
 /// I.e., \\(y = \sqrt{x} = x^{1/2}\\).
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -4242,7 +4349,7 @@ class Sqrt {
 ///
 /// I.e., \\(y = x * x = x^2\\).
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -4258,12 +4365,12 @@ class Square {
   ::tensorflow::Output y;
 };
 
-/// Returns (x - y)(x - y) element-wise.
+/// Returns conj(x - y)(x - y) element-wise.
 ///
 /// *NOTE*: `SquaredDifference` supports broadcasting. More about broadcasting
 /// [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -4285,7 +4392,7 @@ class SquaredDifference {
 /// *NOTE*: `Subtract` supports broadcasting. More about broadcasting
 /// [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -4313,7 +4420,7 @@ typedef Subtract Sub;
 /// `axis`. If `keep_dims` is true, the reduced dimensions are
 /// retained with length 1.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The tensor to reduce.
 /// * axis: The dimensions to reduce. Must be in the range
@@ -4371,7 +4478,7 @@ typedef Sum ReduceSum;
 ///   tf.math.tan(x) ==> [nan 0.45231566 -0.5463025 1.5574077 2.572152 -1.7925274 0.32097113 nan]
 ///   ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -4393,12 +4500,14 @@ class Tan {
 ///   element in the tensor. Input range is `[-inf, inf]` and
 ///   output range is `[-1,1]`.
 ///
-///   ```python
-///   x = tf.constant([-float("inf"), -5, -0.5, 1, 1.2, 2, 3, float("inf")])
-///   tf.math.tanh(x) ==> [-1. -0.99990916 -0.46211717 0.7615942 0.8336547 0.9640276 0.9950547 1.]
-///   ```
+///   >>> x = tf.constant([-float("inf"), -5, -0.5, 1, 1.2, 2, 3, float("inf")])
+///   >>> tf.math.tanh(x)
+///   <tf.Tensor: shape=(8,), dtype=float32, numpy=
+///   array([-1.        , -0.99990916, -0.46211717,  0.7615942 ,  0.8336547 ,
+///           0.9640276 ,  0.9950547 ,  1.        ], dtype=float32)>
 ///
-/// Arguments:
+///
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -4424,7 +4533,7 @@ class Tanh {
 /// *NOTE*: `TruncateDiv` supports broadcasting. More about broadcasting
 /// [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -4449,7 +4558,7 @@ class TruncateDiv {
 /// *NOTE*: `TruncateMod` supports broadcasting. More about broadcasting
 /// [here](http://docs.scipy.org/doc/numpy/user/basics.broadcasting.html)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -4500,7 +4609,7 @@ class TruncateMod {
 /// ```
 ///
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * segment_ids: A tensor whose shape is a prefix of `data.shape`.
 ///
@@ -4550,7 +4659,7 @@ class UnsortedSegmentMax {
 /// If the given segment ID `i` is negative, then the corresponding value is
 /// dropped, and will not be included in the result.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * segment_ids: A tensor whose shape is a prefix of `data.shape`.
 ///
@@ -4599,7 +4708,7 @@ class UnsortedSegmentMin {
 /// If the given segment ID `i` is negative, then the corresponding value is
 /// dropped, and will not be included in the result.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * segment_ids: A tensor whose shape is a prefix of `data.shape`.
 ///
@@ -4650,7 +4759,7 @@ class UnsortedSegmentProd {
 /// ```
 ///
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * segment_ids: A tensor whose shape is a prefix of `data.shape`.
 ///
@@ -4673,7 +4782,7 @@ class UnsortedSegmentSum {
 
 /// Returns 0 if x == 0, and x / y otherwise, elementwise.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -4692,7 +4801,7 @@ class Xdivy {
 
 /// Returns 0 if x == 0, and x * log1p(y) otherwise, elementwise.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -4711,7 +4820,7 @@ class Xlog1py {
 
 /// Returns 0 if x == 0, and x * log(y) otherwise, elementwise.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -4735,7 +4844,7 @@ class Xlogy {
 ///
 /// \\(\zeta(x, q) = \sum_{n=0}^{\infty} (q + n)^{-x}\\)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:

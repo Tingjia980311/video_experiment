@@ -79,4 +79,19 @@
  */
 #define LLVM_FORCE_ENABLE_STATS 0
 
+/* Define if we have z3 and want to build it */
+/* #undef LLVM_WITH_Z3 */
+
+/* Define if LLVM was built with a dependency to the libtensorflow dynamic library */
+/* #undef LLVM_HAVE_TF_API */
+
+/* Define if LLVM was built with a dependency to the tensorflow compiler */
+/* #undef LLVM_HAVE_TF_AOT */
+
+/* Define to 1 if you have the <sysexits.h> header file. */
+#define HAVE_SYSEXITS_H 1
+
+/* Define to 1 to enable the experimental new pass manager by default */
+#define LLVM_ENABLE_NEW_PASS_MANAGER 0
+
 #endif

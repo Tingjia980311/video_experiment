@@ -52,7 +52,7 @@ class InputBuffer {
   // If successful, returns OK.  If we there are not enough bytes to
   // read before the end of the file, we return an OUT_OF_RANGE error.
   // Otherwise, we return some other non-OK status.
-  Status ReadNBytes(int64 bytes_to_read, string* result);
+  Status ReadNBytes(int64 bytes_to_read, std::string* result);
 
   // An overload that writes to char*.  Caller must ensure result[0,
   // bytes_to_read) is valid to be overwritten.  Returns OK iff "*bytes_read ==
@@ -74,6 +74,9 @@ class InputBuffer {
   // data we can.  Otherwise, Seek() throws out the current buffer and the next
   // read will trigger a File::Read().
   Status Seek(int64 position);
+
+  // Provides a hint about future reads, which may improve their performance.
+  Status Hint(int64 bytes_to_read);
 
   // Returns the position in the file.
   int64 Tell() const { return file_pos_ - (limit_ - pos_); }
@@ -110,7 +113,7 @@ class InputBuffer {
 // Implementation details.
 
 // Explicit instantiations defined in inputbuffer.cc.
-extern template Status InputBuffer::ReadLine<string>(string* result);
+extern template Status InputBuffer::ReadLine<std::string>(std::string* result);
 extern template Status InputBuffer::ReadLine<tstring>(tstring* result);
 
 // Inlined for performance.

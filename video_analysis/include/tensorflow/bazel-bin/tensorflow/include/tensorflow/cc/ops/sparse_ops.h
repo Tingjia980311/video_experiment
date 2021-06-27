@@ -43,7 +43,7 @@ namespace ops {
 /// `AddManySparseToTensorsMap` as the `shared_name` passed to
 /// `TakeManySparseFromTensorsMap`.  Ensure the Operations are colocated.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * sparse_indices: 2-D.  The `indices` of the minibatch `SparseTensor`.
 /// `sparse_indices[:, 0]` must be ordered values in `[0, N)`.
@@ -124,7 +124,7 @@ class AddManySparseToTensorsMap {
 /// `AddSparseToTensorsMap` as the `shared_name` passed to
 /// `TakeManySparseFromTensorsMap`.  Ensure the Operations are colocated.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * sparse_indices: 2-D.  The `indices` of the `SparseTensor`.
 /// * sparse_values: 1-D.  The `values` of the `SparseTensor`.
@@ -230,7 +230,7 @@ class AddSparseToTensorsMap {
 ///     values = [1, 2, 3, 4, 5]
 ///     shape = [2 50]
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * serialized_sparse: 2-D, The `N` serialized `SparseTensor` objects.
 /// Must have 3 columns.
@@ -295,7 +295,7 @@ class DeserializeManySparse {
 ///     values = [1, 2, 3, 4, 5]
 ///     shape = [2 50]
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * serialized_sparse: The serialized `SparseTensor` objects. The last dimension
 /// must have 3 columns.
@@ -326,7 +326,7 @@ class DeserializeSparse {
 ///
 /// The minibatch size `N` is extracted from `sparse_shape[0]`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * sparse_indices: 2-D.  The `indices` of the minibatch `SparseTensor`.
 /// * sparse_values: 1-D.  The `values` of the minibatch `SparseTensor`.
@@ -375,7 +375,7 @@ class SerializeManySparse {
 
 /// Serialize a `SparseTensor` into a `[3]` `Tensor` object.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * sparse_indices: 2-D.  The `indices` of the `SparseTensor`.
 /// * sparse_values: 1-D.  The `values` of the `SparseTensor`.
@@ -438,7 +438,7 @@ class SerializeSparse {
 ///
 /// In the following shapes, `nnz` is the count after taking `thresh` into account.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * a_indices: 2-D.  The `indices` of the first `SparseTensor`, size `[nnz, ndims]` Matrix.
 /// * a_values: 1-D.  The `values` of the first `SparseTensor`, size `[nnz]` Vector.
@@ -473,7 +473,7 @@ class SparseAdd {
 /// non-empty values of the sum, and outputs the gradients w.r.t. the non-empty
 /// values of A and B.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * backprop_val_grad: 1-D with shape `[nnz(sum)]`.  The gradient with respect to
 /// the non-empty values of the sum.
@@ -542,7 +542,7 @@ class SparseAddGrad {
 ///     [    a] concat [  d e  ] = [    a   d e  ]
 ///     [b c  ]        [       ]   [b c          ]
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * indices: 2-D.  Indices of each input `SparseTensor`.
 /// * values: 1-D.  Non-empty values of each `SparseTensor`.
@@ -605,7 +605,7 @@ class SparseConcat {
 ///                 Fingerprint64("g"), FingerprintCat64(
 ///                     Fingerprint64("e"), Fingerprint64("c")))
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * indices: 2-D.  Indices of each input `SparseTensor`.
 /// * values: 1-D.   values of each `SparseTensor`.
@@ -637,6 +637,140 @@ class SparseCross {
   ::tensorflow::Output output_shape;
 };
 
+/// Generates sparse cross from a list of sparse and dense tensors.
+///
+/// The op takes two lists, one of 2D `SparseTensor` and one of 2D `Tensor`, each
+/// representing features of one feature column. It outputs a 2D `SparseTensor` with
+/// the batchwise crosses of these features.
+///
+/// For example, if the inputs are
+///
+///     inputs[0]: SparseTensor with shape = [2, 2]
+///     [0, 0]: "a"
+///     [1, 0]: "b"
+///     [1, 1]: "c"
+///
+///     inputs[1]: SparseTensor with shape = [2, 1]
+///     [0, 0]: "d"
+///     [1, 0]: "e"
+///
+///     inputs[2]: Tensor [["f"], ["g"]]
+///
+/// then the output will be
+///
+///     shape = [2, 2]
+///     [0, 0]: "a_X_d_X_f"
+///     [1, 0]: "b_X_e_X_g"
+///     [1, 1]: "c_X_e_X_g"
+///
+/// if hashed_output=true then the output will be
+///
+///     shape = [2, 2]
+///     [0, 0]: FingerprintCat64(
+///                 Fingerprint64("f"), FingerprintCat64(
+///                     Fingerprint64("d"), Fingerprint64("a")))
+///     [1, 0]: FingerprintCat64(
+///                 Fingerprint64("g"), FingerprintCat64(
+///                     Fingerprint64("e"), Fingerprint64("b")))
+///     [1, 1]: FingerprintCat64(
+///                 Fingerprint64("g"), FingerprintCat64(
+///                     Fingerprint64("e"), Fingerprint64("c")))
+///
+/// Args:
+/// * scope: A Scope object
+/// * indices: 2-D.  Indices of each input `SparseTensor`.
+/// * values: 1-D.   values of each `SparseTensor`.
+/// * shapes: 1-D.   Shapes of each `SparseTensor`.
+/// * dense_inputs: 2-D.    Columns represented by dense `Tensor`.
+/// * num_buckets: It is used if hashed_output is true.
+/// output = hashed_value%num_buckets if num_buckets > 0 else hashed_value.
+/// * strong_hash: boolean, if true, siphash with salt will be used instead of farmhash.
+/// * salt: Specify the salt that will be used by the siphash function.
+///
+/// Returns:
+/// * `Output` output_indices: 2-D.  Indices of the concatenated `SparseTensor`.
+/// * `Output` output_values: 1-D.  Non-empty values of the concatenated or hashed
+/// `SparseTensor`.
+/// * `Output` output_shape: 1-D.  Shape of the concatenated `SparseTensor`.
+class SparseCrossHashed {
+ public:
+  SparseCrossHashed(const ::tensorflow::Scope& scope, ::tensorflow::InputList
+                  indices, ::tensorflow::InputList values,
+                  ::tensorflow::InputList shapes, ::tensorflow::InputList
+                  dense_inputs, ::tensorflow::Input num_buckets,
+                  ::tensorflow::Input strong_hash, ::tensorflow::Input salt);
+
+  Operation operation;
+  ::tensorflow::Output output_indices;
+  ::tensorflow::Output output_values;
+  ::tensorflow::Output output_shape;
+};
+
+/// Generates sparse cross from a list of sparse and dense tensors.
+///
+/// The op takes two lists, one of 2D `SparseTensor` and one of 2D `Tensor`, each
+/// representing features of one feature column. It outputs a 2D `SparseTensor` with
+/// the batchwise crosses of these features.
+///
+/// For example, if the inputs are
+///
+///     inputs[0]: SparseTensor with shape = [2, 2]
+///     [0, 0]: "a"
+///     [1, 0]: "b"
+///     [1, 1]: "c"
+///
+///     inputs[1]: SparseTensor with shape = [2, 1]
+///     [0, 0]: "d"
+///     [1, 0]: "e"
+///
+///     inputs[2]: Tensor [["f"], ["g"]]
+///
+/// then the output will be
+///
+///     shape = [2, 2]
+///     [0, 0]: "a_X_d_X_f"
+///     [1, 0]: "b_X_e_X_g"
+///     [1, 1]: "c_X_e_X_g"
+///
+/// if hashed_output=true then the output will be
+///
+///     shape = [2, 2]
+///     [0, 0]: FingerprintCat64(
+///                 Fingerprint64("f"), FingerprintCat64(
+///                     Fingerprint64("d"), Fingerprint64("a")))
+///     [1, 0]: FingerprintCat64(
+///                 Fingerprint64("g"), FingerprintCat64(
+///                     Fingerprint64("e"), Fingerprint64("b")))
+///     [1, 1]: FingerprintCat64(
+///                 Fingerprint64("g"), FingerprintCat64(
+///                     Fingerprint64("e"), Fingerprint64("c")))
+///
+/// Args:
+/// * scope: A Scope object
+/// * indices: 2-D.  Indices of each input `SparseTensor`.
+/// * values: 1-D.   values of each `SparseTensor`.
+/// * shapes: 1-D.   Shapes of each `SparseTensor`.
+/// * dense_inputs: 2-D.    Columns represented by dense `Tensor`.
+/// * sep: string used when joining a list of string inputs, can be used as separator later.
+///
+/// Returns:
+/// * `Output` output_indices: 2-D.  Indices of the concatenated `SparseTensor`.
+/// * `Output` output_values: 1-D.  Non-empty values of the concatenated or hashed
+/// `SparseTensor`.
+/// * `Output` output_shape: 1-D.  Shape of the concatenated `SparseTensor`.
+class SparseCrossV2 {
+ public:
+  SparseCrossV2(const ::tensorflow::Scope& scope, ::tensorflow::InputList
+              indices, ::tensorflow::InputList values, ::tensorflow::InputList
+              shapes, ::tensorflow::InputList dense_inputs, ::tensorflow::Input
+              sep);
+
+  Operation operation;
+  ::tensorflow::Output output_indices;
+  ::tensorflow::Output output_values;
+  ::tensorflow::Output output_shape;
+};
+
 /// Adds up a SparseTensor and a dense Tensor, using these special rules:
 ///
 /// (1) Broadcasts the dense side to have the same shape as the sparse side, if
@@ -648,7 +782,7 @@ class SparseCross {
 /// indices and shape, but possibly with different non-zero values.  The output of
 /// this Op is the resultant non-zero values.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * sp_indices: 2-D.  `N x R` matrix with the indices of non-empty values in a
 /// SparseTensor, possibly not in canonical ordering.
@@ -676,7 +810,7 @@ class SparseDenseCwiseAdd {
 /// *Limitation*: this Op only broadcasts the dense side to the sparse side, but not
 /// the other direction.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * sp_indices: 2-D.  `N x R` matrix with the indices of non-empty values in a
 /// SparseTensor, possibly not in canonical ordering.
@@ -708,7 +842,7 @@ class SparseDenseCwiseDiv {
 /// *Limitation*: this Op only broadcasts the dense side to the sparse side, but not
 /// the other direction.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * sp_indices: 2-D.  `N x R` matrix with the indices of non-empty values in a
 /// SparseTensor, possibly not in canonical ordering.
@@ -770,7 +904,7 @@ class SparseDenseCwiseMul {
 ///
 ///     reverse_index_map[j] = out_j s.t. indices[j, :] == output_indices[out_j, :]
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * indices: 2-D. the indices of the sparse tensor.
 /// * values: 1-D. the values of the sparse tensor.
@@ -809,7 +943,7 @@ class SparseFillEmptyRows {
 ///   d_default_value = sum_{k : 0 .. N_full - 1} (
 ///      grad_values[k] * 1{k not in reverse_index_map})
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * reverse_index_map: 1-D.  The reverse index map from SparseFillEmptyRows.
 /// * grad_values: 1-D.  The gradients from backprop.
@@ -842,7 +976,7 @@ class SparseFillEmptyRowsGrad {
 /// with a single element is returned.  Additionally, the axes can be negative,
 /// which are interpreted according to the indexing rules in Python.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input_indices: 2-D.  `N x R` matrix with the indices of non-empty values in a
 /// SparseTensor, possibly not in canonical ordering.
@@ -905,7 +1039,7 @@ class SparseReduceMax {
 /// with a single element is returned.  Additionally, the axes can be negative,
 /// which are interpreted according to the indexing rules in Python.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input_indices: 2-D.  `N x R` matrix with the indices of non-empty values in a
 /// SparseTensor, possibly not in canonical ordering.
@@ -970,7 +1104,7 @@ class SparseReduceMaxSparse {
 /// with a single element is returned.  Additionally, the axes can be negative,
 /// which are interpreted according to the indexing rules in Python.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input_indices: 2-D.  `N x R` matrix with the indices of non-empty values in a
 /// SparseTensor, possibly not in canonical ordering.
@@ -1033,7 +1167,7 @@ class SparseReduceSum {
 /// with a single element is returned.  Additionally, the axes can be negative,
 /// which are interpreted according to the indexing rules in Python.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input_indices: 2-D.  `N x R` matrix with the indices of non-empty values in a
 /// SparseTensor, possibly not in canonical ordering.
@@ -1094,7 +1228,7 @@ class SparseReduceSumSparse {
 /// If the tensor has rank `R` and `N` non-empty values, `input_indices` has
 /// shape `[N, R]`, input_values has length `N`, and input_shape has length `R`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input_indices: 2-D.  `N x R` matrix with the indices of non-empty values in a
 /// SparseTensor, possibly not in canonical ordering.
@@ -1134,7 +1268,7 @@ class SparseReorder {
 /// `input_shape` has length `R_in`, `output_indices` has shape `[N, R_out]`, and
 /// `output_shape` has length `R_out`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input_indices: 2-D.  `N x R_in` matrix with the indices of non-empty values in a
 /// SparseTensor.
@@ -1176,7 +1310,7 @@ class SparseReshape {
 ///     [ d e  ]
 ///     [      ]
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * indices: 2-D tensor represents the indices of the sparse tensor.
 /// * values: 1-D tensor represents the values of the sparse tensor.
@@ -1210,7 +1344,7 @@ class SparseSlice {
 /// the sliced `SparseTensor`, and outputs the gradients w.r.t.
 /// the non-empty values of input `SparseTensor`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * backprop_val_grad: 1-D. The gradient with respect to
 /// the non-empty values of the sliced `SparseTensor`.
@@ -1252,7 +1386,7 @@ class SparseSliceGrad {
 /// Hence, the `SparseTensor` result has exactly the same non-zero indices and
 /// shape.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * sp_indices: 2-D.  `NNZ x R` matrix with the indices of non-empty values in a
 /// SparseTensor, in canonical ordering.
@@ -1277,7 +1411,7 @@ class SparseSoftmax {
 ///
 /// Assumes the two SparseTensors have the same shape, i.e., no broadcasting.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * a_indices: 2-D.  `N x R` matrix with the indices of non-empty values in a
 /// SparseTensor, in the canonical lexicographic ordering.
@@ -1306,7 +1440,7 @@ class SparseSparseMaximum {
 ///
 /// Assumes the two SparseTensors have the same shape, i.e., no broadcasting.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * a_indices: 2-D.  `N x R` matrix with the indices of non-empty values in a
 /// SparseTensor, in the canonical lexicographic ordering.
@@ -1351,7 +1485,7 @@ class SparseSparseMinimum {
 ///     [ d e  ]
 ///     [      ]
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * split_dim: 0-D.  The dimension along which to split.  Must be in the range
 /// `[0, rank(shape))`.
@@ -1384,7 +1518,7 @@ class SparseSplit {
 ///
 /// This Op does not require `a_indices` be sorted in standard lexicographic order.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * a_indices: 2-D.  The `indices` of the `SparseTensor`, with shape `[nnz, ndims]`.
 /// * a_values: 1-D.  The `values` of the `SparseTensor`, with shape `[nnz]`.
@@ -1418,7 +1552,7 @@ class SparseTensorDenseAdd {
 ///   A should be sorted in order of increasing dimension 1 (i.e., "column major"
 ///   order instead of "row major" order).
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * a_indices: 2-D.  The `indices` of the `SparseTensor`, size `[nnz, 2]` Matrix.
 /// * a_values: 1-D.  The `values` of the `SparseTensor`, size `[nnz]` Vector.
@@ -1504,7 +1638,7 @@ class SparseTensorDenseMatMul {
 /// contain any repeats. If `validate_indices` is true, these properties
 /// are checked during execution.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * sparse_indices: 0-D, 1-D, or 2-D.  `sparse_indices[i]` contains the complete
 /// index where `sparse_values[i]` will be placed.
@@ -1607,7 +1741,7 @@ class SparseToDense {
 ///     shape = [2 50]
 /// ```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * sparse_handles: 1-D, The `N` serialized `SparseTensor` objects.
 /// Shape: `[N]`.

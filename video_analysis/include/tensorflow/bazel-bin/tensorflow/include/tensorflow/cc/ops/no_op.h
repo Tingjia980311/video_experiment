@@ -20,7 +20,7 @@ namespace ops {
 
 /// Does nothing. Only useful as a placeholder for control edges.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:

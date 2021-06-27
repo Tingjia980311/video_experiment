@@ -118,16 +118,8 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
     using Base::IsVectorAtCompileTime;
     using Base::Flags;
 
-    template<typename PlainObjectType, int MapOptions, typename StrideType> friend class Eigen::Map;
-    friend  class Eigen::Map<Derived, Unaligned>;
     typedef Eigen::Map<Derived, Unaligned>  MapType;
-    friend  class Eigen::Map<const Derived, Unaligned>;
     typedef const Eigen::Map<const Derived, Unaligned> ConstMapType;
-#if EIGEN_MAX_ALIGN_BYTES>0
-    // for EIGEN_MAX_ALIGN_BYTES==0, AlignedMax==Unaligned, and many compilers generate warnings for friend-ing a class twice.
-    friend  class Eigen::Map<Derived, AlignedMax>;
-    friend  class Eigen::Map<const Derived, AlignedMax>;
-#endif
     typedef Eigen::Map<Derived, AlignedMax> AlignedMapType;
     typedef const Eigen::Map<const Derived, AlignedMax> ConstAlignedMapType;
     template<typename StrideType> struct StridedMapType { typedef Eigen::Map<Derived, Unaligned, StrideType> type; };
@@ -508,8 +500,8 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
     EIGEN_DEVICE_FUNC
     PlainObjectBase& operator=(PlainObjectBase&& other) EIGEN_NOEXCEPT
     {
-      using std::swap;
-      swap(m_storage, other.m_storage);
+      _check_template_params();
+      m_storage = std::move(other.m_storage);
       return *this;
     }
 #endif
@@ -717,18 +709,26 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
     using Base::setConstant;
     EIGEN_DEVICE_FUNC Derived& setConstant(Index size, const Scalar& val);
     EIGEN_DEVICE_FUNC Derived& setConstant(Index rows, Index cols, const Scalar& val);
+    EIGEN_DEVICE_FUNC Derived& setConstant(NoChange_t, Index cols, const Scalar& val);
+    EIGEN_DEVICE_FUNC Derived& setConstant(Index rows, NoChange_t, const Scalar& val);
 
     using Base::setZero;
     EIGEN_DEVICE_FUNC Derived& setZero(Index size);
     EIGEN_DEVICE_FUNC Derived& setZero(Index rows, Index cols);
+    EIGEN_DEVICE_FUNC Derived& setZero(NoChange_t, Index cols);
+    EIGEN_DEVICE_FUNC Derived& setZero(Index rows, NoChange_t);
 
     using Base::setOnes;
     EIGEN_DEVICE_FUNC Derived& setOnes(Index size);
     EIGEN_DEVICE_FUNC Derived& setOnes(Index rows, Index cols);
+    EIGEN_DEVICE_FUNC Derived& setOnes(NoChange_t, Index cols);
+    EIGEN_DEVICE_FUNC Derived& setOnes(Index rows, NoChange_t);
 
     using Base::setRandom;
     Derived& setRandom(Index size);
     Derived& setRandom(Index rows, Index cols);
+    Derived& setRandom(NoChange_t, Index cols);
+    Derived& setRandom(Index rows, NoChange_t);
 
     #ifdef EIGEN_PLAINOBJECTBASE_PLUGIN
     #include EIGEN_PLAINOBJECTBASE_PLUGIN
@@ -967,8 +967,8 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
     EIGEN_DEVICE_FUNC
     static EIGEN_STRONG_INLINE void _check_template_params()
     {
-      EIGEN_STATIC_ASSERT((EIGEN_IMPLIES(MaxRowsAtCompileTime==1 && MaxColsAtCompileTime!=1, (Options&RowMajor)==RowMajor)
-                        && EIGEN_IMPLIES(MaxColsAtCompileTime==1 && MaxRowsAtCompileTime!=1, (Options&RowMajor)==0)
+      EIGEN_STATIC_ASSERT((EIGEN_IMPLIES(MaxRowsAtCompileTime==1 && MaxColsAtCompileTime!=1, (int(Options)&RowMajor)==RowMajor)
+                        && EIGEN_IMPLIES(MaxColsAtCompileTime==1 && MaxRowsAtCompileTime!=1, (int(Options)&RowMajor)==0)
                         && ((RowsAtCompileTime == Dynamic) || (RowsAtCompileTime >= 0))
                         && ((ColsAtCompileTime == Dynamic) || (ColsAtCompileTime >= 0))
                         && ((MaxRowsAtCompileTime == Dynamic) || (MaxRowsAtCompileTime >= 0))
@@ -980,6 +980,17 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
     }
 
     enum { IsPlainObjectBase = 1 };
+#endif
+  public:
+    // These apparently need to be down here for nvcc+icc to prevent duplicate
+    // Map symbol.
+    template<typename PlainObjectType, int MapOptions, typename StrideType> friend class Eigen::Map;
+    friend class Eigen::Map<Derived, Unaligned>;
+    friend class Eigen::Map<const Derived, Unaligned>;
+#if EIGEN_MAX_ALIGN_BYTES>0
+    // for EIGEN_MAX_ALIGN_BYTES==0, AlignedMax==Unaligned, and many compilers generate warnings for friend-ing a class twice.
+    friend class Eigen::Map<Derived, AlignedMax>;
+    friend class Eigen::Map<const Derived, AlignedMax>;
 #endif
 };
 

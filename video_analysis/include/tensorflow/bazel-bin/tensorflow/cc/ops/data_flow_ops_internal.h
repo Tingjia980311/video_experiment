@@ -25,7 +25,7 @@ namespace internal {
 ///
 /// Does not add if local_step is lesser than the accumulator's global_step.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to a accumulator.
 /// * local_step: The local_step value at which the gradient was computed.
@@ -46,7 +46,7 @@ class ResourceAccumulatorApplyGradient {
 
 /// Returns the number of gradients aggregated in the given accumulators.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to an accumulator.
 ///
@@ -69,7 +69,7 @@ class ResourceAccumulatorNumAccumulated {
 /// Logs warning if the accumulator's value is already higher than
 /// new_global_step.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to an accumulator.
 /// * new_global_step: The new global_step value to set.
@@ -94,7 +94,7 @@ class ResourceAccumulatorSetGlobalStep {
 /// the accumulated gradients.  Also automatically increments the recorded
 /// global_step in the accumulator by 1, and resets the aggregate to 0.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to an accumulator.
 /// * num_required: Number of gradients required before we return an aggregate.
@@ -127,7 +127,7 @@ class ResourceAccumulatorTakeGradient {
 /// This is a resource version of ConditionalAccumulator that will work in TF2.0
 /// with tf.cond version 2.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * dtype: The type of the value being accumulated.
 /// * shape: The shape of the values, can be [], in which case shape is unknown.

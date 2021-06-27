@@ -23,7 +23,7 @@ namespace internal {
 
 /// Computes the derivative of a Gamma random sample w.r.t. `alpha`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:

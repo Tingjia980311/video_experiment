@@ -20,7 +20,7 @@ namespace ops {
 
 /// Output a fact about factorials.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:

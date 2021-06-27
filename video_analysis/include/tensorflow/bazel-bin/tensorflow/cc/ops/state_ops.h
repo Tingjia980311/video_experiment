@@ -23,7 +23,7 @@ namespace ops {
 /// This operation outputs "ref" after the assignment is done.
 /// This makes it easier to chain operations that need to use the reset value.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * ref: Should be from a `Variable` node. May be uninitialized.
 /// * value: The value to be assigned to the variable.
@@ -90,7 +90,7 @@ class Assign {
 /// This operation outputs "ref" after the update is done.
 /// This makes it easier to chain operations that need to use the reset value.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * ref: Should be from a `Variable` node.
 /// * value: The value to be added to the variable.
@@ -139,7 +139,7 @@ class AssignAdd {
 /// This operation outputs "ref" after the update is done.
 /// This makes it easier to chain operations that need to use the reset value.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * ref: Should be from a `Variable` node.
 /// * value: The value to be subtracted to the variable.
@@ -185,7 +185,7 @@ class AssignSub {
 
 /// Increments 'ref' until it reaches 'limit'.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * ref: Should be from a scalar `Variable` node.
 /// * limit: If incrementing ref would bring it above limit, instead generates an
@@ -216,7 +216,7 @@ class CountUpTo {
 ///
 /// Outputs the final value of the tensor pointed to by 'ref'.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * ref: A reference to the temporary variable tensor.
 /// * var_name: Name of the temporary variable, usually the name of the matching
@@ -240,7 +240,7 @@ class DestroyTemporaryVariable {
 ///
 /// Outputs boolean scalar indicating whether the tensor has been initialized.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * ref: Should be from a `Variable` node. May be uninitialized.
 ///
@@ -260,7 +260,7 @@ class IsVariableInitialized {
 
 /// Increments variable pointed to by 'resource' until it reaches 'limit'.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * resource: Should be from a scalar `Variable` node.
 /// * limit: If incrementing ref would bring it above limit, instead generates an
@@ -317,7 +317,7 @@ class ResourceCountUpTo {
 /// See `tf.scatter_nd` for more details about how to make updates to
 /// slices.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * ref: A resource handle. Must be from a VarHandleOp.
 /// * indices: A Tensor. Must be one of the following types: int32, int64.
@@ -363,6 +363,102 @@ class ResourceScatterNdAdd {
   Operation operation;
 };
 
+/// TODO: add doc.
+///
+/// Args:
+/// * scope: A Scope object
+/// * ref: A resource handle. Must be from a VarHandleOp.
+/// * indices: A Tensor. Must be one of the following types: int32, int64.
+/// A tensor of indices into ref.
+/// * updates: A Tensor. Must have the same type as ref. A tensor of
+/// values whose element wise max is taken with ref
+///
+/// Optional attributes (see `Attrs`):
+/// * use_locking: An optional bool. Defaults to True. If True, the assignment will
+/// be protected by a lock; otherwise the behavior is undefined,
+/// but may exhibit less contention.
+///
+/// Returns:
+/// * the created `Operation`
+class ResourceScatterNdMax {
+ public:
+  /// Optional attribute setters for ResourceScatterNdMax
+  struct Attrs {
+    /// An optional bool. Defaults to True. If True, the assignment will
+    /// be protected by a lock; otherwise the behavior is undefined,
+    /// but may exhibit less contention.
+    ///
+    /// Defaults to true
+    TF_MUST_USE_RESULT Attrs UseLocking(bool x) {
+      Attrs ret = *this;
+      ret.use_locking_ = x;
+      return ret;
+    }
+
+    bool use_locking_ = true;
+  };
+  ResourceScatterNdMax(const ::tensorflow::Scope& scope, ::tensorflow::Input ref,
+                     ::tensorflow::Input indices, ::tensorflow::Input updates);
+  ResourceScatterNdMax(const ::tensorflow::Scope& scope, ::tensorflow::Input ref,
+                     ::tensorflow::Input indices, ::tensorflow::Input updates,
+                     const ResourceScatterNdMax::Attrs& attrs);
+  operator ::tensorflow::Operation() const { return operation; }
+
+  static Attrs UseLocking(bool x) {
+    return Attrs().UseLocking(x);
+  }
+
+  Operation operation;
+};
+
+/// TODO: add doc.
+///
+/// Args:
+/// * scope: A Scope object
+/// * ref: A resource handle. Must be from a VarHandleOp.
+/// * indices: A Tensor. Must be one of the following types: int32, int64.
+/// A tensor of indices into ref.
+/// * updates: A Tensor. Must have the same type as ref. A tensor of
+/// values whose element wise min is taken with ref.
+///
+/// Optional attributes (see `Attrs`):
+/// * use_locking: An optional bool. Defaults to True. If True, the assignment will
+/// be protected by a lock; otherwise the behavior is undefined,
+/// but may exhibit less contention.
+///
+/// Returns:
+/// * the created `Operation`
+class ResourceScatterNdMin {
+ public:
+  /// Optional attribute setters for ResourceScatterNdMin
+  struct Attrs {
+    /// An optional bool. Defaults to True. If True, the assignment will
+    /// be protected by a lock; otherwise the behavior is undefined,
+    /// but may exhibit less contention.
+    ///
+    /// Defaults to true
+    TF_MUST_USE_RESULT Attrs UseLocking(bool x) {
+      Attrs ret = *this;
+      ret.use_locking_ = x;
+      return ret;
+    }
+
+    bool use_locking_ = true;
+  };
+  ResourceScatterNdMin(const ::tensorflow::Scope& scope, ::tensorflow::Input ref,
+                     ::tensorflow::Input indices, ::tensorflow::Input updates);
+  ResourceScatterNdMin(const ::tensorflow::Scope& scope, ::tensorflow::Input ref,
+                     ::tensorflow::Input indices, ::tensorflow::Input updates,
+                     const ResourceScatterNdMin::Attrs& attrs);
+  operator ::tensorflow::Operation() const { return operation; }
+
+  static Attrs UseLocking(bool x) {
+    return Attrs().UseLocking(x);
+  }
+
+  Operation operation;
+};
+
 /// Applies sparse subtraction to individual values or slices in a Variable.
 ///
 /// `ref` is a `Tensor` with rank `P` and `indices` is a `Tensor` of rank `Q`.
@@ -399,7 +495,7 @@ class ResourceScatterNdAdd {
 /// See `tf.scatter_nd` for more details about how to make updates to
 /// slices.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * ref: A resource handle. Must be from a VarHandleOp.
 /// * indices: A Tensor. Must be one of the following types: int32, int64.
@@ -483,7 +579,7 @@ class ResourceScatterNdSub {
 /// See `tf.scatter_nd` for more details about how to make updates to
 /// slices.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * ref: A resource handle. Must be from a VarHandleOp.
 /// * indices: A Tensor. Must be one of the following types: int32, int64.
@@ -555,7 +651,7 @@ class ResourceScatterNdUpdate {
 /// <img style="width:100%" src="https://www.tensorflow.org/images/ScatterAdd.png" alt>
 /// </div>
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * ref: Should be from a `Variable` node.
 /// * indices: A tensor of indices into the first dimension of `ref`.
@@ -624,7 +720,7 @@ class ScatterAdd {
 ///
 /// Requires `updates.shape = indices.shape + ref.shape[1:]` or `updates.shape = []`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * ref: Should be from a `Variable` node.
 /// * indices: A tensor of indices into the first dimension of `ref`.
@@ -695,7 +791,7 @@ class ScatterDiv {
 /// <img style="width:100%" src="https://www.tensorflow.org/images/ScatterAdd.png" alt>
 /// </div>
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * ref: Should be from a `Variable` node.
 /// * indices: A tensor of indices into the first dimension of `ref`.
@@ -766,7 +862,7 @@ class ScatterMax {
 /// <img style="width:100%" src="https://www.tensorflow.org/images/ScatterAdd.png" alt>
 /// </div>
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * ref: Should be from a `Variable` node.
 /// * indices: A tensor of indices into the first dimension of `ref`.
@@ -835,7 +931,7 @@ class ScatterMin {
 ///
 /// Requires `updates.shape = indices.shape + ref.shape[1:]` or `updates.shape = []`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * ref: Should be from a `Variable` node.
 /// * indices: A tensor of indices into the first dimension of `ref`.
@@ -917,7 +1013,7 @@ class ScatterMul {
 /// See `tf.scatter_nd` for more details about how to make updates to
 /// slices.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * ref: A mutable Tensor. Should be from a Variable node.
 /// * indices: A Tensor. Must be one of the following types: int32, int64.
@@ -1005,7 +1101,7 @@ class ScatterNdAdd {
 /// See `tf.scatter_nd` for more details about how to make updates to
 /// slices.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * ref: A mutable Tensor. Should be from a Variable node.
 /// * indices: A Tensor. Must be one of the following types: int32, int64.
@@ -1093,7 +1189,7 @@ class ScatterNdSub {
 ///
 /// See also `tf.scatter_update` and `tf.batch_scatter_update`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * ref: A mutable Tensor. Should be from a Variable node.
 /// * indices: A Tensor. Must be one of the following types: int32, int64.
@@ -1168,7 +1264,7 @@ class ScatterNdUpdate {
 /// <img style="width:100%" src="https://www.tensorflow.org/images/ScatterSub.png" alt>
 /// </div>
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * ref: Should be from a `Variable` node.
 /// * indices: A tensor of indices into the first dimension of `ref`.
@@ -1244,7 +1340,7 @@ class ScatterSub {
 ///
 /// See also `tf.batch_scatter_update` and `tf.scatter_nd_update`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * ref: Should be from a `Variable` node.
 /// * indices: A tensor of indices into the first dimension of `ref`.
@@ -1307,7 +1403,7 @@ class ScatterUpdate {
 ///       var = state_ops.assign_add(var, [[6.0, 7.0]])
 ///       final = state_ops._destroy_temporary_variable(var, var_name=var_name)
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * shape: The shape of the variable tensor.
 /// * dtype: The type of elements in the variable tensor.
@@ -1356,7 +1452,7 @@ class TemporaryVariable {
 /// TODO(zhifengc/mrry): Adds a pointer to a more detail document
 /// about sharing states in tensorflow.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * shape: The shape of the variable tensor.
 /// * dtype: The type of elements in the variable tensor.

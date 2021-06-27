@@ -22,7 +22,7 @@ namespace ops {
 ///
 /// Does not add if local_step is lesser than the accumulator's global_step.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to a accumulator.
 /// * local_step: The local_step value at which the gradient was computed.
@@ -42,7 +42,7 @@ class AccumulatorApplyGradient {
 
 /// Returns the number of gradients aggregated in the given accumulators.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to an accumulator.
 ///
@@ -65,7 +65,7 @@ class AccumulatorNumAccumulated {
 /// Logs warning if the accumulator's value is already higher than
 /// new_global_step.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to an accumulator.
 /// * new_global_step: The new global_step value to set.
@@ -89,7 +89,7 @@ class AccumulatorSetGlobalStep {
 /// the accumulated gradients.  Also automatically increments the recorded
 /// global_step in the accumulator by 1, and resets the aggregate to 0.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to an accumulator.
 /// * num_required: Number of gradients required before we return an aggregate.
@@ -122,7 +122,7 @@ class AccumulatorTakeGradient {
 /// incomplete element has some undefined components in its value tuple,
 /// and may be updated using BarrierInsertMany.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * component_types: The type of each component in a value.
 ///
@@ -222,7 +222,7 @@ class Barrier {
 /// continue to succeed if sufficient completed elements remain in the barrier.
 /// Subsequent TakeMany operations that would block will fail immediately.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to a barrier.
 ///
@@ -264,7 +264,7 @@ class BarrierClose {
 
 /// Computes the number of incomplete elements in the given barrier.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to a barrier.
 ///
@@ -290,7 +290,7 @@ class BarrierIncompleteSize {
 /// already has a value at component_index, this operation will fail with
 /// INVALID_ARGUMENT, and leave the barrier in an undefined state.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to a barrier.
 /// * keys: A one-dimensional tensor of keys, with length n.
@@ -312,7 +312,7 @@ class BarrierInsertMany {
 
 /// Computes the number of complete elements in the given barrier.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to a barrier.
 ///
@@ -340,7 +340,7 @@ class BarrierReadySize {
 /// information about the batch in which each element was originally inserted
 /// into the barrier.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to a barrier.
 /// * num_elements: A single-element tensor containing the number of elements to
@@ -429,7 +429,7 @@ class BarrierTakeMany {
 /// resets the aggregate to 0, and increments the global_step recorded by
 /// the accumulator.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * dtype: The type of the value being accumulated.
 /// * shape: The shape of the values, can be [], in which case shape is unknown.
@@ -502,7 +502,7 @@ class ConditionalAccumulator {
 
 /// Delete the tensor specified by its handle in the session.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle for a tensor stored in the session state.
 ///
@@ -557,7 +557,7 @@ class DeleteSessionTensor {
 /// <img style="width:100%" src="https://www.tensorflow.org/images/DynamicPartition.png" alt>
 /// </div>
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * partitions: Any shape.  Indices in the range `[0, num_partitions)`.
 /// * num_partitions: The number of partitions to output.
@@ -640,7 +640,7 @@ class DynamicPartition {
 /// <img style="width:100%" src="https://www.tensorflow.org/images/DynamicStitch.png" alt>
 /// </div>
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -659,7 +659,7 @@ class DynamicStitch {
 
 /// A queue that produces elements in first-in first-out order.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * component_types: The type of each component in a value.
 ///
@@ -755,7 +755,7 @@ class FIFOQueue {
 
 /// Store the input tensor in the state of the current session.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * value: The tensor to be stored.
 ///
@@ -775,7 +775,7 @@ class GetSessionHandle {
 
 /// Store the input tensor in the state of the current session.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * value: The tensor to be stored.
 ///
@@ -795,7 +795,7 @@ class GetSessionHandleV2 {
 
 /// Get the value of the tensor specified by its handle.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle for a tensor stored in the session state.
 /// * dtype: The type of the output value.
@@ -816,7 +816,7 @@ class GetSessionTensor {
 
 /// Op removes all elements in the underlying container.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -881,7 +881,7 @@ class MapClear {
 
 /// Op returns the number of incomplete elements in the underlying container.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -953,7 +953,7 @@ class MapIncompleteSize {
 /// underlying container does not contain this key
 /// this op will block until it does.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1022,7 +1022,7 @@ class MapPeek {
 
 /// Op returns the number of elements in the underlying container.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1090,7 +1090,7 @@ class MapSize {
 
 /// Stage (key, values) in the underlying container which behaves like a hashtable.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * key: int64
 /// * values: a list of tensors
@@ -1179,7 +1179,7 @@ class MapStage {
 /// from the underlying container.   If the underlying container
 /// does not contain this key, the op will block until it does.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1251,7 +1251,7 @@ class MapUnstage {
 /// from the underlying container.   If the underlying container
 /// does not contain elements, the op will block until it does.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1320,7 +1320,7 @@ class MapUnstageNoKey {
 
 /// Op removes all elements in the underlying container.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1385,7 +1385,7 @@ class OrderedMapClear {
 
 /// Op returns the number of incomplete elements in the underlying container.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1458,7 +1458,7 @@ class OrderedMapIncompleteSize {
 /// this op will block until it does.   This Op is optimized for
 /// performance.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1527,7 +1527,7 @@ class OrderedMapPeek {
 
 /// Op returns the number of elements in the underlying container.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1597,7 +1597,7 @@ class OrderedMapSize {
 ///
 /// associative container.   Elements are ordered by key.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * key: int64
 /// * values: a list of tensors
@@ -1687,7 +1687,7 @@ class OrderedMapStage {
 /// from the underlying container.   If the underlying container
 /// does not contain this key, the op will block until it does.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1759,7 +1759,7 @@ class OrderedMapUnstage {
 /// key from the underlying container.   If the underlying container
 /// does not contain elements, the op will block until it does.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -1832,7 +1832,7 @@ class OrderedMapUnstageNoKey {
 /// to 0 in the shape attr.  In this case DequeueMany will pad up to the maximum
 /// size of any given element in the minibatch.  See below for details.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * component_types: The type of each component in a value.
 ///
@@ -1998,7 +1998,7 @@ class PaddingFIFOQueue {
 /// <img style="width:100%" src="https://www.tensorflow.org/images/DynamicStitch.png" alt>
 /// </div>
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -2023,7 +2023,7 @@ class ParallelDynamicStitch {
 /// and DequeueMany) on a PriorityQueue will all require (resp. output) one extra
 /// entry in their input (resp. output) lists.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * shapes: The shape of each component in a value. The length of this attr must
 /// be either 0 or the same as the length of component_types. If the length of
@@ -2123,7 +2123,7 @@ class PriorityQueue {
 /// sufficient elements remain in the queue. Subsequent Dequeue(Many)
 /// operations that would block will fail immediately.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to a queue.
 ///
@@ -2177,7 +2177,7 @@ class QueueClose {
 /// N.B. If the queue is empty, this operation will block until `n` elements
 /// have been dequeued (or 'timeout_ms' elapses, if specified).
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to a queue.
 /// * n: The number of tuples to dequeue.
@@ -2243,7 +2243,7 @@ class QueueDequeueMany {
 /// the tuples stored in the given queue, and output `i` is the ith
 /// component of the dequeued tuple.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to a queue.
 /// * n: The number of tuples to dequeue.
@@ -2298,7 +2298,7 @@ class QueueDequeueUpTo {
 /// N.B. If the queue is empty, this operation will block until an element
 /// has been dequeued (or 'timeout_ms' elapses, if specified).
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to a queue.
 /// * component_types: The type of each component in a tuple.
@@ -2355,7 +2355,7 @@ class QueueDequeue {
 /// N.B. If the queue is full, this operation will block until the given
 /// elements have been enqueued (or 'timeout_ms' elapses, if specified).
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to a queue.
 /// * components: One or more tensors from which the enqueued tensors should
@@ -2407,7 +2407,7 @@ class QueueEnqueueMany {
 /// N.B. If the queue is full, this operation will block until the given
 /// element has been enqueued (or 'timeout_ms' elapses, if specified).
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to a queue.
 /// * components: One or more tensors from which the enqueued tensors should be taken.
@@ -2455,7 +2455,7 @@ class QueueEnqueue {
 /// This operation returns true if the queue is closed and false if the queue
 /// is open.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to a queue.
 ///
@@ -2477,7 +2477,7 @@ class QueueIsClosed {
 /// This operation returns true if the queue is closed and false if the queue
 /// is open.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to a queue.
 ///
@@ -2496,7 +2496,7 @@ class QueueIsClosedV2 {
 
 /// Computes the number of elements in the given queue.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to a queue.
 ///
@@ -2515,7 +2515,7 @@ class QueueSize {
 
 /// A queue that randomizes the order of elements.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * component_types: The type of each component in a value.
 ///
@@ -2659,7 +2659,7 @@ class RandomShuffleQueue {
 
 /// Emits randomized records.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * file_pattern: Glob pattern for the data files.
 ///
@@ -2777,7 +2777,7 @@ class RecordInput {
 /// Does not add if local_step is smaller than the accumulator's
 /// global_step.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to a accumulator.
 /// * local_step: The local_step value at which the sparse gradient was computed.
@@ -2814,7 +2814,7 @@ class SparseAccumulatorApplyGradient {
 /// the recorded global_step in the accumulator by 1, and resets the
 /// aggregate to 0.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to a SparseConditionalAccumulator.
 /// * num_required: Number of gradients required before we return an aggregate.
@@ -2846,7 +2846,7 @@ class SparseAccumulatorTakeGradient {
 /// resets the aggregate to 0, and increments the global_step recorded by
 /// the accumulator.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * dtype: The type of the value being accumulated.
 /// * shape: The shape of the values.
@@ -2922,7 +2922,7 @@ class SparseConditionalAccumulator {
 /// The basic functionality of this Op is similar to a queue with many
 /// fewer capabilities and options.  This Op is optimized for performance.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * values: a list of tensors
 /// dtypes A list of data types that inserted values should adhere to.
@@ -3009,7 +3009,7 @@ class Stage {
 
 /// Op removes all elements in the underlying container.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -3078,7 +3078,7 @@ class StageClear {
 /// this op will block until it does.   This Op is optimized for
 /// performance.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -3146,7 +3146,7 @@ class StagePeek {
 
 /// Op returns the number of elements in the underlying container.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -3217,7 +3217,7 @@ class StageSize {
 /// This enables the user to close and release the resource in the middle
 /// of a step/run.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to a TensorArray (output of TensorArray or TensorArrayGrad).
 ///
@@ -3245,7 +3245,7 @@ class TensorArrayClose {
 ///
 /// All elements must have the same shape (excepting the first dimension).
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to a TensorArray.
 /// * flow_in: A float scalar that enforces proper chaining of operations.
@@ -3300,7 +3300,7 @@ class TensorArrayConcat {
 ///
 /// All elements selected by `indices` must have the same shape.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to a TensorArray.
 /// * indices: The locations in the TensorArray from which to read tensor elements.
@@ -3389,7 +3389,7 @@ class TensorArrayGather {
 /// name when performing the creation / lookup, so that each separate gradient
 /// calculation gets its own TensorArray accumulator.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to the forward TensorArray.
 /// * flow_in: A float scalar that enforces proper chaining of operations.
@@ -3416,7 +3416,7 @@ class TensorArrayGrad {
 /// computed. This enables multiple gradients for the same TensorArray to be
 /// calculated using the same accumulator.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to the forward TensorArray.
 /// * flow_in: A float scalar that enforces proper chaining of operations.
@@ -3443,7 +3443,7 @@ class TensorArrayGradWithShape {
 
 /// Read an element from the TensorArray into output `value`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to a TensorArray.
 /// * flow_in: A float scalar that enforces proper chaining of operations.
@@ -3468,7 +3468,7 @@ class TensorArrayRead {
 ///
 /// `indices` must be a vector, its length must match the first dim of `value`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to a TensorArray.
 /// * indices: The locations at which to write the tensor elements.
@@ -3492,7 +3492,7 @@ class TensorArrayScatter {
 
 /// Get the current size of the TensorArray.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to a TensorArray (output of TensorArray or TensorArrayGrad).
 /// * flow_in: A float scalar that enforces proper chaining of operations.
@@ -3531,7 +3531,7 @@ class TensorArraySize {
 ///
 ///   ```nt x d0 x d1 x ...```
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to a TensorArray.
 /// * value: The concatenated tensor to write to the TensorArray.
@@ -3558,7 +3558,7 @@ class TensorArraySplit {
 ///
 /// Write data via Write and read via Read or Pack.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * size: The size of the array.
 /// * dtype: The type of the elements on the tensor_array.
@@ -3573,7 +3573,7 @@ class TensorArraySplit {
 /// after being read.  This disables multiple read semantics but allows early
 /// release of memory.
 /// * identical_element_shapes: If true (default is false), then all
-/// elements in the TensorArray will be expected to have have identical shapes.
+/// elements in the TensorArray will be expected to have identical shapes.
 /// This allows certain behaviors, like dynamically checking for
 /// consistent shapes on write, and being able to fill in properly
 /// shaped zero tensors on stack -- even if the element_shape attribute
@@ -3622,7 +3622,7 @@ class TensorArray {
     }
 
     /// If true (default is false), then all
-    /// elements in the TensorArray will be expected to have have identical shapes.
+    /// elements in the TensorArray will be expected to have identical shapes.
     /// This allows certain behaviors, like dynamically checking for
     /// consistent shapes on write, and being able to fill in properly
     /// shaped zero tensors on stack -- even if the element_shape attribute
@@ -3680,7 +3680,7 @@ class TensorArray {
 
 /// Push an element onto the tensor_array.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * handle: The handle to a TensorArray.
 /// * index: The position to write to inside the TensorArray.
@@ -3707,7 +3707,7 @@ class TensorArrayWrite {
 /// The basic functionality is similar to dequeue with many fewer
 /// capabilities and options.  This Op is optimized for performance.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:

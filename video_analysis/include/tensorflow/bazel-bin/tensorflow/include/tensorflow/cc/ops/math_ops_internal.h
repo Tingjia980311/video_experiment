@@ -42,7 +42,7 @@ namespace internal {
 /// By setting the `reverse` kwarg to `True`, the cumulative log-sum-exp is performed in the
 /// opposite direction.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * x: A `Tensor`. Must be one of the following types: `float16`, `float32`, `float64`.
 /// * axis: A `Tensor` of type `int32` (default: 0). Must be in the range
@@ -101,7 +101,7 @@ class CumulativeLogsumexp {
 
 /// Computes the gradient of `igamma(a, x)` wrt `a`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -123,7 +123,7 @@ class IgammaGradA {
 /// Specifically, `grad = -dy * y*y`, where `y = 1/x`, and `dy`
 /// is the corresponding input gradient.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -140,12 +140,44 @@ class InvGrad {
   ::tensorflow::Output z;
 };
 
+/// Generates values in an interval.
+///
+/// A sequence of `num` evenly-spaced values are generated beginning at `start`.
+/// If `num > 1`, the values in the sequence increase by `stop - start / num - 1`,
+/// so that the last one is exactly `stop`.
+///
+/// For example:
+///
+/// ```
+/// tf.linspace(10.0, 12.0, 3, name="linspace") => [ 10.0  11.0  12.0]
+/// ```
+///
+/// Args:
+/// * scope: A Scope object
+/// * start: 0-D tensor. First entry in the range.
+/// * stop: 0-D tensor. Last entry in the range.
+/// * num: 0-D tensor. Number of values to generate.
+///
+/// Returns:
+/// * `Output`: 1-D. The generated values.
+class LinSpace {
+ public:
+  LinSpace(const ::tensorflow::Scope& scope, ::tensorflow::Input start,
+         ::tensorflow::Input stop, ::tensorflow::Input num);
+  operator ::tensorflow::Output() const { return output; }
+  operator ::tensorflow::Input() const { return output; }
+  ::tensorflow::Node* node() const { return output.node(); }
+
+  Operation operation;
+  ::tensorflow::Output output;
+};
+
 /// Computes the gradient for the inverse of `x` wrt its input.
 ///
 /// Specifically, `grad = -dy * y*y`, where `y = 1/x`, and `dy`
 /// is the corresponding input gradient.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -164,7 +196,7 @@ class ReciprocalGrad {
 
 /// Computes requantization range per channel.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The original input tensor.
 /// * input_min: The minimum value of the input tensor
@@ -189,7 +221,7 @@ class RequantizationRangePerChannel {
 
 /// Requantizes input with min and max values known per channel.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The original input tensor.
 /// * input_min: The minimum value of the input tensor
@@ -244,7 +276,7 @@ class RequantizePerChannel {
 /// Specifically, `grad = dy * -0.5 * y^3`, where `y = rsqrt(x)`, and `dy`
 /// is the corresponding input gradient.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -266,7 +298,7 @@ class RsqrtGrad {
 /// Specifically, `grad = dy * y * (1 - y)`, where `y = sigmoid(x)`, and
 /// `dy` is the corresponding input gradient.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -288,7 +320,7 @@ class SigmoidGrad {
 /// Creates a Sobol sequence with `num_results` samples. Each sample has dimension
 /// `dim`. Skips the first `skip` samples.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * dim: Positive scalar `Tensor` representing each sample's dimension.
 /// * num_results: Positive scalar `Tensor` of dtype int32. The number of Sobol points to return
@@ -338,7 +370,7 @@ class SobolSample {
 /// Specifically, `grad = dy * 0.5 / y`, where `y = sqrt(x)`, and `dy`
 /// is the corresponding input gradient.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:
@@ -360,7 +392,7 @@ class SqrtGrad {
 /// Specifically, `grad = dy * (1 - y*y)`, where `y = tanh(x)`, and `dy`
 /// is the corresponding input gradient.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:

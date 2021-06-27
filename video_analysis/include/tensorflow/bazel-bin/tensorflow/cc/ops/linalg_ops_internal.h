@@ -21,6 +21,54 @@ namespace internal {
 /// @defgroup linalg_ops_internal Linalg Ops Internal
 /// @{
 
+/// TODO: add doc.
+///
+/// Args:
+/// * scope: A Scope object
+///
+/// Returns:
+/// * `Output`: The output tensor.
+class BandedTriangularSolve {
+ public:
+  /// Optional attribute setters for BandedTriangularSolve
+  struct Attrs {
+    /// Defaults to true
+    TF_MUST_USE_RESULT Attrs Lower(bool x) {
+      Attrs ret = *this;
+      ret.lower_ = x;
+      return ret;
+    }
+
+    /// Defaults to false
+    TF_MUST_USE_RESULT Attrs Adjoint(bool x) {
+      Attrs ret = *this;
+      ret.adjoint_ = x;
+      return ret;
+    }
+
+    bool lower_ = true;
+    bool adjoint_ = false;
+  };
+  BandedTriangularSolve(const ::tensorflow::Scope& scope, ::tensorflow::Input
+                      matrix, ::tensorflow::Input rhs);
+  BandedTriangularSolve(const ::tensorflow::Scope& scope, ::tensorflow::Input
+                      matrix, ::tensorflow::Input rhs, const
+                      BandedTriangularSolve::Attrs& attrs);
+  operator ::tensorflow::Output() const { return output; }
+  operator ::tensorflow::Input() const { return output; }
+  ::tensorflow::Node* node() const { return output.node(); }
+
+  static Attrs Lower(bool x) {
+    return Attrs().Lower(x);
+  }
+  static Attrs Adjoint(bool x) {
+    return Attrs().Adjoint(x);
+  }
+
+  Operation operation;
+  ::tensorflow::Output output;
+};
+
 /// Computes the matrix logarithm of one or more square matrices:
 ///
 ///
@@ -39,7 +87,7 @@ namespace internal {
 /// form square matrices. The output is a tensor of the same shape as the input
 /// containing the exponential for all input submatrices `[..., :, :]`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: Shape is `[..., M, M]`.
 ///
@@ -64,7 +112,7 @@ class MatrixLogarithm {
 ///
 /// Calculates product of two matrices, where left matrix is a tridiagonal matrix.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * superdiag: Tensor of shape `[..., 1, M]`, representing superdiagonals of
 /// tri-diagonal matrices to the left of multiplication. Last element is ignored.
@@ -98,8 +146,9 @@ class TridiagonalMatMul {
 ///   On CPU, solution is computed via Gaussian elimination with or without partial
 ///   pivoting, depending on `partial_pivoting` attribute. On GPU, Nvidia's cuSPARSE
 ///   library is used: https://docs.nvidia.com/cuda/cusparse/index.html#gtsv
+///   Partial pivoting is not yet supported by XLA backends.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * diagonals: Tensor of shape `[..., 3, M]` whose innermost 2 dimensions represent the
 /// tridiagonal matrices with three rows being the superdiagonal, diagonals, and

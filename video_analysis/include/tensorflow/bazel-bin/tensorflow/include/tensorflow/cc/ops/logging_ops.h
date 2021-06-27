@@ -23,7 +23,7 @@ namespace ops {
 /// If `condition` evaluates to false, print the list of tensors in `data`.
 /// `summarize` determines how many entries of the tensors to print.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * condition: The condition to evaluate.
 /// * data: The tensors to print out when condition is false.
@@ -75,7 +75,7 @@ class Assert {
 /// *  If `max_outputs` is greater than 1, the summary value tags are
 ///    generated sequentially as '*tag*/audio/0', '*tag*/audio/1', etc.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * tag: Scalar. Used to build the `tag` attribute of the summary values.
 /// * tensor: 2-D of shape `[batch_size, frames]`.
@@ -126,7 +126,7 @@ class AudioSummary {
 ///
 /// This op reports an `InvalidArgument` error if any value is not finite.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * tag: Scalar.  Tag to use for the `Summary.Value`.
 /// * values: Any shape. Values to use to build the histogram.
@@ -181,7 +181,7 @@ class HistogramSummary {
 /// replaced by this tensor in the output image.  The default value is the color
 /// red.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * tag: Scalar. Used to build the `tag` attribute of the summary values.
 /// * tensor: 4-D of shape `[batch_size, height, width, channels]` where
@@ -247,7 +247,7 @@ class ImageSummary {
 /// When the Op is run, it reports an `InvalidArgument` error if multiple values
 /// in the summaries to merge use the same tag.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * inputs: Can be of any shape.  Each must contain serialized `Summary` protocol
 /// buffers.
@@ -269,7 +269,7 @@ class MergeSummary {
 ///
 /// Passes `input` through to `output` and prints `data` when evaluating.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The tensor passed to `output`
 /// * data: A list of tensors to print out when op is evaluated.
@@ -342,7 +342,7 @@ class Print {
 ///
 /// Prints a string scalar to the desired output_stream.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * input: The string scalar to print.
 ///
@@ -394,7 +394,7 @@ class PrintV2 {
 /// The input `tags` and `values` must have the same shape.  The generated summary
 /// has a summary value for each tag-value pair in `tags` and `values`.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * tags: Tags for the summary.
 /// * values: Same shape as `tags.  Values for the summary.
@@ -419,7 +419,7 @@ class ScalarSummary {
 /// a tag as well as a serialized SummaryMetadata proto string that contains
 /// plugin-specific data. We will keep this op to maintain backwards compatibility.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * tensor: A tensor to serialize.
 ///
@@ -488,7 +488,7 @@ class TensorSummary {
 
 /// Outputs a `Summary` protocol buffer with a tensor and per-plugin data.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * tag: A string attached to this summary. Used for organization in TensorBoard.
 /// * tensor: A tensor to serialize.
@@ -517,7 +517,7 @@ class TensorSummaryV2 {
 /// Note: the timestamp is computed when the op is executed, not when it is added
 /// to the graph.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 ///
 /// Returns:

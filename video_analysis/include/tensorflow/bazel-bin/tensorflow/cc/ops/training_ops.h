@@ -25,7 +25,7 @@ namespace ops {
 /// update_accum = rho() * update_accum + (1 - rho()) * update.square();
 /// var -= update;
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().
@@ -83,7 +83,7 @@ class ApplyAdadelta {
 /// accum += grad * grad
 /// var -= lr * grad * (1 / sqrt(accum))
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().
@@ -145,7 +145,7 @@ class ApplyAdagrad {
 
 /// Update '*var' according to the proximal adagrad scheme.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * gradient_accumulator: Should be from a Variable().
@@ -208,7 +208,7 @@ class ApplyAdagradDA {
 /// $$v_t := beta_2 * v_{t-1} + (1 - beta_2) * g * g$$
 /// $$variable := variable - lr_t * m_t / (\sqrt{v_t} + \epsilon)$$
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * m: Should be from a Variable().
@@ -288,7 +288,7 @@ class ApplyAdam {
 /// update <- (alpha + sign_decay * sign(g) *sign(m)) * g
 /// variable <- variable - lr_t * update
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * m: Should be from a Variable().
@@ -363,7 +363,7 @@ class ApplyAddSign {
 /// mom <- momentum * mom_{t-1} + lr * grad / sqrt(ms - mg * mg + epsilon)
 /// var <- var - mom
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * mg: Should be from a Variable().
@@ -371,6 +371,7 @@ class ApplyAddSign {
 /// * mom: Should be from a Variable().
 /// * lr: Scaling factor. Must be a scalar.
 /// * rho: Decay rate. Must be a scalar.
+/// * momentum: Momentum Scale. Must be a scalar.
 /// * epsilon: Ridge term. Must be a scalar.
 /// * grad: The gradient.
 ///
@@ -424,12 +425,12 @@ class ApplyCenteredRMSProp {
 /// Update '*var' according to the Ftrl-proximal scheme.
 ///
 /// accum_new = accum + grad * grad
-/// linear += grad + (accum_new^(-lr_power) - accum^(-lr_power)) / lr * var
+/// linear += grad - (accum_new^(-lr_power) - accum^(-lr_power)) / lr * var
 /// quadratic = 1.0 / (accum_new^(lr_power) * lr) + 2 * l2
 /// var = (sign(linear) * l1 - linear) / quadratic if |linear| > l1 else 0.0
 /// accum = accum_new
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().
@@ -462,7 +463,15 @@ class ApplyFtrl {
       return ret;
     }
 
+    /// Defaults to false
+    TF_MUST_USE_RESULT Attrs MultiplyLinearByLr(bool x) {
+      Attrs ret = *this;
+      ret.multiply_linear_by_lr_ = x;
+      return ret;
+    }
+
     bool use_locking_ = false;
+    bool multiply_linear_by_lr_ = false;
   };
   ApplyFtrl(const ::tensorflow::Scope& scope, ::tensorflow::Input var,
           ::tensorflow::Input accum, ::tensorflow::Input linear,
@@ -480,6 +489,9 @@ class ApplyFtrl {
   static Attrs UseLocking(bool x) {
     return Attrs().UseLocking(x);
   }
+  static Attrs MultiplyLinearByLr(bool x) {
+    return Attrs().MultiplyLinearByLr(x);
+  }
 
   Operation operation;
   ::tensorflow::Output out;
@@ -488,14 +500,14 @@ class ApplyFtrl {
 /// Update '*var' according to the Ftrl-proximal scheme.
 ///
 /// grad_with_shrinkage = grad + 2 * l2_shrinkage * var
-/// accum_new = accum + grad_with_shrinkage * grad_with_shrinkage
-/// linear += grad_with_shrinkage +
+/// accum_new = accum + grad * grad
+/// linear += grad_with_shrinkage -
 ///     (accum_new^(-lr_power) - accum^(-lr_power)) / lr * var
 /// quadratic = 1.0 / (accum_new^(lr_power) * lr) + 2 * l2
 /// var = (sign(linear) * l1 - linear) / quadratic if |linear| > l1 else 0.0
 /// accum = accum_new
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().
@@ -528,7 +540,15 @@ class ApplyFtrlV2 {
       return ret;
     }
 
+    /// Defaults to false
+    TF_MUST_USE_RESULT Attrs MultiplyLinearByLr(bool x) {
+      Attrs ret = *this;
+      ret.multiply_linear_by_lr_ = x;
+      return ret;
+    }
+
     bool use_locking_ = false;
+    bool multiply_linear_by_lr_ = false;
   };
   ApplyFtrlV2(const ::tensorflow::Scope& scope, ::tensorflow::Input var,
             ::tensorflow::Input accum, ::tensorflow::Input linear,
@@ -548,6 +568,9 @@ class ApplyFtrlV2 {
   static Attrs UseLocking(bool x) {
     return Attrs().UseLocking(x);
   }
+  static Attrs MultiplyLinearByLr(bool x) {
+    return Attrs().MultiplyLinearByLr(x);
+  }
 
   Operation operation;
   ::tensorflow::Output out;
@@ -555,7 +578,7 @@ class ApplyFtrlV2 {
 
 /// Update '*var' by subtracting 'alpha' * 'delta' from it.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * alpha: Scaling factor. Must be a scalar.
@@ -607,7 +630,7 @@ class ApplyGradientDescent {
 /// accum = accum * momentum + grad
 /// var -= lr * accum
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().
@@ -682,7 +705,7 @@ class ApplyMomentum {
 /// update <- exp(logbase * sign_decay * sign(g) * sign(m_t)) * g
 /// variable <- variable - lr_t * update
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * m: Should be from a Variable().
@@ -743,7 +766,7 @@ class ApplyPowerSign {
 /// prox_v = var - lr * grad * (1 / sqrt(accum))
 /// var = sign(prox_v)/(1+lr*l2) * max{|prox_v|-lr*l1,0}
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().
@@ -800,7 +823,7 @@ class ApplyProximalAdagrad {
 /// prox_v = var - alpha * delta
 /// var = sign(prox_v)/(1+alpha*l2) * max{|prox_v|-alpha*l1,0}
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * alpha: Scaling factor. Must be a scalar.
@@ -864,7 +887,7 @@ class ApplyProximalGradientDescent {
 /// mom <- momentum * mom_{t-1} + lr * grad / sqrt(ms + epsilon)
 /// var <- var - mom
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * ms: Should be from a Variable().
@@ -927,7 +950,7 @@ class ApplyRMSProp {
 /// update_accum = rho() * update_accum + (1 - rho()) * update.square();
 /// var -= update;
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().
@@ -983,7 +1006,7 @@ class ResourceApplyAdadelta {
 /// accum += grad * grad
 /// var -= lr * grad * (1 / sqrt(accum))
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().
@@ -1043,7 +1066,7 @@ class ResourceApplyAdagrad {
 
 /// Update '*var' according to the proximal adagrad scheme.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * gradient_accumulator: Should be from a Variable().
@@ -1105,7 +1128,7 @@ class ResourceApplyAdagradDA {
 /// $$v_t := \beta_2 * v_{t-1} + (1 - \beta_2) * g * g$$
 /// $$\text{variable} := \text{variable} - \text{lr}_t * m_t / (\sqrt{v_t} + \epsilon)$$
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * m: Should be from a Variable().
@@ -1186,7 +1209,7 @@ class ResourceApplyAdam {
 /// $$\hat{v}_t := max{\hat{v}_{t-1}, v_t}$$
 /// $$\text{variable} := \text{variable} - \text{lr}_t * m_t / (\sqrt{\hat{v}_t} + \epsilon)$$
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * m: Should be from a Variable().
@@ -1256,7 +1279,7 @@ class ResourceApplyAdamWithAmsgrad {
 /// update <- (alpha + sign_decay * sign(g) *sign(m)) * g
 /// variable <- variable - lr_t * update
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * m: Should be from a Variable().
@@ -1329,7 +1352,7 @@ class ResourceApplyAddSign {
 /// mom <- momentum * mom_{t-1} + lr * grad / sqrt(ms - mg * mg + epsilon)
 /// var <- var - mom
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * mg: Should be from a Variable().
@@ -1337,6 +1360,7 @@ class ResourceApplyAddSign {
 /// * mom: Should be from a Variable().
 /// * lr: Scaling factor. Must be a scalar.
 /// * rho: Decay rate. Must be a scalar.
+/// * momentum: Momentum Scale. Must be a scalar.
 /// * epsilon: Ridge term. Must be a scalar.
 /// * grad: The gradient.
 ///
@@ -1394,7 +1418,7 @@ class ResourceApplyCenteredRMSProp {
 /// var = (sign(linear) * l1 - linear) / quadratic if |linear| > l1 else 0.0
 /// accum = accum_new
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().
@@ -1427,7 +1451,15 @@ class ResourceApplyFtrl {
       return ret;
     }
 
+    /// Defaults to false
+    TF_MUST_USE_RESULT Attrs MultiplyLinearByLr(bool x) {
+      Attrs ret = *this;
+      ret.multiply_linear_by_lr_ = x;
+      return ret;
+    }
+
     bool use_locking_ = false;
+    bool multiply_linear_by_lr_ = false;
   };
   ResourceApplyFtrl(const ::tensorflow::Scope& scope, ::tensorflow::Input var,
                   ::tensorflow::Input accum, ::tensorflow::Input linear,
@@ -1445,6 +1477,9 @@ class ResourceApplyFtrl {
   static Attrs UseLocking(bool x) {
     return Attrs().UseLocking(x);
   }
+  static Attrs MultiplyLinearByLr(bool x) {
+    return Attrs().MultiplyLinearByLr(x);
+  }
 
   Operation operation;
 };
@@ -1459,7 +1494,7 @@ class ResourceApplyFtrl {
 /// var = (sign(linear) * l1 - linear) / quadratic if |linear| > l1 else 0.0
 /// accum = accum_new
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().
@@ -1492,7 +1527,15 @@ class ResourceApplyFtrlV2 {
       return ret;
     }
 
+    /// Defaults to false
+    TF_MUST_USE_RESULT Attrs MultiplyLinearByLr(bool x) {
+      Attrs ret = *this;
+      ret.multiply_linear_by_lr_ = x;
+      return ret;
+    }
+
     bool use_locking_ = false;
+    bool multiply_linear_by_lr_ = false;
   };
   ResourceApplyFtrlV2(const ::tensorflow::Scope& scope, ::tensorflow::Input var,
                     ::tensorflow::Input accum, ::tensorflow::Input linear,
@@ -1511,13 +1554,16 @@ class ResourceApplyFtrlV2 {
   static Attrs UseLocking(bool x) {
     return Attrs().UseLocking(x);
   }
+  static Attrs MultiplyLinearByLr(bool x) {
+    return Attrs().MultiplyLinearByLr(x);
+  }
 
   Operation operation;
 };
 
 /// Update '*var' by subtracting 'alpha' * 'delta' from it.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * alpha: Scaling factor. Must be a scalar.
@@ -1568,7 +1614,7 @@ class ResourceApplyGradientDescent {
 /// accum = accum * momentum - lr * grad
 /// var += accum
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().
@@ -1636,14 +1682,14 @@ class ResourceApplyKerasMomentum {
   Operation operation;
 };
 
-/// Update '*var' according to the momentum scheme. Set use_nesterov = True if you
+/// Update '*var' according to the momentum scheme.
 ///
-/// want to use Nesterov momentum.
+/// Set use_nesterov = True if you want to use Nesterov momentum.
 ///
 /// accum = accum * momentum + grad
 /// var -= lr * accum
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().
@@ -1715,7 +1761,7 @@ class ResourceApplyMomentum {
 /// update <- exp(logbase * sign_decay * sign(g) * sign(m_t)) * g
 /// variable <- variable - lr_t * update
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * m: Should be from a Variable().
@@ -1775,7 +1821,7 @@ class ResourceApplyPowerSign {
 /// prox_v = var - lr * grad * (1 / sqrt(accum))
 /// var = sign(prox_v)/(1+lr*l2) * max{|prox_v|-lr*l1,0}
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().
@@ -1831,7 +1877,7 @@ class ResourceApplyProximalAdagrad {
 /// prox_v = var - alpha * delta
 /// var = sign(prox_v)/(1+alpha*l2) * max{|prox_v|-alpha*l1,0}
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * alpha: Scaling factor. Must be a scalar.
@@ -1897,7 +1943,7 @@ class ResourceApplyProximalGradientDescent {
 /// mom <- momentum * mom_{t-1} + lr * grad / sqrt(ms + epsilon)
 /// var <- var - mom
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * ms: Should be from a Variable().
@@ -1953,7 +1999,7 @@ class ResourceApplyRMSProp {
 
 /// var: Should be from a Variable().
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * accum: Should be from a Variable().
 /// * accum_update: : Should be from a Variable().
@@ -2013,7 +2059,7 @@ class ResourceSparseApplyAdadelta {
 /// accum += grad * grad
 /// var -= lr * grad * (1 / sqrt(accum))
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().
@@ -2076,7 +2122,7 @@ class ResourceSparseApplyAdagrad {
 
 /// Update entries in '*var' and '*accum' according to the proximal adagrad scheme.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * gradient_accumulator: Should be from a Variable().
@@ -2155,7 +2201,7 @@ class ResourceSparseApplyAdagradDA {
 /// mom <- momentum * mom_{t-1} + lr * grad / sqrt(ms + epsilon)
 /// var <- var - mom
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * mg: Should be from a Variable().
@@ -2229,7 +2275,7 @@ class ResourceSparseApplyCenteredRMSProp {
 /// var = (sign(linear) * l1 - linear) / quadratic if |linear| > l1 else 0.0
 /// accum = accum_new
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().
@@ -2263,7 +2309,15 @@ class ResourceSparseApplyFtrl {
       return ret;
     }
 
+    /// Defaults to false
+    TF_MUST_USE_RESULT Attrs MultiplyLinearByLr(bool x) {
+      Attrs ret = *this;
+      ret.multiply_linear_by_lr_ = x;
+      return ret;
+    }
+
     bool use_locking_ = false;
+    bool multiply_linear_by_lr_ = false;
   };
   ResourceSparseApplyFtrl(const ::tensorflow::Scope& scope, ::tensorflow::Input
                         var, ::tensorflow::Input accum, ::tensorflow::Input
@@ -2282,6 +2336,9 @@ class ResourceSparseApplyFtrl {
   static Attrs UseLocking(bool x) {
     return Attrs().UseLocking(x);
   }
+  static Attrs MultiplyLinearByLr(bool x) {
+    return Attrs().MultiplyLinearByLr(x);
+  }
 
   Operation operation;
 };
@@ -2297,7 +2354,7 @@ class ResourceSparseApplyFtrl {
 /// var = (sign(linear) * l1 - linear) / quadratic if |linear| > l1 else 0.0
 /// accum = accum_new
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().
@@ -2331,7 +2388,15 @@ class ResourceSparseApplyFtrlV2 {
       return ret;
     }
 
+    /// Defaults to false
+    TF_MUST_USE_RESULT Attrs MultiplyLinearByLr(bool x) {
+      Attrs ret = *this;
+      ret.multiply_linear_by_lr_ = x;
+      return ret;
+    }
+
     bool use_locking_ = false;
+    bool multiply_linear_by_lr_ = false;
   };
   ResourceSparseApplyFtrlV2(const ::tensorflow::Scope& scope, ::tensorflow::Input
                           var, ::tensorflow::Input accum, ::tensorflow::Input
@@ -2351,6 +2416,9 @@ class ResourceSparseApplyFtrlV2 {
   static Attrs UseLocking(bool x) {
     return Attrs().UseLocking(x);
   }
+  static Attrs MultiplyLinearByLr(bool x) {
+    return Attrs().MultiplyLinearByLr(x);
+  }
 
   Operation operation;
 };
@@ -2364,7 +2432,7 @@ class ResourceSparseApplyFtrlV2 {
 /// accum = accum * momentum - lr * grad
 /// var += accum
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().
@@ -2445,7 +2513,7 @@ class ResourceSparseApplyKerasMomentum {
 /// accum = accum * momentum + grad
 /// var -= lr * accum
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().
@@ -2524,7 +2592,7 @@ class ResourceSparseApplyMomentum {
 /// prox_v -= lr * grad * (1 / sqrt(accum))
 /// var = sign(prox_v)/(1+lr*l2) * max{|prox_v|-lr*l1,0}
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().
@@ -2585,7 +2653,7 @@ class ResourceSparseApplyProximalAdagrad {
 /// prox_v = var - alpha * grad
 /// var = sign(prox_v)/(1+alpha*l2) * max{|prox_v|-alpha*l1,0}
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * alpha: Scaling factor. Must be a scalar.
@@ -2654,7 +2722,7 @@ class ResourceSparseApplyProximalGradientDescent {
 /// mom <- momentum * mom_{t-1} + lr * grad / sqrt(ms + epsilon)
 /// var <- var - mom
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * ms: Should be from a Variable().
@@ -2715,7 +2783,7 @@ class ResourceSparseApplyRMSProp {
 
 /// var: Should be from a Variable().
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * accum: Should be from a Variable().
 /// * accum_update: : Should be from a Variable().
@@ -2776,7 +2844,7 @@ class SparseApplyAdadelta {
 /// $$accum += grad * grad$$
 /// $$var -= lr * grad * (1 / sqrt(accum))$$
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().
@@ -2840,7 +2908,7 @@ class SparseApplyAdagrad {
 
 /// Update entries in '*var' and '*accum' according to the proximal adagrad scheme.
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * gradient_accumulator: Should be from a Variable().
@@ -2918,7 +2986,7 @@ class SparseApplyAdagradDA {
 /// $$mom <- momentum * mom_{t-1} + lr * grad / sqrt(ms + epsilon)$$
 /// $$var <- var - mom$$
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * mg: Should be from a Variable().
@@ -2990,7 +3058,7 @@ class SparseApplyCenteredRMSProp {
 /// $$var = (sign(linear) * l1 - linear) / quadratic\ if\ |linear| > l1\ else\ 0.0$$
 /// $$accum = accum_{new}$$
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().
@@ -3024,7 +3092,15 @@ class SparseApplyFtrl {
       return ret;
     }
 
+    /// Defaults to false
+    TF_MUST_USE_RESULT Attrs MultiplyLinearByLr(bool x) {
+      Attrs ret = *this;
+      ret.multiply_linear_by_lr_ = x;
+      return ret;
+    }
+
     bool use_locking_ = false;
+    bool multiply_linear_by_lr_ = false;
   };
   SparseApplyFtrl(const ::tensorflow::Scope& scope, ::tensorflow::Input var,
                 ::tensorflow::Input accum, ::tensorflow::Input linear,
@@ -3044,6 +3120,9 @@ class SparseApplyFtrl {
   static Attrs UseLocking(bool x) {
     return Attrs().UseLocking(x);
   }
+  static Attrs MultiplyLinearByLr(bool x) {
+    return Attrs().MultiplyLinearByLr(x);
+  }
 
   Operation operation;
   ::tensorflow::Output out;
@@ -3053,14 +3132,14 @@ class SparseApplyFtrl {
 ///
 /// That is for rows we have grad for, we update var, accum and linear as follows:
 /// grad_with_shrinkage = grad + 2 * l2_shrinkage * var
-/// accum_new = accum + grad_with_shrinkage * grad_with_shrinkage
-/// linear += grad_with_shrinkage +
+/// accum_new = accum + grad * grad
+/// linear += grad_with_shrinkage -
 ///     (accum_new^(-lr_power) - accum^(-lr_power)) / lr * var
 /// quadratic = 1.0 / (accum_new^(lr_power) * lr) + 2 * l2
 /// var = (sign(linear) * l1 - linear) / quadratic if |linear| > l1 else 0.0
 /// accum = accum_new
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().
@@ -3094,7 +3173,15 @@ class SparseApplyFtrlV2 {
       return ret;
     }
 
+    /// Defaults to false
+    TF_MUST_USE_RESULT Attrs MultiplyLinearByLr(bool x) {
+      Attrs ret = *this;
+      ret.multiply_linear_by_lr_ = x;
+      return ret;
+    }
+
     bool use_locking_ = false;
+    bool multiply_linear_by_lr_ = false;
   };
   SparseApplyFtrlV2(const ::tensorflow::Scope& scope, ::tensorflow::Input var,
                   ::tensorflow::Input accum, ::tensorflow::Input linear,
@@ -3116,6 +3203,9 @@ class SparseApplyFtrlV2 {
   static Attrs UseLocking(bool x) {
     return Attrs().UseLocking(x);
   }
+  static Attrs MultiplyLinearByLr(bool x) {
+    return Attrs().MultiplyLinearByLr(x);
+  }
 
   Operation operation;
   ::tensorflow::Output out;
@@ -3130,7 +3220,7 @@ class SparseApplyFtrlV2 {
 /// $$accum = accum * momentum + grad$$
 /// $$var -= lr * accum$$
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().
@@ -3210,7 +3300,7 @@ class SparseApplyMomentum {
 /// $$prox_v -= lr * grad * (1 / sqrt(accum))$$
 /// $$var = sign(prox_v)/(1+lr*l2) * max{|prox_v|-lr*l1,0}$$
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * accum: Should be from a Variable().
@@ -3271,7 +3361,7 @@ class SparseApplyProximalAdagrad {
 /// $$prox_v = var - alpha * grad$$
 /// $$var = sign(prox_v)/(1+alpha*l2) * max{|prox_v|-alpha*l1,0}$$
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * alpha: Scaling factor. Must be a scalar.
@@ -3339,7 +3429,7 @@ class SparseApplyProximalGradientDescent {
 /// $$mom <- momentum * mom_{t-1} + lr * grad / sqrt(ms + epsilon)$$
 /// $$var <- var - mom$$
 ///
-/// Arguments:
+/// Args:
 /// * scope: A Scope object
 /// * var: Should be from a Variable().
 /// * ms: Should be from a Variable().
